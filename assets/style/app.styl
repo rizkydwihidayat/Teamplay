@@ -1,0 +1,231 @@
+// Import Vuetify styling
+@require '~vuetify/src/stylus/app.styl';
+
+// hide icons font when loading
+.wf-loading {
+  .material-icons {
+    display: none;
+  }
+}
+
+// override Vuetify styling
+$input_border_radius: 4px, html {
+  font-size: 13px;
+}
+
+a {
+  text-decoration: none;
+
+  a:hover {
+    color: #383838;
+  }
+}
+
+h6.title {
+  font-size: 19px;
+  margin-bottom: 24px;
+}
+
+.v-list__tile {
+  a {
+    color: #383838;
+  }
+}
+
+.theme--light.v-toolbar, .theme--light.application {
+  background: #fff;
+}
+
+.v-input__slot {
+  padding: 3px 6px;
+  border-width: 1px !important;
+  border-radius: $input_border_radius;
+  transition: border-color 0.2s ease-in-out;
+}
+
+// .v-card__title {
+// padding: 0 16px;
+// }
+.v-dialog {
+  .v-card__actions .v-btn {
+    height: 40px;
+  }
+}
+
+// override v-card sheet
+.theme--light.v-sheet {
+  background-color: #fff;
+  border-color: transparent;
+}
+
+.v-list__tile__title {
+  // height: 15px;
+  // line-height: 15px;
+}
+
+.v-list__tile {
+  font-size: 13px;
+}
+
+.v-footer--fixed {
+  padding: 0 15px;
+}
+
+.v-snack__wrapper {
+  box-shadow: none;
+}
+
+.red-ripple {
+  background-color: #e33837;
+}
+
+.v-icon {
+  font-size: 18px;
+}
+
+.text-none.v-btn:before {
+  opacity: 0;
+}
+
+.v-text-field input {
+  font-size: 14px;
+}
+
+.v-text-field--outline {
+  .v-label {
+    font-size: 14px;
+  }
+}
+
+.v-input--selection-controls:not(.v-input--hide-details) .v-input__slot {
+  margin-bottom: 0;
+}
+
+.v-messages.theme--light {
+  min-height: 2px;
+}
+
+.v-btn {
+  box-shadow: none;
+  font-size: 14px;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.36;
+  letter-spacing: normal;
+  text-align: center;
+}
+
+.v-btn.btnBack {
+  height: 32px;
+  width: 32px;
+}
+
+.v-btn.v-btn--depressed {
+  height: 48px !important;
+}
+
+.bottomNavSeller .v-btn.v-btn--active .v-btn__content, .bottomNavSeller .v-btn .v-btn__content {
+  font-size: 12px;
+  padding: 8px 12px;
+  color: #888;
+}
+
+.v-item-group.v-bottom-nav.bottomNavSeller .v-btn--active .v-btn__content {
+  font-size: 12px;
+}
+
+.btmNavImg {
+  margin-bottom: 5px;
+}
+
+.v-text-field--box > .v-input__control > .v-input__slot, .v-text-field--full-width > .v-input__control > .v-input__slot, .v-text-field--outline > .v-input__control > .v-input__slot {
+  min-height: 36px;
+}
+
+.accountInfoTile {
+  .v-list__tile {
+    height: auto;
+  }
+}
+
+.v-divider.bolderBorder {
+  border-width: 8px 0 0 0;
+  border-color: rgba(0, 0, 0, 0.05) !important;
+  margin-left: -16px;
+  margin-right: -16px;
+  max-width: none !important;
+}
+
+// Put other global styles below
+.container {
+  padding: 15px;
+}
+
+.g-page {
+  padding-top: 15px;
+}
+
+.g-page-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #00bcb8;
+}
+
+.pBottom45 {
+  padding-bottom: 45px;
+}
+
+// override onesignal css
+.secondary.popover-button, .primary.popover-button {
+  border-color: transparent !important;
+}
+
+.theme--light.application {
+  background: #f4faf9;
+}
+
+.container {
+  background: #fff;
+  padding: 16px;
+  min-height: 100%;
+}
+
+.v-content__wrap > .container {
+  padding-bottom: 0;
+}
+
+.afterSellerInfo {
+  margin-top: 95px;
+}
+
+.btnUpdate {
+  font-size: 12px !important;
+  font-weight: 400;
+  border-radius: 3px;
+  height: 27px !important;
+  padding: 0 10px;
+  margin: 0;
+  text-transform: none;
+  background: #f5f5f5;
+  border: 1px solid #e3e3e3;
+  color: #969696;
+  width: 105px;
+  text-align: center;
+  -webkit-box-shadow: 0px 0px 0px 0px !important;
+  -moz-box-shadow: 0px 0px 0px 0px !important;
+  box-shadow: 0px 0px 0px 0px !important;
+}
+.v-expansion-panel__header {
+  background: #def2ee;
+}
+
+.theme--light.v-expansion-panel .v-expansion-panel__container .v-expansion-panel__header .v-expansion-panel__header__icon .v-icon {
+  color: #fe4544 !important;
+}
+
+.detilDrd {
+  font-size: 14px;
+  font-weight: 500;
+  color: #00bcb8;
+}
