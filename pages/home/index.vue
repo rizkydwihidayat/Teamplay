@@ -1,6 +1,9 @@
 <template>
-  <div id="pageHome" class="compWrapper g-transition home-page">
-    <HomeSlide />
+  <div id="pageHome" class="compWrapper g-transition">
+    <HomeSearch />
+    <HomeCategory />
+    <HomeCarousel />
+    <HomeMatchLocation />
   </div>
 </template>
 
@@ -8,8 +11,14 @@
 export default {
   name: "HomePage",
   components: {
-    HomeSlide: () =>
-      import('../../components/HomeSlide.vue' /* webpackChunkName: "HomeSellerInfo" */),
+    HomeSearch: () =>
+      import('../../components/HomeSearch.vue' /* webpackChunkName: "HomeSellerInfo" */),
+    HomeCategory: () =>
+      import('../../components/HomeCategory.vue' /* webpackChunkName: "HomeSellerInfo" */),
+    HomeCarousel: () =>
+      import('../../components/HomeCarousel.vue' /* webpackChunkName: "HomeSellerInfo" */),
+    HomeMatchLocation: () =>
+      import('../../components/HomeMatchLocation.vue' /* webpackChunkName: "HomeSellerInfo" */)
   },
   layout: 'bottom_nav',
   head() {
@@ -35,5 +44,10 @@ export default {
 <style>
 .loaderHome {
   margin-top: 55%;
+}
+</style>
+<style scoped>
+.home-page {
+  background: white !important;
 }
 </style>

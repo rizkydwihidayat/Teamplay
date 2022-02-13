@@ -47,7 +47,8 @@ export default {
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
-  background: #0D47A1;
+  padding: 0px;
+  /* background: #0D47A1; */
 }
 .main {
   background: lightgray;

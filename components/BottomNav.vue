@@ -4,7 +4,6 @@
     :value="true"
     absolute
     color="primary"
-    hide-on-scroll
     app
     class="bottomNav"
   >
@@ -14,14 +13,14 @@
         v-if="routeName === 'home'"
         src="~/assets/svg/home.svg"
         alt="H"
-        width="16"
+        width="21"
         class="btmNavImg"
       />
       <img
         v-else
         src="~/assets/svg/home-inactive.svg"
         alt="H"
-        width="16"
+        width="21"
         class="btmNavImg"
       />
     </v-btn>
@@ -33,13 +32,13 @@
         "
         src="~/assets/svg/calendar.svg"
         alt="H"
-        width="16"
+        width="21"
         class="btmNavImg"
       />
       <img
         v-else
         src="~/assets/svg/calendar-inactive.svg"
-        width="16"
+        width="21"
         alt="H"
         class="btmNavImg"
       />
@@ -49,14 +48,14 @@
       <img
         v-if="routeName === 'search'"
         src="~/assets/svg/search.svg"
-        width="16"
+        width="21"
         alt="H"
         class="btmNavImg"
       />
       <img
         v-else
         src="~/assets/svg/search-inactive.svg"
-        width="16"
+        width="21"
         alt="H"
         class="btmNavImg"
       />
@@ -66,14 +65,14 @@
       <img
         v-if="routeName === 'profile'"
         src="~/assets/svg/portrait.svg"
-        width="16"
+        width="21"
         alt="H"
         class="btmNavImg"
       />
       <img
         v-else
         src="~/assets/svg/portrait-inactive.svg"
-        width="16"
+        width="21"
         alt="H"
         class="btmNavImg"
       />
@@ -117,13 +116,16 @@ export default {
   position: fixed;
   bottom: 0;
   background: white;
+  height: 60px;
+  padding: 5px;
 }
 .bottomNav >>> .v-btn {
   background: none;
 }
 .text-nav {
     text-transform: capitalize;
-    margin: 3px;
+    /* margin: 3px; */
+    padding: 5px;
     font-weight: 600;
 }
 </style>
