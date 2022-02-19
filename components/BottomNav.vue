@@ -126,7 +126,8 @@ export default {
     text-transform: capitalize;
     /* margin: 3px; */
     padding: 5px;
-    font-weight: 600;
+    font-weight: 500;
+    font-family: Poppins;
 }
 </style>
 <style>

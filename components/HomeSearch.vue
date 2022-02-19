@@ -6,6 +6,7 @@
         Selamat datang di Teamplay! <br />
         Anti ribet atur janji buat olahraga bareng.
       </p>
+      <br />
       <v-text-field solo append-icon="mdi-magnify" placeholder="Mau maen dimana?" class="search"></v-text-field>
     </div>
   </div>
@@ -34,7 +35,10 @@ p {
 .container-top {
     padding-top: 20px;
     padding-bottom: 20px;
-    background: #0D47A1;
+    /* background: #0D47A1; */
+    background: white;
+    background-image: url('~@/assets/img/Home.png');
+    background-position: bottom;
 }
 .search >>> .v-text-field__slot input {
   color: #9E9E9E;

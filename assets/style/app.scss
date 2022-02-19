@@ -1,4 +1,7 @@
 // sample override using SASS
+body {
+  font-family: Poppins !important;
+}
 .container {
   padding: 15px;
 }
@@ -19,4 +22,14 @@ a.footerText {
 }
 p {
   font-weight: 500;
+  font-family: Poppins !important;
+}
+.mb-10 {
+  margin-bottom: 10px;
+}
+.ml-16 {
+  margin-left: 16px !important;
+}
+span {
+  color: black;
 }
