@@ -41,11 +41,6 @@ export default {
   },
 }
 </script>
-<style>
-.loaderHome {
-  margin-top: 55%;
-}
-</style>
 <style scoped>
 .home-page {
   background: white !important;
