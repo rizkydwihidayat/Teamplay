@@ -18,47 +18,67 @@
       </div>
       <div class="divider"><span>atau</span></div>
       <div class="bottom-button">
-        <v-text-field
-          ref="emailAddress"
+        <v-btn
+          v-if="hideButton === false"
+          depressed
+          color="gray"
           outlined
-          placeholder="Email"
-          required
-          :error-messages="emailErrorResponse"
-          validate-on-blur
-          prepend-inner-icon="mdi-email-outline"
-          @input="(val) => inputEmail(val)"
-          @focus="resetEmail"
-        ></v-text-field>
-        <v-text-field
-          :type="showpass ? 'text' : 'password'"
-          :validate-on-blur="true"
-          browser-autocomplete="password"
-          autocomplete="password"
-          required
-          outlined
-          placeholder="Password"
-          prepend-inner-icon="mdi-key-outline"
-          :maxlength="27"
-          @click:append="showpass = !showpass"
+          rounded
+          @click="showForm"
         >
-          <template #append>
-            <div @click="showpass = !showpass">
-              <IcSeen v-if="!showpass" class="form-icon" />
-              <IcSeen v-else :reveal="true" class="form-icon" />
-            </div>
-          </template>
-        </v-text-field>
-        <span>Lupa Password?</span>
+          <img src="~/assets/img/email.png" width="20" /><span
+            >Masuk dengan Email</span
+          >
+        </v-btn>
+        <v-form
+          v-if="showFormRegister === true"
+          ref="form"
+          v-model="valid"
+          lazy-validation
+          @keyup.native.enter="valid && submit($event)"
+        >
+          <v-text-field
+            ref="emailAddress"
+            outlined
+            placeholder="Email"
+            required
+            :error-messages="emailErrorResponse"
+            validate-on-blur
+            prepend-inner-icon="mdi-email-outline"
+            @input="(val) => inputEmail(val)"
+            @focus="resetEmail"
+          ></v-text-field>
+          <v-text-field
+            :type="showpass ? 'text' : 'password'"
+            :validate-on-blur="true"
+            browser-autocomplete="password"
+            autocomplete="password"
+            required
+            outlined
+            placeholder="Password"
+            prepend-inner-icon="mdi-key-outline"
+            :maxlength="27"
+            @click:append="showpass = !showpass"
+          >
+            <template #append>
+              <div @click="showpass = !showpass">
+                <IcSeen v-if="!showpass" class="form-icon" />
+                <IcSeen v-else :reveal="true" class="form-icon" />
+              </div>
+            </template>
+          </v-text-field>
+          <span>Lupa Password?</span>
+          <div class="login-button">
+            <v-btn depressed color="primary" rounded>
+              <span>Masuk</span>
+            </v-btn>
+          </div>
+        </v-form>
       </div>
       <br />
       <span class="do-register"
         >Belum punya akun? <a href="/register">Yuk, daftar!</a></span
       >
-      <div class="login-button">
-      <v-btn depressed color="primary" rounded>
-        <span>Masuk</span>
-      </v-btn>
-    </div>
     </div>
   </v-content>
 </template>
@@ -75,6 +95,8 @@ export default {
     showpass: false,
     valid: false,
     refFocus: false,
+    showFormLogin: false,
+    hideButton: false,
     emailInput: '',
     // emailErrorMessage: ''
   }),
@@ -85,6 +107,10 @@ export default {
     },
     resetEmail() {
       // this.emailErrorMessage = ''\
+    },
+    showForm() {
+      this.showFormRegister = true
+      this.hideButton = true
     },
   },
 }
@@ -110,10 +136,14 @@ h2 {
   font-size: 16px;
 }
 .bottom-button span {
+  text-transform: capitalize !important;
   font-family: Poppins;
   font-weight: 500;
   font-size: 12px;
   color: #2b67f6;
+}
+.bottom-button img {
+  margin-right: 16px;
 }
 .google-button {
   padding-left: 20px;
@@ -176,14 +206,15 @@ span {
   cursor: pointer;
 }
 .login-button {
-  position:absolute;
-    bottom: 5px;
-    left: 0%;
-    right: 0%;
-    text-align: center;
-    margin: 40px 20px;
+  position: absolute;
+  bottom: 5px;
+  left: 0%;
+  right: 0%;
+  text-align: center;
+  margin: 40px 20px;
 }
 .login-button span {
+  color: white;
   text-transform: capitalize !important;
   font-family: Poppins;
   font-weight: 500;
