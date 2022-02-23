@@ -1,12 +1,13 @@
 <template>
   <v-content class="main">
-    <div id="pageLogin" class="compWrapper g-transition">
+    <div id="pageRegister" class="compWrapper g-transition">
       <TopBarNav />
-      <div class="top-login">
-        <h2>
-          Masuk dengan email<br />
-          yang kamu gunakan
-        </h2>
+      <div class="top-register">
+        <h2>Yuk, daftar!</h2>
+        <span
+          >Jangan khawatir, data kamu akan kami<br />
+          lindungi sepenuh hati.</span
+        >
       </div>
       <br />
       <div class="google-button">
@@ -27,7 +28,7 @@
           @click="showForm"
         >
           <img src="~/assets/img/email.png" width="20" /><span
-            >Masuk dengan Email</span
+            >Daftar dengan Email</span
           >
         </v-btn>
         <v-form
@@ -40,10 +41,10 @@
           <v-text-field
             ref="emailAddress"
             outlined
-            placeholder="Email"
             required
             :error-messages="emailErrorResponse"
             validate-on-blur
+            placeholder="Daftar dengan Email"
             prepend-inner-icon="mdi-email-outline"
             @input="(val) => inputEmail(val)"
             @focus="resetEmail"
@@ -70,14 +71,14 @@
           <span>Lupa Password?</span>
           <div class="login-button">
             <v-btn depressed color="primary" rounded>
-              <span>Masuk</span>
+              <span>Daftar</span>
             </v-btn>
           </div>
         </v-form>
       </div>
       <br />
       <span class="do-register"
-        >Belum punya akun? <a href="/register">Yuk, daftar!</a></span
+        >Suda punya akun? <a href="/login">Yuk, masuk!</a></span
       >
     </div>
   </v-content>
@@ -94,8 +95,7 @@ export default {
   data: () => ({
     showpass: false,
     valid: false,
-    refFocus: false,
-    showFormLogin: false,
+    showFormRegister: false,
     hideButton: false,
     emailInput: '',
     // emailErrorMessage: ''
@@ -116,11 +116,15 @@ export default {
 }
 </script>
 <style scoped>
-.top-login {
+.top-register {
   padding-left: 20px;
   padding-right: 20px;
   padding-top: 80px;
   margin-bottom: 20px;
+}
+.top-register span {
+  font-size: 18px;
+  text-align: justify;
 }
 h2 {
   font-family: Poppins;
@@ -135,15 +139,15 @@ h2 {
   font-weight: 500;
   font-size: 16px;
 }
+.bottom-button img {
+  margin-right: 16px;
+}
 .bottom-button span {
-  text-transform: capitalize !important;
   font-family: Poppins;
   font-weight: 500;
   font-size: 12px;
   color: #2b67f6;
-}
-.bottom-button img {
-  margin-right: 16px;
+  text-transform: capitalize !important;
 }
 .google-button {
   padding-left: 20px;
@@ -164,7 +168,7 @@ h2 {
 span {
   font-family: Poppins;
 }
-#pageLogin {
+#pageRegister {
   background: white;
   height: 100vh;
 }
