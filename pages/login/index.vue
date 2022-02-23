@@ -53,6 +53,11 @@
       <span class="do-register"
         >Belum punya akun? <a href="">Yuk Daftar!</a></span
       >
+      <div class="login-button">
+      <v-btn depressed color="primary" rounded>
+        <span>Masuk</span>
+      </v-btn>
+    </div>
     </div>
   </v-content>
 </template>
@@ -78,7 +83,7 @@ export default {
     resetEmail() {
       // this.emailErrorMessage = ''\
     },
-  }
+  },
 }
 </script>
 <style scoped>
@@ -106,7 +111,7 @@ h2 {
   font-family: Poppins;
   font-weight: 500;
   font-size: 12px;
-  color: #2B67F6;
+  color: #2b67f6;
 }
 .google-button {
   padding-left: 20px;
@@ -167,6 +172,20 @@ span {
   width: 24px;
   height: 24px;
   cursor: pointer;
+}
+.login-button {
+  position:absolute;
+    bottom: 5px;
+    left: 0%;
+    right: 0%;
+    text-align: center;
+    margin: 40px 20px;
+}
+.login-button span {
+  text-transform: capitalize !important;
+  font-family: Poppins;
+  font-weight: 500;
+  font-size: 14px;
 }
 </style>
 <style>
