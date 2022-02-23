@@ -1,12 +1,12 @@
 <template>
   <v-content class="main">
-    <div id="pageLogin" class="compWrapper g-transition">
+    <div id="pageRegister" class="compWrapper g-transition">
       <TopBarNav />
-      <div class="top-login">
+      <div class="top-register">
         <h2>
-          Masuk dengan email<br />
-          yang kamu gunakan
+          Yuk, daftar!
         </h2>
+        <span>Jangan khawatir, data kamu akan kami<br /> lindungi sepenuh hati.</span>
       </div>
       <br />
       <div class="google-button">
@@ -21,10 +21,10 @@
         <v-text-field
           ref="emailAddress"
           outlined
-          placeholder="Email"
           required
           :error-messages="emailErrorResponse"
           validate-on-blur
+          placeholder="Daftar dengan Email"
           prepend-inner-icon="mdi-email-outline"
           @input="(val) => inputEmail(val)"
           @focus="resetEmail"
@@ -52,11 +52,11 @@
       </div>
       <br />
       <span class="do-register"
-        >Belum punya akun? <a href="/register">Yuk, daftar!</a></span
+        >Suda punya akun? <a href="/login">Yuk, masuk!</a></span
       >
       <div class="login-button">
       <v-btn depressed color="primary" rounded>
-        <span>Masuk</span>
+        <span>Daftar</span>
       </v-btn>
     </div>
     </div>
@@ -90,11 +90,15 @@ export default {
 }
 </script>
 <style scoped>
-.top-login {
+.top-register {
   padding-left: 20px;
   padding-right: 20px;
   padding-top: 80px;
   margin-bottom: 20px;
+}
+.top-register span {
+    font-size: 18px;
+    text-align: justify;
 }
 h2 {
   font-family: Poppins;
@@ -134,7 +138,7 @@ h2 {
 span {
   font-family: Poppins;
 }
-#pageLogin {
+#pageRegister {
   background: white;
   height: 100vh;
 }
