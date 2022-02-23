@@ -35,8 +35,3 @@ export default {
   },
 }
 </script>
-<style scoped>
-.home-page {
-  background: white !important;
-}
-</style>
