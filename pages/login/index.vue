@@ -1,6 +1,7 @@
 <template>
   <v-content class="main">
     <div id="pageLogin" class="compWrapper g-transition">
+      <TopBarNav />
       <div class="top-login">
         <h2>
           Masuk dengan email<br />
@@ -64,7 +65,9 @@
 <script>
 const components = {
   IcSeen: () => import('~/components/svg/IcSeen'),
+  TopBarNav: () => import('~/components/Topbar'),
 }
+
 export default {
   name: 'LoginPage',
   components,
