@@ -3,8 +3,16 @@
     <div class="container">
       <v-toolbar flat color="transparent">
         <v-btn icon :ripple="false" class="btnBack" @click="back">
-          <img width="32" height="32" src="~/assets/svg/ic-back-cevron.svg" alt="<" />
+          <img
+            width="32"
+            height="32"
+            src="~/assets/svg/ic-back-cevron.svg"
+            alt="<"
+          />
         </v-btn>
+        <v-toolbar-title class="headTitle">{{
+          title
+        }}</v-toolbar-title>
         <div></div>
       </v-toolbar>
     </div>
@@ -12,11 +20,23 @@
 </template>
 <script>
 export default {
-  name: "TopBar",
+  name: 'TopbarWithTitle',
+  data() {
+    return {
+      title: '',
+    }
+  },
   methods: {
     back() {
-        this.$store.$router.push('/home')
-    }
+      this.$store.$router.push('/home')
+    },
+    head() {
+    //   const self = this
+      if (process.client) {
+        this.title = window.$nuxt._route.name
+      }
+      return this.title
+    },
   },
 }
 </script>
@@ -54,13 +74,13 @@ export default {
   margin-right: 32px;
 }
 .headTitle {
-  font-family: Roboto;
+  font-family: Poppins;
   font-size: 15px;
   font-style: normal;
   font-stretch: normal;
   line-height: 1.33;
   letter-spacing: normal;
   text-align: center;
-  color: var(--black);
+  color: black;
 }
 </style>
