@@ -10,9 +10,7 @@
             alt="<"
           />
         </v-btn>
-        <v-toolbar-title class="headTitle">{{
-          title
-        }}</v-toolbar-title>
+        <v-toolbar-title class="headTitle">My Match</v-toolbar-title>
         <div></div>
       </v-toolbar>
     </div>
@@ -43,7 +41,7 @@ export default {
 
 <style scoped>
 .headBar {
-  padding: 0 15px;
+  /* padding: 0 15px; */
   background: #fff;
   z-index: 5;
   clear: both;
@@ -81,6 +79,6 @@ export default {
   line-height: 1.33;
   letter-spacing: normal;
   text-align: center;
-  color: black;
+  color: black !important;
 }
 </style>
