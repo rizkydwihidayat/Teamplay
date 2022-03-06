@@ -205,7 +205,7 @@
 </template>
 <script>
 const components = {
-  TopBarNav: () => import('~/components/Topbar'),
+  TopBarNav: () => import('~/components/TopbarWithTitle'),
 }
 export default {
   name: 'MatchPage',

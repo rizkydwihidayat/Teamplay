@@ -2,7 +2,7 @@
   <div class="headBar">
     <div class="container">
       <v-toolbar flat color="transparent">
-        <v-btn icon :ripple="false" class="btnBack" @click="back">
+        <v-btn icon :ripple="false" class="btnBack ml-10" @click="back">
           <img
             width="32"
             height="32"
@@ -30,9 +30,7 @@ export default {
     },
     head() {
     //   const self = this
-      if (process.client) {
-        this.title = window.$nuxt._route.name
-      }
+      this.title = window.$nuxt._route.name
       return this.title
     },
   },
@@ -80,5 +78,9 @@ export default {
   letter-spacing: normal;
   text-align: center;
   color: black !important;
+  padding-right: 16px;
+}
+.ml-10 {
+  margin-left: 10px !important;
 }
 </style>
