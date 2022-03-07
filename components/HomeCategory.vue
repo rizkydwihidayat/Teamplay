@@ -285,6 +285,7 @@ span {
 .bottom-button {
   padding-left: 20px;
   padding-right: 20px;
+  margin-bottom: 40px;
 }
 .bottom-button >>> span {
   text-transform: capitalize !important;
