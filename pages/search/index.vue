@@ -17,7 +17,7 @@
           </div>
           <v-chip-group v-model="filter" active-class="primary--text" mandatory>
             <div class="filter">
-              <v-chip>Filter</v-chip>
+              <v-chip @click="openFilter">Filter</v-chip>
             </div>
             <v-chip>Semua</v-chip>
             <v-chip>Mini Soccer</v-chip>
@@ -258,6 +258,102 @@
             </v-list-item>
           </v-card>
         </div>
+        <v-dialog
+          v-model="showdialog"
+          transition="dialog-bottom-transition wrap-400"
+        >
+          <v-card class="modalShare">
+            <v-card-title class="headerModal mt-2">
+              <v-layout row wrap>
+                <v-flex xs1 s1 class="close-modal">
+                  <div class="align-right" @click="closeDialog">X</div>
+                </v-flex>
+                <v-flex xs6 s6>
+                  <span class="title-filter">Ubah Pencarian</span>
+                </v-flex>
+              </v-layout>
+            </v-card-title>
+            <hr class="hr-divider" />
+            <v-card-text>
+              <div class="filter-field">
+                <v-text-field
+                  outlined
+                  append-icon="mdi-magnify"
+                  placeholder="Mau maen dimana?"
+                ></v-text-field>
+                <v-menu
+                  ref="menu"
+                  v-model="menu"
+                  :close-on-content-click="false"
+                  :return-value.sync="date"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="date"
+                      label="Tanggal main"
+                      append-icon="mdi-calendar"
+                      outlined
+                      v-bind="attrs"
+                      v-on="on"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker v-model="date" range no-title scrollable>
+                    <v-spacer></v-spacer>
+                    <v-btn text color="primary" @click="menu = false">
+                      Cancel
+                    </v-btn>
+                    <v-btn text color="primary" @click="$refs.menu.save(date)">
+                      OK
+                    </v-btn>
+                  </v-date-picker>
+                </v-menu>
+              </div>
+              <div class="filter-category">
+                <h3>Kategori Pemain</h3>
+                <v-chip-group
+                  v-model="filterCategory"
+                  active-class="primary--text"
+                  mandatory
+                >
+                  <v-chip>Pria</v-chip>
+                  <v-chip>Wanita</v-chip>
+                  <v-chip>Campuran</v-chip>
+                </v-chip-group>
+              </div>
+              <div class="filter-waktu-main">
+                <h3>Waktu Main</h3>
+                <v-checkbox
+                  v-model="checkbox"
+                  label="Pagi (06.00 - 12.00)"
+                  hide-details
+                ></v-checkbox>
+                <v-checkbox
+                  v-model="checkbox"
+                  label="Siang (12.00 - 15.00)"
+                  hide-details
+                ></v-checkbox>
+                <v-checkbox
+                  v-model="checkbox"
+                  label="Sore (15.00 - 18.00)"
+                  hide-details
+                ></v-checkbox>
+                <v-checkbox
+                  v-model="checkbox"
+                  label="Malam (18.00 - 23.00)"
+                  hide-details
+                ></v-checkbox>
+              </div>
+            </v-card-text>
+            <div class="bottom-button">
+              <v-btn depressed rounded color="primary">
+                <span> Cari pertandingan</span>
+              </v-btn>
+            </div>
+          </v-card>
+        </v-dialog>
       </div>
     </div>
   </div>
@@ -265,14 +361,31 @@
 <script>
 export default {
   name: 'SearchPage',
+  data() {
+    return {
+      showdialog: false,
+      filterCategory: '',
+    }
+  },
   methods: {
     back() {
       this.$store.$router.push('/')
-    }
+    },
+    openFilter() {
+      this.showdialog = true
+    },
+    closeDialog() {
+      this.showdialog = false
+    },
   },
 }
 </script>
 <style scoped>
+h3 {
+  font-family: Poppins;
+  font-weight: 600;
+  color: black;
+}
 .search {
   padding-top: 20px;
   padding-bottom: 20px;
@@ -347,6 +460,53 @@ export default {
 .card-section-2 {
   padding: 15px 0px 0px 0px;
   text-align: right;
+}
+.modalShare {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 480px;
+  max-height: 700px;
+  overflow: scroll;
+  margin: auto;
+  border-radius: 16px 16px 0px 0px;
+}
+.hr-divider {
+  margin: 10px 0;
+  height: 1px;
+  border: 0;
+  background: #e3e3e3;
+}
+.title-filter {
+  font-family: Poppins;
+  font-weight: 600;
+  font-size: 20px;
+}
+.bottom-button {
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.bottom-button >>> span {
+  text-transform: capitalize !important;
+  font-family: Poppins;
+  font-weight: 600;
+  font-size: 14px;
+}
+.filter-category,
+.filter-waktu-main,
+.filter-field {
+  font-family: Poppins;
+  margin-bottom: 16px;
+}
+.close-modal {
+  font-family: Poppins;
+  font-weight: 500;
+  color: #424242;
+  cursor: pointer;
 }
 </style>
 <style>
