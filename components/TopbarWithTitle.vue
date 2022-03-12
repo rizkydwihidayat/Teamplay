@@ -26,13 +26,8 @@ export default {
   },
   methods: {
     back() {
-      this.$store.$router.push('/home')
-    },
-    head() {
-    //   const self = this
-      this.title = window.$nuxt._route.name
-      return this.title
-    },
+      this.$store.$router.push('/')
+    }
   },
 }
 </script>

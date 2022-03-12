@@ -187,12 +187,9 @@
 
     <!-- bottom button -->
     <div class="bottom-button">
-      <v-btn
-      depressed
-      color="primary"
-    >
-      <span> Lihat Pertandingan Lainnya</span>
-    </v-btn>
+      <v-btn depressed color="primary">
+        <span> Lihat Pertandingan Lainnya</span>
+      </v-btn>
     </div>
   </div>
 </template>
@@ -279,12 +276,13 @@ span {
   font-weight: 600;
 }
 .red-text {
-  color: #F16060;
+  color: #f16060;
   margin-left: 10px;
 }
 .bottom-button {
   padding-left: 20px;
   padding-right: 20px;
+  margin-bottom: 40px;
 }
 .bottom-button >>> span {
   text-transform: capitalize !important;

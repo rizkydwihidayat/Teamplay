@@ -60,7 +60,7 @@
         class="btmNavImg"
       />
     </v-btn>
-    <v-btn id="toChat" :ripple="false" text :to="linkChat">
+    <v-btn id="toChat" :ripple="false" text :to="linkToAccount">
       <span class="text-nav">Profile</span>
       <img
         v-if="routeName === 'profile'"
@@ -88,8 +88,8 @@ export default {
     return {
       activeBtn: '/home',
       linkToMatch: '/match',
-      // linkToSearch: '/search',
-      // linkToAccount: '/profile',
+      linkToSearch: '/search',
+      linkToAccount: '/profile',
     }
   },
   computed: {
