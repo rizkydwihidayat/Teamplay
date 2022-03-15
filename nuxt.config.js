@@ -88,6 +88,8 @@ export default {
   },
 
   generate: {
-    fallback: true
-  }
+    dir: 'dist'
+  },
+
+  target: 'static'
 }
