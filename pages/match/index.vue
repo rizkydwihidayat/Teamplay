@@ -293,6 +293,6 @@ export default {
 <style>
 .main {
   background: lightgray !important;
-  padding: 0px 0px 24px !important;
+  padding: 0px 0px !important;
 }
 </style>
