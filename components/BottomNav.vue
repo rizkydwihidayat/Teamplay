@@ -2,7 +2,7 @@
   <v-bottom-navigation
     v-model="activeBtn"
     :value="true"
-    absolute
+    fixed
     color="primary"
     app
     class="bottomNav"

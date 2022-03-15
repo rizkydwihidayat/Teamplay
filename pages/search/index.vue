@@ -445,7 +445,7 @@ h3 {
 }
 .list-card {
   margin: 20px;
-  width: 91%;
+  width: 100%;
   font-family: Poppins;
   padding: 15px 10px 10px 15px;
   border-radius: 15px;
