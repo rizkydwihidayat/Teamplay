@@ -1,5 +1,3 @@
 [build]
-  # this is the dir that will be published
-  publish = "dist/"
-  # command to setup your SSR environment
-  command = "yarn generate"
+  command = "npm run build"
+  publish = "dist"
