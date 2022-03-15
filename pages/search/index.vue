@@ -217,7 +217,7 @@
                 <v-flex xs8 class="card-section-1"
                   ><h3>Fun Futsal Bekasi</h3>
                   <v-chip color="blue" outlined small>Futsal </v-chip>
-                  <v-chip color="blue" outlined small>Pria </v-chip>
+                  <v-chip color="blue" outlined small>Wanita </v-chip>
                   <br /><br />
                   <div class="center">
                     <img src="~/assets/img/Vector.png" width="16" />
