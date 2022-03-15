@@ -1,5 +1,5 @@
-# Basic redirect rule
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+[build]
+  # this is the dir that will be published
+  publish = "dist/"
+  # command to setup your SSR environment
+  command = "yarn generate"

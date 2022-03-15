@@ -85,5 +85,9 @@ export default {
       // specific font weights
       Poppins: [300, 400, 500, 600, 700, 800, 900],
     }
+  },
+
+  generate: {
+    fallback: true
   }
 }
