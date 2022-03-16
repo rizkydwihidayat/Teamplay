@@ -35,3 +35,9 @@ export default {
   },
 }
 </script>
+<style>
+.main {
+  background: lightgray !important;
+  padding: 0px 0px !important;
+}
+</style>

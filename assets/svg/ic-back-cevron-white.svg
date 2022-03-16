@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+    <defs>
+        <style>
+            .cls-1{fill:#ffffff}.cls-2{fill:none}
+        </style>
+    </defs>
+    <g id="ic_Back_Cevron" data-name="ic_Back Cevron" transform="translate(-16 -12)">
+        <path id="Path_18773" d="M.265 8.9l7.506 7.5a.847.847 0 0 0 1.2 0 .837.837 0 0 0 0-1.187L2.059 8.3l6.916-6.907A.846.846 0 0 0 7.779.2L.265 7.711a.853.853 0 0 0 0 1.187zm0 0" class="cls-1" data-name="Path 18773" transform="translate(26.974 20.05)"/>
+        <path id="Rectangle_4842" d="M0 0h32v32H0z" class="cls-2" data-name="Rectangle 4842" transform="translate(16 12)"/>
+    </g>
+</svg>
