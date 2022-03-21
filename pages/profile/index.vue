@@ -22,6 +22,10 @@
               >Poinku
               <img width="12" height="12" src="~/assets/svg/alert.svg" alt="<"
             /></span>
+            <div class="progress">
+              <div class="progress-bar"></div>
+            </div>
+            <br />
           </v-flex>
         </v-layout>
       </div>
@@ -84,7 +88,7 @@
         </v-flex>
       </v-layout>
       <hr class="hr-divider" />
-      <br /><br /><br />
+      <br /><br />
       <v-layout row wrap class="logout">
         <v-flex xs6 s6>
           <span>Keluar</span>
@@ -120,8 +124,8 @@ h3 {
 }
 .top-section {
   background-image: linear-gradient(to bottom right, #0d47a1, #2962ff);
-  height: 212px;
-  padding: 40px 20px;
+  height: 230px;
+  padding: 25px 20px;
 }
 .btnBack {
   padding: 10px;
@@ -198,5 +202,36 @@ h3 {
 .btn-detail {
   transform: rotate(180deg);
   padding-left: 25px;
+}
+.progress {
+  margin: 0 auto;
+  margin-left: -3%;
+  width: 100%;
+}
+
+.progress {
+  padding: 4px;
+  /* background: rgba(0, 0, 0, 0.25); */
+  background: white;
+  border-radius: 15px;
+}
+
+.progress-bar {
+  width: 50%;
+  height: 15px;
+  border-radius: 10px;
+  /* background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
+  background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
+  background-image: -o-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05)); */
+  background-color: #F9D745;
+  -webkit-transition: 0.4s linear;
+  -moz-transition: 0.4s linear;
+  -o-transition: 0.4s linear;
+  transition: 0.4s linear;
+  -webkit-transition-property: width, background-color;
+  -moz-transition-property: width, background-color;
+  -o-transition-property: width, background-color;
+  transition-property: width, background-color;
 }
 </style>

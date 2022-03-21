@@ -39,6 +39,7 @@
         >
           <v-text-field
             ref="emailAddress"
+            v-model="emailInput"
             outlined
             placeholder="Email"
             required
@@ -49,6 +50,7 @@
             @focus="resetEmail"
           ></v-text-field>
           <v-text-field
+            v-model="passInput"
             :type="showpass ? 'text' : 'password'"
             :validate-on-blur="true"
             browser-autocomplete="password"
@@ -69,7 +71,7 @@
           </v-text-field>
           <span>Lupa Password?</span>
           <div class="login-button">
-            <v-btn depressed color="primary" rounded>
+            <v-btn depressed color="primary" rounded @click="submit">
               <span>Masuk</span>
             </v-btn>
           </div>
@@ -83,6 +85,7 @@
   </v-content>
 </template>
 <script>
+import { mapActions } from 'vuex'
 const components = {
   IcSeen: () => import('~/components/svg/IcSeen'),
   TopBarNav: () => import('~/components/Topbar'),
@@ -98,9 +101,11 @@ export default {
     showFormLogin: false,
     hideButton: false,
     emailInput: '',
+    passInput: '',
     // emailErrorMessage: ''
   }),
   methods: {
+    ...mapActions({ postLogin: 'user/postLogin' }),
     inputEmail(val) {
       this.resetEmail()
       this.emailInput = val.replace(' ', '')
@@ -111,6 +116,15 @@ export default {
     showForm() {
       this.showFormRegister = true
       this.hideButton = true
+    },
+    submit() {
+      this.postLogin()
+        .then(() => {
+          this.$router.push('/')
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     },
   },
 }
