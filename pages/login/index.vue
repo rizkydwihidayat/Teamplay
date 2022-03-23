@@ -10,11 +10,42 @@
       </div>
       <br />
       <div class="google-button">
-        <v-btn depressed color="primary" outlined rounded>
+        <v-btn
+          v-if="hideButtonGoogle === false"
+          depressed
+          color="primary"
+          outlined
+          rounded
+          @click="showFormGoogle"
+        >
           <img src="~/assets/img/google-ic.png" width="20" /><span
             >Lanjutkan dengan Google</span
           >
         </v-btn>
+        <v-form
+          v-if="showFormLoginWithGoogle === true"
+          ref="formGoogle"
+          v-model="validGoogle"
+          lazy-validation
+          @keyup.native.enter="valid && submit($event)"
+        >
+          <v-text-field
+            ref="emailGoogle"
+            v-model="emailGoogle"
+            outlined
+            placeholder="Masukkan email Google"
+            required
+            validate-on-blur
+            prepend-inner-icon="mdi-email-outline"
+            @input="(val) => inputEmail(val)"
+            @focus="resetEmail"
+          ></v-text-field>
+          <div class="login-button">
+            <v-btn depressed color="primary" rounded @click="submitEmailGoogle">
+              <span>Masuk</span>
+            </v-btn>
+          </div></v-form
+        >
       </div>
       <div class="divider"><span>atau</span></div>
       <div class="bottom-button">
@@ -31,7 +62,7 @@
           >
         </v-btn>
         <v-form
-          v-if="showFormRegister === true"
+          v-if="showFormLogin === true"
           ref="form"
           v-model="valid"
           lazy-validation
@@ -43,7 +74,6 @@
             outlined
             placeholder="Email"
             required
-            :error-messages="emailErrorResponse"
             validate-on-blur
             prepend-inner-icon="mdi-email-outline"
             @input="(val) => inputEmail(val)"
@@ -53,7 +83,6 @@
             v-model="passInput"
             :type="showpass ? 'text' : 'password'"
             :validate-on-blur="true"
-            browser-autocomplete="password"
             autocomplete="password"
             required
             outlined
@@ -85,7 +114,7 @@
   </v-content>
 </template>
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 const components = {
   IcSeen: () => import('~/components/svg/IcSeen'),
   TopBarNav: () => import('~/components/Topbar'),
@@ -97,15 +126,27 @@ export default {
   data: () => ({
     showpass: false,
     valid: false,
+    validGoogle: false,
     refFocus: false,
     showFormLogin: false,
+    showFormLoginWithGoogle: false,
     hideButton: false,
+    hideButtonGoogle: false,
     emailInput: '',
     passInput: '',
+    emailGoogle: '',
     // emailErrorMessage: ''
   }),
+  computed: {
+    ...mapState({
+      isLogin: (state) => state.user.isLogin,
+    }),
+  },
   methods: {
-    ...mapActions({ postLogin: 'user/postLogin' }),
+    ...mapActions({
+      postLogin: 'user/postLogin',
+      loginWithGoogle: 'user/loginWithGoogle',
+    }),
     inputEmail(val) {
       this.resetEmail()
       this.emailInput = val.replace(' ', '')
@@ -114,13 +155,41 @@ export default {
       // this.emailErrorMessage = ''\
     },
     showForm() {
-      this.showFormRegister = true
+      this.showFormLogin = true
       this.hideButton = true
+      this.showFormLoginWithGoogle = false
+      this.hideButtonGoogle = false
+    },
+    showFormGoogle() {
+      this.showFormLoginWithGoogle = true
+      this.hideButtonGoogle = true
+      this.hideButton = false
+      this.showFormLogin = false
     },
     submit() {
-      this.postLogin()
+      const params = {
+        email: this.emailInput,
+        password: this.passInput
+      }
+      this.postLogin(params)
         .then(() => {
-          this.$router.push('/')
+          if (this.isLogin) {
+            this.$router.push('/')
+          }
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
+    submitEmailGoogle() {
+      const params = {
+        email: this.emailGoogle
+      }
+      this.loginWithGoogle(params)
+        .then(() => {
+          if (this.isLogin) {
+            this.$router.push('/')
+          }
         })
         .catch((error) => {
           console.log(error)
@@ -162,6 +231,7 @@ h2 {
 .google-button {
   padding-left: 20px;
   padding-right: 20px;
+  font-family: Poppins;
 }
 .google-button span {
   text-transform: capitalize !important;
