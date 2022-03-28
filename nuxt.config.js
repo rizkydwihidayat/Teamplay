@@ -43,12 +43,40 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    '@nuxtjs/proxy'
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: '/',
+    baseURL: 'http://localhost:3000',
+    proxy: true,
+    proxyHeaders: false,
+    credentials: false
+  },
+
+  publicRuntimeConfig: {
+    axios: {
+      browserBaseURL: process.env.TEAMPLAY_API_URL
+    }
+  },
+
+  privateRuntimeConfig: {
+    axios: {
+      baseURL: process.env.TEAMPLAY_API_URL
+    }
+  },
+
+  proxy: {
+    '/api/v1': { target: 'https://api.naufalbahri.com', pathRewrite: {'^/api/v1': ''}, changeOrigin: true }
+  },
+
+  storage: {
+    vuex: false, // boolean or {namespace}
+    localStorage: { prefix: 'teamplay_' }, // boolean or {prefix }
+    cookie: false, // boolean or {prefix, options }
+    initialState: false, // Object {}
+    ignoreExceptions: false //
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
