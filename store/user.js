@@ -4,14 +4,22 @@ export const state = () => ({
   emailGoogle: '',
   nameGoogleAcc: '',
   isLogin: false,
+  accKey: '',
 })
 export const mutations = {
   setState(state, params) {
     const keys = Object.keys(params)
-    keys.forEach(key => (state[key] = params[key]))
+    keys.forEach((key) => (state[key] = params[key]))
+  },
+  setAuthToken(state, params) {
+    const keys = Object.keys(params)
+    keys.forEach((key) => (state[key] = params[key]))
   },
 }
 export const actions = {
+  setAuthToken({ commit }, params) {
+    commit('setAuthToken', params)
+  },
   postLogin({ dispatch, commit, state }, { email, password }) {
     this.$axios.setHeader(
       'Content-Type',
@@ -61,25 +69,33 @@ export const actions = {
   loginWithGoogle({ dispatch, commit, state }, { email }) {
     const axiosOption = {
       headers: {
-        'Content-Type': 'multipart/form-data; boundary=<calculated when request is sent>'
+        'Content-Type':
+          'multipart/form-data; boundary=<calculated when request is sent>',
       },
-      validateStatus: status => {
+      validateStatus: (status) => {
         const result = status >= 200
         return result
       },
     }
-    
+
     const data = {
       email,
     }
     const querystring = require('querystring')
     const postData = querystring.stringify(data)
     return this.$axios
-      .$post('https://api.naufalbahri.com/api/v1/users/login/google', postData, axiosOption)
-      .then(result => {
-        console.warn(result);
+      .$post(
+        'https://api.naufalbahri.com/api/v1/users/login/google',
+        postData,
+        axiosOption
+      )
+      .then((result) => {
+        console.warn(result)
         commit('setState', {
-          nameGoogleAcc: result.data.name
+          nameGoogleAcc: result.data.name,
+        })
+        commit('setAuthToken', {
+          accKey: result.token,
         })
       })
       .catch((error) => {
@@ -110,7 +126,10 @@ export const actions = {
       })
   },
 
-  postRegister({ dispatch, commit, state }, { name, email, password, gender, age }) {
+  postRegister(
+    { dispatch, commit, state },
+    { name, email, password, gender, age }
+  ) {
     this.$axios.setHeader(
       'Content-Type',
       'multipart/form-data; boundary=<calculated when request is sent>',
@@ -125,7 +144,7 @@ export const actions = {
       email,
       password,
       gender,
-      age
+      age,
     }
     const querystring = require('querystring')
     const postData = querystring.stringify(data)

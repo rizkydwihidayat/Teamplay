@@ -124,24 +124,25 @@ const components = {
 export default {
   name: 'LoginPage',
   components,
-  data: () => ({
-    showpass: false,
-    valid: false,
-    validGoogle: false,
-    refFocus: false,
-    showFormLogin: false,
-    showFormLoginWithGoogle: false,
-    hideButton: false,
-    hideButtonGoogle: false,
-    emailInput: '',
-    passInput: '',
-    emailGoogle: '',
-    // emailErrorMessage: ''
-  }),
+  data() {
+    return {
+      showpass: false,
+      valid: false,
+      validGoogle: false,
+      refFocus: false,
+      showFormLogin: false,
+      showFormLoginWithGoogle: false,
+      hideButton: false,
+      hideButtonGoogle: false,
+      emailInput: '',
+      passInput: '',
+      emailGoogle: '',
+    }
+  },
   computed: {
     ...mapState({
       isLogin: (state) => state.user.isLogin,
-      namaUser: (state) => state.user.nameGoogleAcc
+      namaUser: (state) => state.user.nameGoogleAcc,
     }),
   },
   methods: {
@@ -171,7 +172,7 @@ export default {
     submit() {
       const params = {
         email: this.emailInput,
-        password: this.passInput
+        password: this.passInput,
       }
       this.doLogin(params)
         .then(() => {
@@ -185,7 +186,7 @@ export default {
     },
     submitEmailGoogle() {
       const params = {
-        email: this.emailGoogle
+        email: this.emailGoogle,
       }
       this.loginWithGoogle(params)
         .then(() => {

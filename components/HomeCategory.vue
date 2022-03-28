@@ -193,7 +193,30 @@
     </div>
   </div>
 </template>
-
+<script>
+// import { mapState } from 'vuex'
+export default {
+  // data() {
+  //   return {
+  //     listMatch: []
+  //   }
+  // },
+  // computed: {
+  //   ...mapState({
+  //     listAllMatch: state => state.match.listHistory
+  //   })
+  // },
+  // async mounted() {
+  //   await this.getMatch()
+  // },
+  // methods: {
+  //   async getMatch(store = this.$store) {
+  //     const listData = await store.dispatch('match/getListMatch')
+  //     await store.dispatch('match/setListMatch', listData)
+  //   }
+  // }
+}
+</script>
 <style scoped>
 h2 {
   font-weight: 600;

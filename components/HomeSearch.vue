@@ -1,7 +1,7 @@
 <template>
   <div class="container-top">
     <div class="top-element">
-      <h2 class="welcome mt-5">Halo, Bambang!</h2>
+      <h2 class="welcome mt-5">Halo, {{ namaUser }}!</h2>
       <p>
         Selamat datang di Teamplay! <br />
         Anti ribet atur janji buat olahraga bareng.
@@ -11,6 +11,17 @@
     </div>
   </div>
 </template>
+<script>
+import { mapState } from 'vuex'
+export default {
+  name: 'TopHome',
+  computed: {
+    ...mapState({
+      namaUser: (state) => state.user.nameGoogleAcc
+    }),
+  },
+}
+</script>
 <style scoped>
 h2.welcome {
   font-size: 24px;
