@@ -7,7 +7,7 @@
     app
     class="bottomNav"
   >
-    <v-btn id="toHome" :ripple="false" text to="/home">
+    <v-btn id="toHome" :ripple="false" text to="/">
       <span class="text-nav">Home</span>
       <img
         v-if="routeName === 'home'"
@@ -86,7 +86,7 @@
 export default {
   data() {
     return {
-      activeBtn: '/home',
+      activeBtn: '/',
       linkToMatch: '/match',
       linkToSearch: '/search',
       linkToAccount: '/profile',

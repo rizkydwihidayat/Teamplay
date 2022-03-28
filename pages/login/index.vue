@@ -111,6 +111,7 @@
         >Belum punya akun? <a href="/register">Yuk, daftar!</a></span
       >
     </div>
+    {{ namaUser }}
   </v-content>
 </template>
 <script>
@@ -140,11 +141,12 @@ export default {
   computed: {
     ...mapState({
       isLogin: (state) => state.user.isLogin,
+      namaUser: (state) => state.user.nameGoogleAcc
     }),
   },
   methods: {
     ...mapActions({
-      postLogin: 'user/postLogin',
+      doLogin: 'user/postLogin',
       loginWithGoogle: 'user/loginWithGoogle',
     }),
     inputEmail(val) {
@@ -171,7 +173,7 @@ export default {
         email: this.emailInput,
         password: this.passInput
       }
-      this.postLogin(params)
+      this.doLogin(params)
         .then(() => {
           if (this.isLogin) {
             this.$router.push('/')
