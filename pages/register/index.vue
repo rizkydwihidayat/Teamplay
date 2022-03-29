@@ -38,8 +38,9 @@
           lazy-validation
           @keyup.native.enter="valid && submit($event)"
         >
-          <div><br /><br /><br /><br />
-          <h2 v-if="isRegister1 === true">Daftar dengan email</h2>
+          <div>
+            <br /><br /><br /><br />
+            <h2 v-if="isRegister1 === true">Daftar dengan email</h2>
           </div>
           <br />
           <v-text-field
@@ -94,8 +95,9 @@
             </v-btn>
           </div>
           <div>
-          <h2 v-if="isRegister2 === true">Yuk, lengkapin data kamu dulu!</h2>
-          </div><br />
+            <h2 v-if="isRegister2 === true">Yuk, lengkapin data kamu dulu!</h2>
+          </div>
+          <br />
           <v-text-field
             v-if="isRegister2 === true"
             ref="fullName"
@@ -110,8 +112,8 @@
             v-model="age"
             outlined
             required
-            @keypress="checkValue($event)"
             placeholder="Usia kamu sekarang"
+            @keypress="checkValue($event)"
           ></v-text-field>
           <v-radio-group v-if="isRegister2 === true" v-model="radioGroup">
             <v-radio label="Laki-laki" value="M"></v-radio>
@@ -137,20 +139,22 @@ const components = {
 export default {
   name: 'LoginPage',
   components,
-  data: () => ({
-    showpass: false,
-    valid: false,
-    showFormRegister: false,
-    hideButton: false,
-    emailInput: '',
-    passIput: '',
-    isRegister1: false,
-    isRegister2: false,
-    radioGroup: 'M',
-    hideTop: false,
-    fullname: '',
-    age: ''
-  }),
+  data() {
+    return {
+      showpass: false,
+      valid: false,
+      showFormRegister: false,
+      hideButton: false,
+      emailInput: '',
+      passIput: '',
+      isRegister1: false,
+      isRegister2: false,
+      radioGroup: 'M',
+      hideTop: false,
+      fullname: '',
+      age: '',
+    }
+  },
   methods: {
     ...mapActions({
       doRegister: 'user/postRegister',
@@ -179,7 +183,7 @@ export default {
         email: this.emailInput,
         password: this.passInput,
         gender: this.radioGroup,
-        age: parseInt(this.age)
+        age: parseInt(this.age),
       }
       this.doRegister(params)
         .then(() => {

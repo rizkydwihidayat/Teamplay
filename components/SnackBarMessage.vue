@@ -15,8 +15,8 @@
         @click.native="snackbar=false"
       >{{actionText}}</nuxt-link>
     </div>
-    <v-btn :ripple="false" flat @click="snackbar = false">
-      <v-icon>clear</v-icon>
+    <v-btn :ripple="false" flat class="btn" @click="snackbar = false">
+      <span>Back</span>
     </v-btn>
   </v-snackbar>
 </template>
@@ -102,11 +102,19 @@ export default {
 <style>
 .v-snack__wrapper {
   max-width: 480px !important;
-  width: 100% !important;
+  /* width: 100% !important; */
   text-align: center !important;
+  font-family: Poppins;
+  margin: 16px;
 }
 .link-text {
   margin-left: 0;
   text-decoration: underline;
+}
+.btn {
+  text-transform: capitalize;
+  font-family: Poppins;
+  font-size: 12px !important;
+  margin-top: 10px;
 }
 </style>
