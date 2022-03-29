@@ -74,6 +74,7 @@
             outlined
             placeholder="Email"
             required
+            type="text"
             validate-on-blur
             prepend-inner-icon="mdi-email-outline"
             @input="(val) => inputEmail(val)"
@@ -171,7 +172,7 @@ export default {
     },
     submit() {
       const params = {
-        email: this.emailInput,
+        email: this.emailInput.toString(),
         password: this.passInput,
       }
       this.doLogin(params)
