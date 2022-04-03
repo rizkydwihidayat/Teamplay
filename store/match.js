@@ -17,7 +17,8 @@ export const mutations = {
               gender: value.match.playerCategory,
               date: value.match.playDate,
               time: value.match.timePlay,
-              place: value.venue.venueName
+              place: value.venue.venueName,
+              status: value.match.status
           }
       }, {})
       : []

@@ -27,7 +27,6 @@
 
     <!-- card list -->
     <div v-for="(item, idx) in listAllMatch" :key="idx" class="card-list">
-      <!-- {{ listAllMatch }} -->
     <v-card outlined>
       <h3>{{item.gamename}}</h3>
       <div class="chips">
@@ -70,7 +69,7 @@
 
     <!-- bottom button -->
     <div class="bottom-button">
-      <v-btn depressed color="primary">
+      <v-btn depressed color="primary" @click="goToSearch">
         <span> Lihat Pertandingan Lainnya</span>
       </v-btn>
     </div>
@@ -97,6 +96,9 @@ export default {
       const listData = await store.dispatch('match/getListMatch')
       await store.dispatch('match/setListMatch', listData)
     },
+    goToSearch() {
+      this.$store.$router.push('/search')
+    }
   },
 }
 </script>
