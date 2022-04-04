@@ -27,10 +27,10 @@
           ref="formGoogle"
           v-model="validGoogle"
           lazy-validation
-          @keyup.native.enter="valid && submit($event)"
+          @keyup.native.enter="valid && submitEmailGoogle($event)"
         >
           <v-text-field
-            ref="emailGoogle"
+            id="emailGoogle"
             v-model="emailGoogle"
             outlined
             placeholder="Masukkan email Google"
@@ -42,7 +42,7 @@
           ></v-text-field>
           <div class="login-button">
             <v-btn depressed color="primary" rounded @click="submitEmailGoogle">
-              <span>Masuk</span>
+              <span>Masuk Google</span>
             </v-btn>
           </div></v-form
         >
@@ -186,18 +186,21 @@ export default {
         })
     },
     submitEmailGoogle() {
-      const params = {
-        email: this.emailGoogle,
+      if (this.$refs.formGoogle.validate()) {
+        console.warn(this.emailGoogle);
+        const params = {
+          email: this.emailGoogle,
+        }
+        this.loginWithGoogle(params)
+          .then(() => {
+            if (this.isLogin) {
+              this.$router.push('/')
+            }
+          })
+          .catch((error) => {
+            console.log(error)
+          })
       }
-      this.loginWithGoogle(params)
-        .then(() => {
-          if (this.isLogin) {
-            this.$router.push('/')
-          }
-        })
-        .catch((error) => {
-          console.log(error)
-        })
     },
   },
 }
