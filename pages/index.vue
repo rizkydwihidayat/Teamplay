@@ -14,7 +14,8 @@ export default {
     HomeCategory: () =>
       import('../components/HomeCategory.vue' /* webpackChunkName: "HomeSellerInfo" */),
   },
-  layout: 'bottom_nav',
+  // layout: 'bottom_nav',
+  layout: 'bottom_nav_trusted',
   head() {
     return {
       title: 'Home',
