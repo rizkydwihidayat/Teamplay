@@ -44,7 +44,7 @@
       id="toAddUser"
       :ripple="false"
       flat
-      to="/member-registration"
+      to="/create-match"
       aria-expanded="false"
       aria-label="Add"
     >
