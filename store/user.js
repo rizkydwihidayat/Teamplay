@@ -77,7 +77,6 @@ export const actions = {
       )
       .then((result) => {
         commit('setState', { isLogin: true })
-        console.warn('cek', result)
         commit('setState', {
           nameGoogleAcc: result.data.name,
         })

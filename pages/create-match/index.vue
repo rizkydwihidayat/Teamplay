@@ -71,19 +71,22 @@
         </div>
         <div class="fields">
           <span class="title">Lokasi Main</span>
-          <v-text-field
+          <v-autocomplete
             v-model="searchkey"
             :append-icon="showIcon ? 'mdi-magnify' : undefined"
             outlined
+            :items="ListVenue"
             placeholder="Nama lapangan"
-            @keypress="(
-              ($event.keyCode > 47 && $event.keyCode < 58)
-              || $event.keyCode === 32
-              || ($event.keyCode > 96 && $event.keyCode < 123)
-              || ($event.keyCode > 64 && $event.keyCode < 91)
-              ) ? true : $event.preventDefault()"
+            @keypress="
+              ;($event.keyCode > 47 && $event.keyCode < 58) ||
+              $event.keyCode === 32 ||
+              ($event.keyCode > 96 && $event.keyCode < 123) ||
+              ($event.keyCode > 64 && $event.keyCode < 91)
+                ? true
+                : $event.preventDefault()
+            "
             @keyup.enter="Dosearch"
-          ></v-text-field>
+          ></v-autocomplete>
           <!-- <small>Pastikan lapangan sudah dibooking ya!</small> -->
         </div>
         <div class="filter-time">
@@ -154,7 +157,7 @@
   </v-main>
 </template>
 <script>
-// import { mapActions, mapState, mapMutations } from 'vuex'
+import { mapActions, mapState, mapMutations } from 'vuex'
 export default {
   name: 'CreateMatch',
   data() {
@@ -165,6 +168,7 @@ export default {
       minPlayer: 0,
       maxPlayer: 0,
       inputName: '',
+      isCityId: '',
       valid: false,
       modal_tgl_awal: false,
       tgl_awal: '',
@@ -178,6 +182,12 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      isLoading: state => state.match.isLoading,
+      ListVenue: state => {
+        return state.match.listVenue
+      },
+    }),
     computedDateFormatted() {
       return this.formatDate(this.date)
     },
@@ -188,6 +198,13 @@ export default {
     },
   },
   methods: {
+    ...mapActions({
+      getCity: 'match/getListCity',
+      searchVenue: 'match/getListVenue',
+    }),
+    ...mapMutations({
+      setState: 'match/setState',
+    }),
     back() {
       this.$store.$router.push('/')
     },
@@ -197,15 +214,8 @@ export default {
       const [year, month, day] = date.split('-')
       return `${day}/${month}/${year}`
     },
-    parseDate(date) {
-      if (!date) return null
-
-      const [month, day, year] = date.split('/')
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-    },
     submitCreateMatch() {},
     checkMinPlayer(value) {
-      console.warn(value)
       switch (value) {
         case 'Futsal':
           this.minPlayer = 10
@@ -220,6 +230,38 @@ export default {
           this.minPlayer = 13
           break
       }
+    },
+    async Dosearch() {
+      this.setState({ isLoading: true })
+      const bearer = this.$store.state.user.accKey
+      const keyword = this.searchkey
+      const cityID = 24
+      const resultsearch = await this.searchVenue({keyword, cityID, bearer}).catch((error) => {
+        if (error.response.status === 401) {
+          const alertMsg = {
+            msg: 'Sesi telah berakhir, merefresh halaman',
+          }
+          this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+          // this.$store.dispatch('user/refreshAuth', null, { root: true })
+          this.searchkey = ''
+          // const searchMsg = {
+          //   msg: 'Silahkan lakukan pencarian kembali',
+          //   color: 'primary',
+          // }
+        }
+        return false
+      })
+
+      // eslint-disable-next-line no-prototype-builtins
+      if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
+        await this.$store
+          .dispatch(
+            'match/setListVenue',
+            resultsearch
+          )
+          .finally(this.setState({ isLoading: false }))
+      }
+      this.setState({ isSearch: true })
     },
   },
 }
