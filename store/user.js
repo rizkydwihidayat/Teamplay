@@ -62,7 +62,7 @@ export const actions = {
   },
 
   loginWithGoogle({ dispatch, commit, state }, { email }) {
-    this.$axios.setHeader('Content-Type', 'multipart/form-data; boundary=<calculated when request is sent>', [
+    this.$axios.setHeader('Content-Type', 'application/json', [
       'post'
     ])
 
@@ -75,15 +75,16 @@ export const actions = {
         'https://api.naufalbahri.com/api/v1/users/login/google',
         postData
       )
-      // .then((result) => {
-      //   console.warn('cek', result)
-      //   commit('setState', {
-      //     nameGoogleAcc: result.data.name,
-      //   })
-      //   commit('setAuthToken', {
-      //     accKey: result.token,
-      //   })
-      // })
+      .then((result) => {
+        commit('setState', { isLogin: true })
+        console.warn('cek', result)
+        commit('setState', {
+          nameGoogleAcc: result.data.name,
+        })
+        commit('setAuthToken', {
+          accKey: result.token,
+        })
+      })
       .catch((error) => {
         const errMsg = error.message
         const alertMsg = {

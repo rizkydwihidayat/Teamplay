@@ -3,11 +3,12 @@ export const state = () => ({
   listPlayer: [],
   limit: 10,
   offset: 0,
+  isLoading: false,
+  isSearch: false,
 })
 
 export const mutations = {
   setListMatch(state, list) {
-    console.warn('cek value', list);
       state.listMatch = list.data.length > 0 && list.data[0] !== null
       // eslint-disable-next-line array-callback-return
       ? list.data.map((value, key) => {
@@ -62,6 +63,7 @@ export const actions = {
         return false
       })
   },
+
   getListPlayer({ context, commit, dispatch }) {
     const matchid = '0abdf2a0-96cf-11ec-b412-c10fd5947636'
     const axiosOption = {
@@ -89,4 +91,8 @@ export const actions = {
         return false
       })
   },
+
+  getListVenue({ context, commit, dispatch }) {
+    
+  }
 }
