@@ -42,7 +42,6 @@ export const mutations = {
       : []
   },
   setListVenue(state, list) {
-    console.warn(list.data);
     state.listVenue = list.data.length > 0 && list.data[0] !== null
       // eslint-disable-next-line array-callback-return
       ? list.data.map((value, key) => {
@@ -120,8 +119,13 @@ export const actions = {
       )
       .catch((error) => {
         // handle error
-        if (error.response.status === 401) {
-          console.log(error)
+        if (error.response.status !== '404') {
+          const alertMsg = {
+            msg: 'Token kadaluwarsa, silahkan login kembali.',
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/login')
           //   dispatch('user/refreshAuth', null, { root: true })
         } else {
           const alertMsg = {
@@ -141,8 +145,13 @@ export const actions = {
       )
       .catch((error) => {
         // handle error
-        if (error.response.status === 401) {
-          console.log(error)
+        if (error.response.status !== '404') {
+          const alertMsg = {
+            msg: 'Token kadaluwarsa, silahkan login kembali.',
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/login')
           //   dispatch('user/refreshAuth', null, { root: true })
         } else {
           const alertMsg = {
@@ -166,8 +175,13 @@ export const actions = {
       )
       .catch((error) => {
         // handle error
-        if (error.response.status === 401) {
-          console.log(error)
+        if (error.response.status !== '404') {
+          const alertMsg = {
+            msg: 'Token kadaluwarsa, silahkan login kembali.',
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/login')
           //   dispatch('user/refreshAuth', null, { root: true })
         } else {
           const alertMsg = {

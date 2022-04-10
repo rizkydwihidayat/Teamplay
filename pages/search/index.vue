@@ -15,6 +15,15 @@
             <span>Bekasi</span>
             <small>10 Feb - 17 Feb 2022</small>
           </div>
+          <!-- <v-chip-group v-model="inputCategory" active-class="primary--text">
+            <div class="filter">
+              <v-chip @click="openFilter">Filter</v-chip>
+            </div>
+            <v-chip v-for="data in filterCategory" :key="data" :value="data">{{
+              data
+            }}</v-chip>
+          </v-chip-group> -->
+
           <v-chip-group v-model="filter" active-class="primary--text" mandatory>
             <div class="filter">
               <v-chip @click="openFilter">Filter</v-chip>
@@ -72,7 +81,7 @@
           </div>
         </div>
         <!-- end of card list -->
-        
+
         <v-dialog
           v-model="showdialog"
           transition="dialog-bottom-transition wrap-400"
@@ -180,8 +189,17 @@ export default {
   data() {
     return {
       showdialog: false,
-      filterCategory: '',
+      filterGender: ['Pria', 'Wanita', 'Campuran'],
+      inputGender: '',
       listMatch: [],
+      inputCategory: '',
+      filterCategory: [
+        'Semua',
+        'Mini Soccer',
+        'Futsal',
+        'Basket',
+        'Sepak Bola',
+      ],
     }
   },
   computed: {
@@ -221,6 +239,9 @@ h3 {
 }
 .pl-16 {
   padding-left: 18px !important;
+}
+.pr-16 {
+  padding-right: 18px !important;
 }
 .fs-12 {
   font-size: 12px;
@@ -269,6 +290,7 @@ h3 {
 .filter {
   border-right: solid 1px lightgray;
   margin-right: 10px;
+  /* padding: 10px 0px 0px 0px; */
 }
 .top-filter {
   margin-bottom: 20px;
@@ -375,6 +397,11 @@ h3 {
   font-weight: 500;
   color: #424242;
   cursor: pointer;
+}
+.btn-filter {
+  background: #dfe7ff;
+  color: #2962ff;
+  text-transform: capitalize;
 }
 </style>
 <style>

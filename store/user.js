@@ -5,6 +5,11 @@ export const state = () => ({
   nameGoogleAcc: '',
   isLogin: false,
   accKey: '',
+  userID: '',
+  userEmail: '',
+  userPhone: '',
+  userPoint: 0,
+  listUserMatch: []
 })
 export const mutations = {
   setState(state, params) {
@@ -15,6 +20,23 @@ export const mutations = {
     const keys = Object.keys(params)
     keys.forEach((key) => (state[key] = params[key]))
   },
+  setListUserMatch(list) {
+    state.listUserMatch = list.data
+    // state.listUserMatch = list.data.length > 0 && list.data[0] !== null
+    //   // eslint-disable-next-line array-callback-return
+    //   ? list.data.map((value, key) => {
+    //       return {
+    //           gamename: value.match.gameName,
+    //           category: value.match.sportCategory,
+    //           gender: value.match.playerCategory,
+    //           date: value.match.playDate,
+    //           time: value.match.timePlay,
+    //           place: value.venue.venueName,
+    //           status: value.match.status
+    //       }
+    //   }, {})
+    //   : []
+  }
 }
 export const actions = {
   setAuthToken({ commit }, params) {
@@ -62,19 +84,14 @@ export const actions = {
   },
 
   loginWithGoogle({ dispatch, commit, state }, { email }) {
-    this.$axios.setHeader('Content-Type', 'application/json', [
-      'post'
-    ])
+    this.$axios.setHeader('Content-Type', 'application/json', ['post'])
 
     const data = {
       email,
     }
     const postData = JSON.stringify(data)
     return this.$axios
-      .$post(
-        'https://api.naufalbahri.com/api/v1/users/login/google',
-        postData
-      )
+      .$post('https://api.naufalbahri.com/api/v1/users/login/google', postData)
       .then((result) => {
         commit('setState', { isLogin: true })
         commit('setState', {
@@ -82,6 +99,9 @@ export const actions = {
         })
         commit('setAuthToken', {
           accKey: result.token,
+        })
+        commit('setState', {
+          userID: result.data.id,
         })
       })
       .catch((error) => {
@@ -143,4 +163,76 @@ export const actions = {
         commit('setState', { loginLoading: false })
       })
   },
+
+  getUserProfile({ dispatch, commit, state }, { bearer, userID }) {
+    const axiosOption = {
+      headers: {
+        xToken: bearer
+      }
+    }
+    return this.$axios
+      .$get(
+        `https://api.naufalbahri.com/api/v1/users/${userID}/inquiry`, axiosOption
+      )
+      .then((result => {
+        const phone = result.data.phoneNumber !== null ? result.data.phoneNumber : '-'
+        commit('setState', {
+          userEmail: result.data.email,
+        })
+        commit('setState', {
+          userPhone: phone,
+        })
+        commit('setState', {
+          userPoint: result.data.totalPoint,
+        })
+      }))
+      .catch((error) => {
+        // handle error
+        if (error.response.status !== '404') {
+          const alertMsg = {
+            msg: 'Token kadaluwarsa, silahkan login kembali.',
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/login')
+          //   dispatch('user/refreshAuth', null, { root: true })
+        } else {
+          const alertMsg = {
+            msg: 'Get item store failed',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+        }
+        return false
+      })
+  },
+
+  getUserMatchHistory({ dispatch, commit, state }, { bearer, userID }) {
+    const axiosOption = {
+      headers: {
+        xToken: bearer
+      }
+    }
+    return this.$axios
+      .$get(
+        `https://api.naufalbahri.com/api/v1/users/${userID}/match-history`, axiosOption
+      )
+      .catch((error) => {
+        // handle error
+        if (error.response.status !== '404') {
+          const alertMsg = {
+            msg: 'Token kadaluwarsa, silahkan login kembali.',
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/login')
+          //   dispatch('user/refreshAuth', null, { root: true })
+        } else {
+          const alertMsg = {
+            msg: 'Get item store failed',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+        }
+        return false
+      })
+  }
 }
