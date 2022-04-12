@@ -192,7 +192,8 @@ export default {
           email: this.emailGoogle,
         }
         this.loginWithGoogle(params)
-          .then(() => {
+          .then((resp) => {
+            console.warn(resp);
             if (this.isLoginWithGoogle) {
               this.$router.push('/')
             }
