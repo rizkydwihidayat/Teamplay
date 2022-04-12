@@ -4,6 +4,8 @@ export const state = () => ({
   emailGoogle: '',
   nameGoogleAcc: '',
   isLogin: false,
+  isLoginWithGoogle: false,
+  isLoading: true,
   accKey: '',
   userID: '',
   userEmail: '',
@@ -93,7 +95,7 @@ export const actions = {
     return this.$axios
       .$post('https://api.naufalbahri.com/api/v1/users/login/google', postData)
       .then((result) => {
-        commit('setState', { isLogin: true })
+        commit('setState', { isLoginWithGoogle: true })
         commit('setState', {
           nameGoogleAcc: result.data.name,
         })
@@ -185,6 +187,7 @@ export const actions = {
         commit('setState', {
           userPoint: result.data.totalPoint,
         })
+        commit('setState', { isLoading: false })
       }))
       .catch((error) => {
         // handle error
@@ -196,11 +199,13 @@ export const actions = {
           dispatch('ui/showAlert', alertMsg, { root: true })
           this.$router.push('/login')
           //   dispatch('user/refreshAuth', null, { root: true })
+          commit('setState', { isLoading: false })
         } else {
           const alertMsg = {
             msg: 'Get item store failed',
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
+          commit('setState', { isLoading: false })
         }
         return false
       })
@@ -216,6 +221,10 @@ export const actions = {
       .$get(
         `https://api.naufalbahri.com/api/v1/users/${userID}/match-history`, axiosOption
       )
+      .then((result) => {
+        commit('setState', { isLoading: false })
+        return result
+      })
       .catch((error) => {
         // handle error
         if (error.response.status !== '404') {

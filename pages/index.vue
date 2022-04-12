@@ -1,11 +1,14 @@
 <template>
+<v-main>
   <div id="pageHome" class="compWrapper g-transition">
     <HomeSearch />
     <HomeCategory />
   </div>
+</v-main>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   name: "HomePage",
   components: {
@@ -33,6 +36,11 @@ export default {
         },
       ],
     }
+  },
+  computed: {
+    ...mapState({
+      isLoading: (state) => state.match.isLoading,
+    }),
   },
 }
 </script>

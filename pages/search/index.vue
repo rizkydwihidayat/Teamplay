@@ -106,32 +106,47 @@
                   placeholder="Mau maen dimana?"
                 ></v-text-field>
                 <v-menu
-                  ref="menu"
-                  v-model="menu"
+                  ref="dialog_tgl_awal"
+                  v-model="modal_tgl_awal"
                   :close-on-content-click="false"
-                  :return-value.sync="date"
                   transition="scale-transition"
                   offset-y
+                  max-width="290px"
                   min-width="auto"
+                  class="datepicker customField"
                 >
                   <template #activator="{ on, attrs }">
                     <v-text-field
-                      v-model="date"
-                      label="Tanggal main"
+                      slot="activator"
+                      v-model="tgl_awal"
+                      clearable
+                      persistent-hint
                       append-icon="mdi-calendar"
-                      outlined
                       v-bind="attrs"
+                      outlined
                       v-on="on"
+                      @click="tgl_awal = currentDate"
                     ></v-text-field>
                   </template>
-                  <v-date-picker v-model="date" range no-title scrollable>
+                  <v-date-picker
+                    v-model="tgl_awal"
+                    full-width
+                    scrollable
+                    no-title
+                  >
                     <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="menu = false">
-                      Cancel
-                    </v-btn>
-                    <v-btn text color="primary" @click="$refs.menu.save(date)">
-                      OK
-                    </v-btn>
+                    <v-btn
+                      depressed
+                      color="secondary"
+                      @click="modal_tgl_awal = false"
+                      >Cancel</v-btn
+                    >
+                    <v-btn
+                      depressed
+                      color="primary"
+                      @click="$refs.dialog_tgl_awal.save(tgl_awal)"
+                      >OK</v-btn
+                    >
                   </v-date-picker>
                 </v-menu>
               </div>
@@ -200,12 +215,20 @@ export default {
         'Basket',
         'Sepak Bola',
       ],
+      currentDate: new Date().toISOString().substr(0, 10),
+      modal_tgl_awal: false,
+      tgl_awal: '',
     }
   },
   computed: {
     ...mapState({
       listAllMatch: (state) => state.match.listMatch,
     }),
+  },
+  watch: {
+    date(val) {
+      this.dateFormatted = this.formatDate(this.date)
+    },
   },
   async mounted() {
     await this.getMatch()
@@ -223,6 +246,12 @@ export default {
     },
     closeDialog() {
       this.showdialog = false
+    },
+    formatDate(date) {
+      if (!date) return null
+
+      const [year, month, day] = date.split('-')
+      return `${day}/${month}/${year}`
     },
   },
 }
@@ -271,6 +300,7 @@ h3 {
   padding-bottom: 20px;
   background: white;
   height: 100%;
+  font-family: Poppins;
 }
 .filter-search {
   padding: 20px;
@@ -389,7 +419,7 @@ h3 {
 .filter-category,
 .filter-waktu-main,
 .filter-field {
-  font-family: Poppins;
+  font-family: Poppins !important;
   margin-bottom: 16px;
 }
 .close-modal {
@@ -402,6 +432,21 @@ h3 {
   background: #dfe7ff;
   color: #2962ff;
   text-transform: capitalize;
+}
+.v-list,
+.v-picker {
+  font-family: Poppins !important;
+}
+.customField >>> .v-text-field__slot input {
+  margin-top: 0;
+  height: 48px;
+  max-height: 48px;
+  font-size: 16px;
+  padding: 0 5px;
+  font-family: Poppins !important;
+}
+.v-btn {
+  text-transform: capitalize !important;
 }
 </style>
 <style>

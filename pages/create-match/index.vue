@@ -71,7 +71,24 @@
         </div>
         <div class="fields">
           <span class="title">Lokasi Main</span>
-          <v-autocomplete
+          <vue-autosuggest
+            ref="autocomplete"
+            v-model="query"
+            :suggestions="suggestions"
+            :input-props="inputProps"
+            :section-configs="sectionConfigs"
+            :render-suggestion="renderSuggestion"
+            :get-suggestion-value="getSuggestionValue"
+            class="autofill"
+            @input="Dosearch"
+          />
+          <div v-if="selected" style="margin-top: 10px">
+            You have selected:
+            <code>
+              <pre>{{ JSON.stringify(selected, null, 4) }}</pre>
+            </code>
+          </div>
+          <!-- <v-autocomplete
             v-model="searchkey"
             :append-icon="showIcon ? 'mdi-magnify' : undefined"
             outlined
@@ -86,9 +103,10 @@
                 : $event.preventDefault()
             "
             @keyup.enter="Dosearch"
-          ></v-autocomplete>
+          ></v-autocomplete> -->
           <!-- <small>Pastikan lapangan sudah dibooking ya!</small> -->
         </div>
+        <br />
         <div class="filter-time">
           <span class="title">Jadwal Main</span>
           <v-menu
@@ -158,8 +176,12 @@
 </template>
 <script>
 import { mapActions, mapState, mapMutations } from 'vuex'
+import { VueAutosuggest } from 'vue-autosuggest'
 export default {
   name: 'CreateMatch',
+  components: {
+    VueAutosuggest,
+  },
   data() {
     return {
       itemsCategory: ['Pria', 'Wanita', 'Campuran'],
@@ -179,18 +201,42 @@ export default {
       modal: false,
       searchkey: '',
       showIcon: true,
+      query: '',
+      inputProps: {
+        id: 'autosuggest__input',
+        placeholder: 'Nama Lapangan',
+        class: 'form-control',
+        name: 'hello',
+      },
+      selected: null,
+      suggestions: [],
+      sectionConfigs: {
+        venue: {
+          limit: 10,
+          label: 'Venue Lapangan',
+          onSelected: (selected) => {
+            console.warn('celeesss', selected)
+            this.selected = selected.item
+          },
+        },
+        // add: {
+        //   limit: 1,
+        //   label: 'Tambah Lapangan',
+        //   onSelected: (selected) => {
+        //     this.selected = selected.item
+        //   },
+        // },
+      },
     }
   },
   computed: {
     ...mapState({
-      isLoading: state => state.match.isLoading,
-      ListVenue: state => {
-        return state.match.listVenue
-      },
+      isLoading: (state) => state.match.isLoading,
+      ListVenue: (state) => state.match.listVenue,
     }),
-    computedDateFormatted() {
-      return this.formatDate(this.date)
-    },
+    // computedDateFormatted() {
+    //   return this.formatDate(this.date)
+    // },
   },
   watch: {
     date(val) {
@@ -214,6 +260,9 @@ export default {
       const [year, month, day] = date.split('-')
       return `${day}/${month}/${year}`
     },
+    renderSuggestion(suggestion) {
+      return suggestion.item.venueName + ', ' + suggestion.item.cityName
+    },
     submitCreateMatch() {},
     checkMinPlayer(value) {
       switch (value) {
@@ -234,9 +283,13 @@ export default {
     async Dosearch() {
       this.setState({ isLoading: true })
       const bearer = this.$store.state.user.accKey
-      const keyword = this.searchkey
+      const keyword = this.query
       const cityID = 24
-      const resultsearch = await this.searchVenue({keyword, cityID, bearer}).catch((error) => {
+      const resultsearch = await this.searchVenue({
+        keyword,
+        cityID,
+        bearer,
+      }).catch((error) => {
         if (error.response.status === 401) {
           const alertMsg = {
             msg: 'Sesi telah berakhir, merefresh halaman',
@@ -255,13 +308,47 @@ export default {
       // eslint-disable-next-line no-prototype-builtins
       if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
         await this.$store
-          .dispatch(
-            'match/setListVenue',
-            resultsearch
-          )
+          .dispatch('match/setListVenue', resultsearch)
           .finally(this.setState({ isLoading: false }))
+        this.timeout = setTimeout(() => {
+          this.suggestions = []
+          this.selected = null
+          const venue = this.filterResults(
+            resultsearch.data,
+            this.query,
+            'venueName'
+          )
+          console.warn(venue)
+          venue.length && this.suggestions.push({ data: venue })
+          // Promise.all(setlist).then(values => {
+          //   this.suggestions = [];
+          //   this.selected = null;
+          //   console.warn(values);
+          //   // const venue = this.filterResults(values.data, this.query, "title");
+
+          //   // venue.length &&
+          //   //   this.suggestions.push({ name: "venue", data: venue });
+          // });
+          // this.suggestions = this.listVenue
+        }, 250)
+        console.warn('test', this.suggestions)
+        this.setState({ isSearch: true })
       }
-      this.setState({ isSearch: true })
+    },
+    filterResults(data, text, field) {
+      return (
+        data
+          // eslint-disable-next-line array-callback-return
+          .filter((item) => {
+            if (item[field].toLowerCase().includes(text.toLowerCase())) {
+              return item[field]
+            }
+          })
+          .sort()
+      )
+    },
+    getSuggestionValue(suggestion) {
+      return suggestion.venueName
     },
   },
 }
@@ -346,5 +433,74 @@ export default {
 .main {
   background: lightgray !important;
   padding: 0px 0px !important;
+}
+#autosuggest__input {
+  outline: none;
+  outline: #616161;
+  position: relative;
+  display: block !important;
+  border: 1px solid #616161 !important;
+  border-radius: 3px;
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  height: 56px !important;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+
+#autosuggest__input.autosuggest__input-open {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.autosuggest__results-container {
+  position: relative;
+  width: 100%;
+}
+
+.autosuggest__results {
+  font-weight: 300;
+  margin: 0;
+  position: absolute;
+  z-index: 5;
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  background: white;
+  padding: 0px 20px 0px 20px;
+  max-height: 200px;
+  overflow-y: scroll !important;
+}
+
+.autosuggest__results ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 5px;
+}
+
+.autosuggest__results .autosuggest__results-item {
+  cursor: pointer;
+  padding: 15px !important;
+}
+
+#autosuggest ul:nth-child(1) > .autosuggest__results_title {
+  border-top: none;
+}
+
+.autosuggest__results .autosuggest__results-before {
+  color: gray;
+  font-size: 12px;
+  margin-left: 0;
+  padding: 15px 13px 5px;
+  border-top: 1px solid lightgray;
+}
+
+.autosuggest__results .autosuggest__results-item:active,
+.autosuggest__results .autosuggest__results-item:hover,
+.autosuggest__results .autosuggest__results-item:focus,
+.autosuggest__results
+  .autosuggest__results-item.autosuggest__results-item--highlighted {
+  background-color: #f6f6f6;
 }
 </style>

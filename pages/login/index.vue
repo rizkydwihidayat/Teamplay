@@ -143,6 +143,7 @@ export default {
   computed: {
     ...mapState({
       isLogin: (state) => state.user.isLogin,
+      isLoginWithGoogle: (state) => state.user.isLoginWithGoogle,
       namaUser: (state) => state.user.nameGoogleAcc,
     }),
   },
@@ -187,13 +188,12 @@ export default {
     },
     submitEmailGoogle() {
       if (this.$refs.formGoogle.validate()) {
-        console.warn(this.emailGoogle);
         const params = {
           email: this.emailGoogle,
         }
         this.loginWithGoogle(params)
           .then(() => {
-            if (this.isLogin) {
+            if (this.isLoginWithGoogle) {
               this.$router.push('/')
             }
           })

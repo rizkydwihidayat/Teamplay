@@ -31,7 +31,15 @@
         </v-layout>
       </div>
     </div>
-    <div>
+    <div v-if="isLoading" class="align-center">
+      <v-progress-circular
+        color="#0d47a1"
+        :indeterminate="isLoading"
+        :size="35"
+        :width="2"
+      ></v-progress-circular>
+    </div>
+    <div v-else>
       <h3>Profile</h3>
       <v-layout row wrap class="info-pribadi">
         <v-flex xs6 s6>
@@ -124,6 +132,8 @@ export default {
       userEmail: (state) => state.user.userEmail,
       userPhone: (state) => state.user.userPhone,
       namaUser: (state) => state.user.nameGoogleAcc,
+      isLoginWithGoogle: (state) => state.user.isLoginWithGoogle,
+      isLoading: (state) => state.user.isLoading
     }),
   },
   async mounted() {
@@ -266,5 +276,10 @@ h3 {
   -moz-transition-property: width, background-color;
   -o-transition-property: width, background-color;
   transition-property: width, background-color;
+}
+.align-center {
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 </style>

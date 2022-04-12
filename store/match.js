@@ -5,47 +5,46 @@ export const state = () => ({
   listVenue: [],
   limit: 10,
   offset: 0,
-  isLoading: false,
+  isLoading: true,
   isSearch: false,
 })
 
 export const mutations = {
   setState(state, params) {
     const keys = Object.keys(params)
-    keys.forEach(key => (state[key] = params[key]))
+    keys.forEach((key) => (state[key] = params[key]))
   },
   setListMatch(state, list) {
-      state.listMatch = list.data.length > 0 && list.data[0] !== null
-      // eslint-disable-next-line array-callback-return
-      ? list.data.map((value, key) => {
-          return {
-              gamename: value.match.gameName,
-              category: value.match.sportCategory,
-              gender: value.match.playerCategory,
-              date: value.match.playDate,
-              time: value.match.timePlay,
-              place: value.venue.venueName,
-              status: value.match.status
-          }
+      state.listMatch = list.data.map((value, key) => {
+        return {
+          gamename: value.match.gameName,
+          category: value.match.sportCategory,
+          gender: value.match.playerCategory,
+          date: value.match.playDate,
+          time: value.match.timePlay,
+          place: value.venue.venueName,
+          status: value.match.status,
+        }
       }, {})
-      : []
   },
   setListCity(state, list) {
-    state.listCity = list.data.length > 0 && list.data[0] !== null
-      // eslint-disable-next-line array-callback-return
-      ? list.data.map((value, key) => {
-          return {
+    state.listCity =
+      list.data.length > 0 && list.data[0] !== null
+        ? // eslint-disable-next-line array-callback-return
+          list.data.map((value, key) => {
+            return {
               id: value.id,
               name: value.name,
-          }
-      }, {})
-      : []
+            }
+          }, {})
+        : []
   },
   setListVenue(state, list) {
-    state.listVenue = list.data.length > 0 && list.data[0] !== null
-      // eslint-disable-next-line array-callback-return
-      ? list.data.map((value, key) => {
-          return {
+    state.listVenue =
+      list.data.length > 0 && list.data[0] !== null
+        ? // eslint-disable-next-line array-callback-return
+          list.data.map((value, key) => {
+            return {
               id: value.id,
               citie: value.cityName,
               venue: value.venueName,
@@ -53,11 +52,11 @@ export const mutations = {
               address: value.address,
               coordinate: value.coordinate,
               duration: value.minimumDurationRent,
-              price: value.pricePerHours
-          }
-      }, {})
-      : []
-  }
+              price: value.pricePerHours,
+            }
+          }, {})
+        : []
+  },
 }
 
 export const actions = {
@@ -73,33 +72,46 @@ export const actions = {
   setListVenue({ commit }, listVenue) {
     commit('setListVenue', listVenue)
   },
-  getListMatch({ context, commit, dispatch }) {
+  getListMatch(
+    { context, commit, dispatch },
+    { city, startDate, endDate, time }
+  ) {
     const axiosOption = {
       params: {
         limit: state.limit,
         offset: state.offset,
-        q: 'bogor',
-        from: '2022-01-01',
-        to: '2022-05-20',
-        timeCategory: '1-2',
+        q: city,
+        from: startDate,
+        to: endDate,
+        timeCategory: time,
       },
     }
+    
     return this.$axios
-      .$get(
-        'https://api.naufalbahri.com/api/v1/match',
-        axiosOption
-      )
+      .$get('https://api.naufalbahri.com/api/v1/match', axiosOption)
+      .then((result) => {
+        commit('setState', { isLoading: false })
+        return result
+      })
       .catch((error) => {
         // handle error
-        if (error.response.status === 401) {
-          console.log(error)
+        if (error.response.status !== '404') {
+          const alertMsg = {
+            msg: 'Token kadaluwarsa, silahkan login kembali.',
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/login')
           //   dispatch('user/refreshAuth', null, { root: true })
+          commit('setState', { isLoading: false })
         } else {
           const alertMsg = {
             msg: 'Get item store failed',
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
+          commit('setState', { isLoading: false })
         }
+        
         return false
       })
   },
@@ -137,12 +149,10 @@ export const actions = {
       })
   },
 
-  getListCity({ context, commit, dispatch }, {keyword}) {
-    const params = {q: keyword}
+  getListCity({ context, commit, dispatch }, { keyword }) {
+    const params = { q: keyword }
     return this.$axios
-      .$get(
-        `https://api.naufalbahri.com/api/v1/static/cities`, params
-      )
+      .$get(`https://api.naufalbahri.com/api/v1/static/cities`, params)
       .catch((error) => {
         // handle error
         if (error.response.status !== '404') {
@@ -163,15 +173,16 @@ export const actions = {
       })
   },
 
-  getListVenue({ context, commit, dispatch }, {keyword, cityID, bearer}) {
+  getListVenue({ context, commit, dispatch }, { keyword, cityID, bearer }) {
     const axiosOption = {
       headers: {
-        xToken: bearer
-      }
+        xToken: bearer,
+      },
     }
     return this.$axios
       .$get(
-        `https://api.naufalbahri.com/api/v1/venue?q=${keyword}&cityId=${cityID}`, axiosOption
+        `https://api.naufalbahri.com/api/v1/venue?q=${keyword}&cityId=${cityID}`,
+        axiosOption
       )
       .catch((error) => {
         // handle error
@@ -191,5 +202,5 @@ export const actions = {
         }
         return false
       })
-  }
+  },
 }
