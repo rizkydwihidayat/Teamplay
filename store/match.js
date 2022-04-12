@@ -3,6 +3,7 @@ export const state = () => ({
   listPlayer: [],
   listCity: [],
   listVenue: [],
+  matchdetail: {},
   limit: 10,
   offset: 0,
   isLoading: true,
@@ -14,18 +15,43 @@ export const mutations = {
     const keys = Object.keys(params)
     keys.forEach((key) => (state[key] = params[key]))
   },
+  setMatchDetail(state, resp) {
+    console.warn(resp.data.match.timePlay);
+
+    const store = {
+      id: resp.data.match.id,
+      gameName: resp.data.match.gameName,
+      playDate: resp.data.match.playDate,
+      time: resp.data.match.timePlay,
+      playerCategory: resp.data.match.playerCategory,
+      sportCategory: resp.data.match.sportCategory,
+      duration: resp.data.match.duration,
+      address: resp.data.venue.address,
+      venueName: resp.data.venue.venueName,
+      coordinate: resp.data.venue.coordinate,
+      name: resp.data.organizer.name,
+      created: resp.data.organizer.hasCreated
+    }
+
+    state.matchdetail = store
+  },
   setListMatch(state, list) {
-      state.listMatch = list.data.map((value, key) => {
-        return {
-          gamename: value.match.gameName,
-          category: value.match.sportCategory,
-          gender: value.match.playerCategory,
-          date: value.match.playDate,
-          time: value.match.timePlay,
-          place: value.venue.venueName,
-          status: value.match.status,
-        }
-      }, {})
+    state.listMatch =
+      list.data.length > 0 && list.data[0] !== null
+        ? // eslint-disable-next-line array-callback-return
+          list.data.map((value, key) => {
+            return {
+              id: value.match.id,
+              gamename: value.match.gameName,
+              category: value.match.sportCategory,
+              gender: value.match.playerCategory,
+              date: value.match.playDate,
+              time: value.match.timePlay,
+              place: value.venue.venueName,
+              status: value.match.status,
+            }
+          }, {})
+        : []
   },
   setListCity(state, list) {
     state.listCity =
@@ -72,21 +98,24 @@ export const actions = {
   setListVenue({ commit }, listVenue) {
     commit('setListVenue', listVenue)
   },
+  setMatchDetail({ commit }, storeData) {
+    commit('setMatchDetail', storeData)
+  },
   getListMatch(
     { context, commit, dispatch },
-    { city, startDate, endDate, time }
+    // { city, startDate, endDate, time }
   ) {
     const axiosOption = {
       params: {
         limit: state.limit,
         offset: state.offset,
-        q: city,
-        from: startDate,
-        to: endDate,
-        timeCategory: time,
+        q: 'bogor',
+        from: '2022-01-01',
+        to: '2022-05-20',
+        timeCategory: '1-2',
       },
     }
-    
+
     return this.$axios
       .$get('https://api.naufalbahri.com/api/v1/match', axiosOption)
       .then((result) => {
@@ -111,7 +140,7 @@ export const actions = {
           dispatch('ui/showAlert', alertMsg, { root: true })
           commit('setState', { isLoading: false })
         }
-        
+
         return false
       })
   },
@@ -129,6 +158,29 @@ export const actions = {
         `https://api.naufalbahri.com/api/v1/users/match/${matchid}/match`,
         axiosOption
       )
+      .catch((error) => {
+        // handle error
+        if (error.response.status !== '404') {
+          const alertMsg = {
+            msg: 'Token kadaluwarsa, silahkan login kembali.',
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/login')
+          //   dispatch('user/refreshAuth', null, { root: true })
+        } else {
+          const alertMsg = {
+            msg: 'Get item store failed',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+        }
+        return false
+      })
+  },
+
+  getMatchId({ context, commit, dispatch }, {id}) {
+    return this.$axios
+      .$get(`https://api.naufalbahri.com/api/v1/match/${id}`)
       .catch((error) => {
         // handle error
         if (error.response.status !== '404') {

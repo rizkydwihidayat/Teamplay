@@ -37,7 +37,7 @@
     <div v-else>
       <div v-if="listAllMatch.length > 0">
         <div v-for="(item, idx) in listAllMatch" :key="idx" class="card-list">
-          <v-card outlined>
+          <v-card outlined @click="goToDetailMatch(item.id)">
             <h3>{{ item.gamename }}</h3>
             <div class="chips">
               <v-chip color="blue" outlined small>
@@ -110,23 +110,25 @@ export default {
   },
   methods: {
     async getMatch(store = this.$store) {
-      const city = ''
-      const startDate = ''
-      const endDate = ''
-      const time = ''
-      const listData = await store.dispatch('match/getListMatch', {
-        city,
-        startDate,
-        endDate,
-        time,
-      })
-      if (listData.length > 0) {
+      // const city = 'bogor'
+      // const startDate = '2022-01-01'
+      // const endDate = '2022-05-20'
+      // const time = '1-2'
+      const listData = await store.dispatch('match/getListMatch')
+      // {
+      //   city,
+      //   startDate,
+      //   endDate,
+      //   time,
+      // })
         await store.dispatch('match/setListMatch', listData)
-      }
     },
     goToSearch() {
       this.$store.$router.push('/search')
     },
+    goToDetailMatch(id) {
+      this.$router.push(`/match/${id}`)
+    }
   },
 }
 </script>
@@ -186,6 +188,7 @@ span {
 }
 .card-list {
   margin: 20px;
+  cursor: pointer;
 }
 .txt-chips {
   font-family: Poppins;

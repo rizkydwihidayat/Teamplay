@@ -74,7 +74,8 @@ const components = {
 export default {
   name: 'MatchPage',
   components,
-  layout: 'bottom_nav',
+  // layout: 'bottom_nav',
+  layout: 'bottom_nav_trusted',
   data() {
     return {
       filter: '',

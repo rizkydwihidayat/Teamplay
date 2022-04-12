@@ -26,7 +26,7 @@
     <v-btn id="toOrder" :ripple="false" text :to="linkToMatch">
       <span class="text-nav">Match</span>
       <img
-        v-if="routeName === 'match'"
+        v-if="routeName === 'my-match'"
         src="~/assets/svg/match.svg"
         alt="H"
         width="21"
@@ -95,7 +95,7 @@ export default {
     data() {
     return {
       activeBtn: '/',
-      linkToMatch: '/match',
+      linkToMatch: '/my-match',
       linkToSearch: '/search',
       linkToAccount: '/profile',
     }
