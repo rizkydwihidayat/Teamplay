@@ -121,7 +121,8 @@
       <div
         class="mb-6"
         style="height: 164px; width: 100%; border-radius: 8px; background: grey"
-      ></div>
+      >
+      </div>
       <v-btn block depressed rounded small class="btn-secondary mb-6"
         >Lihat petunjuk jalan</v-btn
       >
@@ -160,6 +161,7 @@
 </template>
 <script>
 import { mapState } from 'vuex'
+import { gmapApi } from 'vue2-google-maps'
 export default {
   name: 'MatchDetailPage',
   data() {
@@ -190,6 +192,7 @@ export default {
     ...mapState({
       matchdetail: (state) => state.match.matchdetail,
     }),
+    google: gmapApi
   },
   async mounted() {
     await this.getMatchDetail()
