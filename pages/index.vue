@@ -45,8 +45,8 @@ export default {
 }
 </script>
 <style>
-.main {
+.v-main {
   background: lightgray !important;
-  padding: 0px 0px !important;
+  padding: 0px !important;
 }
 </style>

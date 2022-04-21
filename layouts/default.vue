@@ -1,12 +1,12 @@
 <template>
   <v-app>
     <SnackBarMessage />
-    <v-content class="main">
+    <v-main class="main">
       <v-container class="main-container">
         <!-- <OfflineAlert /> -->
         <nuxt />
       </v-container>
-    </v-content>
+    </v-main>
     <!-- <BottomNavigation /> -->
   </v-app>
 </template>

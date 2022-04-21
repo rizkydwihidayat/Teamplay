@@ -1,5 +1,5 @@
 <template>
-  <v-content class="main">
+  <v-main class="main">
     <div id="pageRegister" class="compWrapper g-transition">
       <TopBarNav />
       <div v-if="hideTop === false" class="top-register">
@@ -127,7 +127,7 @@
         >Suda punya akun? <a href="/login">Yuk, masuk!</a></span
       >
     </div>
-  </v-content>
+  </v-main>
 </template>
 <script>
 import { mapActions } from 'vuex'

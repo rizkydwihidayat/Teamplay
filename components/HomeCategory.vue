@@ -1,5 +1,5 @@
 <template>
-  <div class="container-category pagecategory">
+  <div class="pagecategory">
     <div class="mb-10">
       <h2>Kategori Olahraga</h2>
       <v-layout row wrap class="ic-category">
@@ -135,6 +135,7 @@ export default {
 <style scoped>
 .pagecategory {
   height: 100vh;
+  background: white;
 }
 .emptyState {
   padding: 20px;
@@ -244,5 +245,11 @@ span {
 .align-center {
   text-align: center;
   margin-bottom: 20px;
+}
+</style>
+<style>
+.main {
+  background: lightgray !important;
+  padding: 0px 0px !important;
 }
 </style>

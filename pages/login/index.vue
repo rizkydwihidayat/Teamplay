@@ -1,5 +1,5 @@
 <template>
-  <v-content class="main">
+  <v-main class="main">
     <div id="pageLogin" class="compWrapper g-transition">
       <TopBarNav />
       <div class="top-login">
@@ -113,7 +113,7 @@
       >
     </div>
     {{ namaUser }}
-  </v-content>
+  </v-main>
 </template>
 <script>
 import { mapActions, mapState } from 'vuex'

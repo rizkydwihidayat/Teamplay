@@ -191,11 +191,12 @@ export const actions = {
           dispatch('ui/showAlert', alertMsg, { root: true })
           this.$router.push('/login')
           //   dispatch('user/refreshAuth', null, { root: true })
-        } else {
+        } else if (error.response.status === '500') {
           const alertMsg = {
             msg: 'Get item store failed',
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/login')
         }
         return false
       })

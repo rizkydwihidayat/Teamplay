@@ -1,6 +1,9 @@
 import colors from 'vuetify/es5/util/colors'
 
 export default {
+  env: {
+    teamplay_app_google_map_api_key: process.env.TEAMPLAY_GOOGLE_API_KEY
+  },
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: '%s - Teamplay',
@@ -25,7 +28,8 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    { src: '@/plugins/persistedstate', ssr: false }
+    { src: '@/plugins/persistedstate', ssr: false },
+    { ssr: false, src: '~plugins/google-maps.js', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -101,6 +105,7 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    transpile: [/^vue2-google-maps($|\/)/]
   },
 
   googleFonts: {

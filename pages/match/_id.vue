@@ -43,7 +43,7 @@
         ></v-flex>
         <v-flex xs9 s
           ><p>
-            {{ matchdetail.venueName }} 
+            {{ matchdetail.venueName }}
           </p></v-flex
         >
       </v-layout>
@@ -62,9 +62,10 @@
         </div>
         <div class="description-wrapper">
           <p class="desc-subdued mb-1">Waktu Main</p>
-          <p class="desc-primary mb-1">{{matchdetail.playDate}}</p>
+          <p class="desc-primary mb-1">{{ matchdetail.playDate }}</p>
           <p class="desc-primary mb-0">
-            {{matchdetail.time}} <span class="desc-subdued">({{matchdetail.duration}} jam)</span>
+            {{ matchdetail.time }}
+            <span class="desc-subdued">({{ matchdetail.duration }} jam)</span>
           </p>
         </div>
       </v-row>
@@ -115,13 +116,31 @@
         <h3>Lokasi Lapangan</h3>
       </v-row>
       <p class="desc-primary small">
-        {{matchdetail.address}}
+        {{ matchdetail.address }}
       </p>
       <!-- maps -->
-      <div
-        class="mb-6"
-        style="height: 164px; width: 100%; border-radius: 8px; background: grey"
-      >
+      <div class="maps-area" style="width:100%; height:220px">
+        <GmapMap
+          :center="center"
+          :map-type-id="mapTypeId"
+          :zoom="15"
+          :options="{
+            zoomControl: false,
+            mapTypeControl: false,
+            scaleControl: false,
+            streetViewControl: false,
+            rotateControl: false,
+            fullscreenControl: false,
+            disableDefaultUi: false,
+          }"
+        >
+          <GmapMarker
+            v-for="(item, index) in markers"
+            :key="index"
+            :position="item.position"
+            @click="center = item.position"
+          />
+        </GmapMap>
       </div>
       <v-btn block depressed rounded small class="btn-secondary mb-6"
         >Lihat petunjuk jalan</v-btn
@@ -137,7 +156,7 @@
         <div class="description-wrapper">
           <v-row style="align-item: center" class="ma-0">
             <p class="desc-bold mb-0 mr-2" style="align-item: center">
-              {{matchdetail.name}}
+              {{ matchdetail.name }}
             </p>
             <img
               width="20"
@@ -167,6 +186,19 @@ export default {
   data() {
     return {
       matchDetail: [],
+      center: {
+        lat: 106.766574,
+        lng: -6.529217
+      },
+      mapTypeId: 'terrain',
+      markers: [
+        {
+          position: {
+            lat: 0,
+            lng: 0
+          }
+        }
+      ]
     }
   },
   //   layout: 'bottom_nav',
@@ -192,7 +224,7 @@ export default {
     ...mapState({
       matchdetail: (state) => state.match.matchdetail,
     }),
-    google: gmapApi
+    google: gmapApi,
   },
   async mounted() {
     await this.getMatchDetail()
@@ -202,11 +234,11 @@ export default {
       this.$store.$router.push('/')
     },
     async getMatchDetail(store = this.$store) {
-    //   this.matchDetail = []
+      //   this.matchDetail = []
       const id = this.$route.params.id
       const match = await store.dispatch('match/getMatchId', { id })
       await store.dispatch('match/setMatchDetail', match)
-    //   return this.matchDetail.push(match)
+      //   return this.matchDetail.push(match)
     },
   },
 }
@@ -358,5 +390,9 @@ h2.match-title {
   margin: auto;
   left: 0;
   right: 0;
+}
+.maps-area >>> .vue-map {
+  position: none;
+  height: 200px;
 }
 </style>

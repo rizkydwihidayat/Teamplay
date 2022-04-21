@@ -1,5 +1,7 @@
 <template>
+<v-main>
   <v-bottom-navigation
+    v-if="isTrusted"
     v-model="activeBtn"
     :value="true"
     color="primary"
@@ -85,6 +87,145 @@
       />
     </v-btn>
   </v-bottom-navigation>
+
+  <!-- default navbar -->
+  <v-bottom-navigation
+    v-if="isDefault"
+    v-model="activeBtn"
+    :value="true"
+    fixed
+    color="primary"
+    app
+    class="bottomNav"
+  >
+    <v-btn id="toHome" :ripple="false" text to="/">
+      <span class="text-nav">Home</span>
+      <img
+        v-if="routeName === 'index'"
+        src="~/assets/svg/Subtract.svg"
+        alt="H"
+        width="21"
+        class="btmNavImg"
+      />
+      <img
+        v-else
+        src="~/assets/svg/Subtract-inactive.svg"
+        alt="H"
+        width="21"
+        class="btmNavImg"
+      />
+    </v-btn>
+    <v-btn id="toOrder" :ripple="false" text :to="linkToMatch">
+      <span class="text-nav">Match</span>
+      <img
+        v-if="
+          routeName === 'match'
+        "
+        src="~/assets/svg/match.svg"
+        alt="H"
+        width="21"
+        class="btmNavImg"
+      />
+      <img
+        v-else
+        src="~/assets/svg/match-inactive.svg"
+        width="21"
+        alt="H"
+        class="btmNavImg"
+      />
+    </v-btn>
+    <v-btn id="toProduct" :ripple="false" text :to="linkToSearch">
+      <span class="text-nav">Search</span>
+      <img
+        v-if="routeName === 'search'"
+        src="~/assets/svg/search-normal-1.svg"
+        width="21"
+        alt="H"
+        class="btmNavImg"
+      />
+      <img
+        v-else
+        src="~/assets/svg/search-normal-inactive.svg"
+        width="21"
+        alt="H"
+        class="btmNavImg"
+      />
+    </v-btn>
+    <v-btn id="toChat" :ripple="false" text :to="linkToAccount">
+      <span class="text-nav">Profile</span>
+      <img
+        v-if="routeName === 'profile'"
+        src="~/assets/svg/user-square.svg"
+        width="21"
+        alt="H"
+        class="btmNavImg"
+      />
+      <img
+        v-else
+        src="~/assets/svg/user-square-inactive.svg"
+        width="21"
+        alt="H"
+        class="btmNavImg"
+      />
+    </v-btn>
+  </v-bottom-navigation>
+
+  <!-- not login navbar -->
+  <v-bottom-navigation
+    v-if="isNotLogin"
+    v-model="activeBtn"
+    :value="true"
+    fixed
+    color="primary"
+    app
+    class="bottomNav"
+  >
+    <v-btn id="toHome" :ripple="false" text to="/">
+      <span class="text-nav">Home</span>
+      <img
+        v-if="routeName === 'index'"
+        src="~/assets/svg/Subtract.svg"
+        alt="H"
+        width="21"
+        class="btmNavImg"
+      />
+      <img
+        v-else
+        src="~/assets/svg/Subtract-inactive.svg"
+        alt="H"
+        width="21"
+        class="btmNavImg"
+      />
+    </v-btn>
+    <v-btn id="toProduct" :ripple="false" text :to="linkToSearch">
+      <span class="text-nav">Search</span>
+      <img
+        v-if="routeName === 'search'"
+        src="~/assets/svg/search-normal-1.svg"
+        width="21"
+        alt="H"
+        class="btmNavImg"
+      />
+      <img
+        v-else
+        src="~/assets/svg/search-normal-inactive.svg"
+        width="21"
+        alt="H"
+        class="btmNavImg"
+      />
+    </v-btn>
+
+    <v-btn id="toOrder" :ripple="false" text :to="linkToLogin">
+      <span class="text-nav">Masuk</span>
+      <img
+        src="~/assets/svg/login.svg"
+        alt="H"
+        width="21"
+        class="btmNavImg"
+      />
+    </v-btn>
+  </v-bottom-navigation>
+</v-main>
 </template>
 <script>
 import IcPlus from '~/components/svg/IcPlus'
@@ -98,6 +239,10 @@ export default {
       linkToMatch: '/my-match',
       linkToSearch: '/search',
       linkToAccount: '/profile',
+      linkToLogin: '/login',
+      isNotLogin: false,
+      isTrusted: false,
+      isDefault: false
     }
   },
   computed: {
@@ -107,6 +252,14 @@ export default {
       },
     },
   },
+  mounted() {
+    const token = this.$store.state.user.accKey
+    if (token === "") {
+      this.isNotLogin = true
+    } else if (token !== "") {
+      this.isDefault = true
+    }
+  }
 }
 </script>
 <style scoped>
