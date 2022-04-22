@@ -29,6 +29,7 @@ export const mutations = {
       address: resp.data.venue.address,
       venueName: resp.data.venue.venueName,
       coordinate: resp.data.venue.coordinate,
+      city: resp.data.venue.city,
       name: resp.data.organizer.name,
       created: resp.data.organizer.hasCreated
     }

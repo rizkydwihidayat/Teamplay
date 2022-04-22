@@ -253,7 +253,7 @@ export default {
     },
   },
   mounted() {
-    const token = this.$store.state.user.accKey
+    const token = localStorage.getItem('accKey')
     if (token === "") {
       this.isNotLogin = true
     } else if (token !== "") {

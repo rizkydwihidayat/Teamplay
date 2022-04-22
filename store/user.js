@@ -105,6 +105,7 @@ export const actions = {
         commit('setState', {
           userID: result.data.id,
         })
+        localStorage.setItem('accKey', result.token)
       })
       .catch((error) => {
         const errMsg = error.message

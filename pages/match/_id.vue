@@ -119,28 +119,13 @@
         {{ matchdetail.address }}
       </p>
       <!-- maps -->
-      <div class="maps-area" style="width:100%; height:220px">
-        <GmapMap
-          :center="center"
-          :map-type-id="mapTypeId"
-          :zoom="15"
-          :options="{
-            zoomControl: false,
-            mapTypeControl: false,
-            scaleControl: false,
-            streetViewControl: false,
-            rotateControl: false,
-            fullscreenControl: false,
-            disableDefaultUi: false,
-          }"
-        >
-          <GmapMarker
-            v-for="(item, index) in markers"
-            :key="index"
-            :position="item.position"
-            @click="center = item.position"
-          />
-        </GmapMap>
+      <div class="maps-area" style="width: 100%; height: 220px">
+        <l-map style="height: 200px" :zoom="zoom" :center="center">
+          <l-tile-layer :url="url"></l-tile-layer>
+          <l-marker ref="marker" :lat-lng="markerLatLng">
+            <l-popup ref="popup">{{matchdetail.city}}</l-popup>
+          </l-marker>
+        </l-map>
       </div>
       <v-btn block depressed rounded small class="btn-secondary mb-6"
         >Lihat petunjuk jalan</v-btn
@@ -180,25 +165,24 @@
 </template>
 <script>
 import { mapState } from 'vuex'
-import { gmapApi } from 'vue2-google-maps'
+import { LMap, LTileLayer, LMarker, LPopup } from 'vue2-leaflet'
+import 'leaflet/dist/leaflet.css';
 export default {
   name: 'MatchDetailPage',
+  components: {
+    LMap,
+    LTileLayer,
+    LMarker,
+    LPopup,
+  },
   data() {
     return {
       matchDetail: [],
-      center: {
-        lat: 106.766574,
-        lng: -6.529217
-      },
+      center: [ -6.529217, 106.766574 ],
+      zoom: 10,
       mapTypeId: 'terrain',
-      markers: [
-        {
-          position: {
-            lat: 0,
-            lng: 0
-          }
-        }
-      ]
+      markerLatLng: [ -6.529217, 106.766574 ],
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     }
   },
   //   layout: 'bottom_nav',
@@ -224,10 +208,12 @@ export default {
     ...mapState({
       matchdetail: (state) => state.match.matchdetail,
     }),
-    google: gmapApi,
   },
   async mounted() {
     await this.getMatchDetail()
+    this.$nextTick(() => {
+      this.$refs.marker.mapObject.openPopup();
+    });
   },
   methods: {
     back() {
