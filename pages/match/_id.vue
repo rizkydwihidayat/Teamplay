@@ -178,10 +178,10 @@ export default {
   data() {
     return {
       matchDetail: [],
-      center: [ -6.529217, 106.766574 ],
+      center: [ -6, 106 ],
       zoom: 10,
       mapTypeId: 'terrain',
-      markerLatLng: [ -6.529217, 106.766574 ],
+      markerLatLng: [ -6, 106 ],
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     }
   },
@@ -211,6 +211,7 @@ export default {
   },
   async mounted() {
     await this.getMatchDetail()
+    await this.getCoordinate()
     this.$nextTick(() => {
       this.$refs.marker.mapObject.openPopup();
     });
@@ -218,6 +219,11 @@ export default {
   methods: {
     back() {
       this.$store.$router.push('/')
+    },
+    getCoordinate() {
+      const temp = []
+      temp.push(this.matchdetail.coordinate)
+      console.warn(temp);
     },
     async getMatchDetail(store = this.$store) {
       //   this.matchDetail = []

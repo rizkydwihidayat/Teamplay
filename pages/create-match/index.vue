@@ -1,5 +1,5 @@
 <template>
-  <v-main>
+  <!-- <v-main> -->
     <div class="g-transition createMatch">
       <div class="filter-search">
         <div class="top-filter">
@@ -39,7 +39,7 @@
             placeholder="Nama permainan"
           ></v-text-field>
           <v-autocomplete
-            v-model="values"
+            v-model="gender"
             :items="itemsCategory"
             outlined
             small-chips
@@ -80,31 +80,23 @@
             :render-suggestion="renderSuggestion"
             :get-suggestion-value="getSuggestionValue"
             class="autofill"
+            clearable
             @input="Dosearch"
-          />
+          >
+            <template slot-scope="{ suggestions }">
+              {{ suggestions }}
+              <!-- <div v-if="suggestion.length > 0">
+              <span> Tambah lapangan </span>
+            </div> -->
+              <span> Tambah lapangan </span>
+            </template>
+          </vue-autosuggest>
           <div v-if="selected" style="margin-top: 10px">
             You have selected:
             <code>
               <pre>{{ JSON.stringify(selected, null, 4) }}</pre>
             </code>
           </div>
-          <!-- <v-autocomplete
-            v-model="searchkey"
-            :append-icon="showIcon ? 'mdi-magnify' : undefined"
-            outlined
-            :items="ListVenue"
-            placeholder="Nama lapangan"
-            @keypress="
-              ;($event.keyCode > 47 && $event.keyCode < 58) ||
-              $event.keyCode === 32 ||
-              ($event.keyCode > 96 && $event.keyCode < 123) ||
-              ($event.keyCode > 64 && $event.keyCode < 91)
-                ? true
-                : $event.preventDefault()
-            "
-            @keyup.enter="Dosearch"
-          ></v-autocomplete> -->
-          <!-- <small>Pastikan lapangan sudah dibooking ya!</small> -->
         </div>
         <br />
         <div class="filter-time">
@@ -172,11 +164,12 @@
         </div>
       </v-form>
     </div>
-  </v-main>
+  <!-- </v-main> -->
 </template>
 <script>
 import { mapActions, mapState, mapMutations } from 'vuex'
 import { VueAutosuggest } from 'vue-autosuggest'
+
 export default {
   name: 'CreateMatch',
   components: {
@@ -194,7 +187,7 @@ export default {
       valid: false,
       modal_tgl_awal: false,
       tgl_awal: '',
-      values: '',
+      gender: '',
       filterCategory: ['Futsal', 'Basket', 'Mini Soccer', 'Sepak Bola'],
       inputCategory: '',
       currentDate: new Date().toISOString().substr(0, 10),
@@ -211,22 +204,17 @@ export default {
       selected: null,
       suggestions: [],
       sectionConfigs: {
-        venue: {
+        default: {
           limit: 10,
           label: 'Venue Lapangan',
           onSelected: (selected) => {
-            console.warn('celeesss', selected)
             this.selected = selected.item
+            this.query = selected.item.venueName
           },
         },
-        // add: {
-        //   limit: 1,
-        //   label: 'Tambah Lapangan',
-        //   onSelected: (selected) => {
-        //     this.selected = selected.item
-        //   },
-        // },
       },
+      selecteduser: null,
+      lapangan: [],
     }
   },
   computed: {
@@ -234,6 +222,15 @@ export default {
       isLoading: (state) => state.match.isLoading,
       ListVenue: (state) => state.match.listVenue,
     }),
+    filteredOptions() {
+      return [
+        {
+          data: this.ListVenue[0].data.filter((option) => {
+            return option.id
+          }),
+        },
+      ]
+    },
     // computedDateFormatted() {
     //   return this.formatDate(this.date)
     // },
@@ -263,20 +260,32 @@ export default {
     renderSuggestion(suggestion) {
       return suggestion.item.venueName + ', ' + suggestion.item.cityName
     },
-    submitCreateMatch() {},
+    submitCreateMatch() {
+      const params = {
+        venueId: this.selected,
+        gameName: this.inputName,
+        playerCategory: this.gender,
+        playDate: this.tgl_awal,
+        startTime: this.startTime,
+        endTime: this.endTime,
+        minPlayer: this.minPlayer,
+        maxPlayer: this.maxPlayer,
+      }
+      console.warn(params)
+    },
     checkMinPlayer(value) {
       switch (value) {
         case 'Futsal':
-          this.minPlayer = 10
+          this.minPlayer = 15
           break
         case 'Basket':
-          this.minPlayer = 8
+          this.minPlayer = 15
           break
         case 'Mini Soccer':
-          this.minPlayer = 8
+          this.minPlayer = 18
           break
         case 'Sepak Bola':
-          this.minPlayer = 13
+          this.minPlayer = 25
           break
       }
     },
@@ -318,7 +327,6 @@ export default {
             this.query,
             'venueName'
           )
-          console.warn(venue)
           venue.length && this.suggestions.push({ data: venue })
           // Promise.all(setlist).then(values => {
           //   this.suggestions = [];
@@ -331,7 +339,6 @@ export default {
           // });
           // this.suggestions = this.listVenue
         }, 250)
-        console.warn('test', this.suggestions)
         this.setState({ isSearch: true })
       }
     },
@@ -357,7 +364,7 @@ export default {
 .filter-search {
   padding: 20px;
   box-shadow: 0 -0.1px 6px 0 rgba(0, 0, 0, 0.08);
-  background: #fff;
+  background: #fff !important;
   top: 0px;
   z-index: 5;
   position: fixed;
@@ -373,7 +380,9 @@ export default {
 }
 .createMatch {
   height: 100vh;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
+  padding-bottom: 50px;
+  background: #fff !important;
 }
 .filter-category {
   font-family: Poppins;
@@ -433,6 +442,7 @@ export default {
 .main {
   background: lightgray !important;
   padding: 0px 0px !important;
+  /* height: 100vh !; */
 }
 #autosuggest__input {
   outline: none;

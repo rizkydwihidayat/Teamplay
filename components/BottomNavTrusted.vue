@@ -253,11 +253,12 @@ export default {
     },
   },
   mounted() {
-    const token = localStorage.getItem('accKey')
+    const token = this.$store.state.user.accKey
     if (token === "") {
       this.isNotLogin = true
     } else if (token !== "") {
-      this.isDefault = true
+      // this.isDefault = true
+      this.isTrusted = true
     }
   }
 }
