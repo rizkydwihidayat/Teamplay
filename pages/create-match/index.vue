@@ -1,179 +1,210 @@
 <template>
   <!-- <v-main> -->
-    <div class="g-transition createMatch">
-      <div class="filter-search">
-        <div class="top-filter">
-          <v-btn icon :ripple="false" class="btnBack" @click="back">
-            <img
-              width="32"
-              height="32"
-              src="~/assets/svg/ic-back-cevron.svg"
-              alt="<"
-            />
-          </v-btn>
-          <span>Buat Permainan</span>
-        </div>
+  <div class="g-transition createMatch">
+    <div class="filter-search">
+      <div class="top-filter">
+        <v-btn icon :ripple="false" class="btnBack" @click="back">
+          <img
+            width="32"
+            height="32"
+            src="~/assets/svg/ic-back-cevron.svg"
+            alt="<"
+          />
+        </v-btn>
+        <span>Buat Permainan</span>
       </div>
-      <v-form
-        ref="form"
-        v-model="valid"
-        lazy-validation
-        @keyup.native.enter="valid && submitCreateMatch($event)"
-      >
-        <div class="filter-category">
-          <span class="title">Kategori Olahraga</span>
-          <v-chip-group v-model="inputCategory" active-class="primary--text">
-            <v-chip
-              v-for="data in filterCategory"
-              :key="data"
-              :value="data"
-              @input="checkMinPlayer(data)"
-              >{{ data }}</v-chip
-            >
-          </v-chip-group>
-        </div>
-        <div class="fields">
-          <v-text-field
-            v-model="inputName"
-            outlined
-            placeholder="Nama permainan"
-          ></v-text-field>
-          <v-autocomplete
-            v-model="gender"
-            :items="itemsCategory"
-            outlined
-            small-chips
-            placeholder="Kategori pemain"
-          ></v-autocomplete>
-        </div>
-        <div class="filter-player">
-          <span class="title">Jumlah Pemain</span>
-          <v-layout row wrap>
-            <v-flex xs5 class="row-player1">
-              <span>Minimum</span>
-              <v-text-field
-                v-model="minPlayer"
-                outlined
-                placeholder="Min pemain"
-                readonly
-                disabled
-              ></v-text-field>
-            </v-flex>
-            <v-flex xs6 class="row-player2">
-              <span>Maksimum</span>
-              <v-text-field
-                v-model="maxPlayer"
-                outlined
-                placeholder="Max pemain"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-        </div>
-        <div class="fields">
-          <span class="title">Lokasi Main</span>
-          <vue-autosuggest
-            ref="autocomplete"
-            v-model="query"
-            :suggestions="suggestions"
-            :input-props="inputProps"
-            :section-configs="sectionConfigs"
-            :render-suggestion="renderSuggestion"
-            :get-suggestion-value="getSuggestionValue"
-            class="autofill"
-            clearable
-            @input="Dosearch"
+    </div>
+    <v-form
+      ref="form"
+      v-model="valid"
+      lazy-validation
+      @keyup.native.enter="valid && submitCreateMatch($event)"
+    >
+      <div class="filter-category">
+        <span class="title">Kategori Olahraga</span>
+        <v-chip-group v-model="inputCategory" active-class="primary--text">
+          <v-chip
+            v-for="data in filterCategory"
+            :key="data"
+            :value="data"
+            @input="checkMinPlayer(data)"
+            >{{ data }}</v-chip
           >
-            <template slot-scope="{ suggestions }">
-              {{ suggestions }}
-              <!-- <div v-if="suggestion.length > 0">
+        </v-chip-group>
+      </div>
+      <div class="fields">
+        <v-text-field
+          v-model="inputName"
+          outlined
+          placeholder="Nama permainan"
+        ></v-text-field>
+        <v-autocomplete
+          v-model="gender"
+          :items="itemsCategory"
+          outlined
+          small-chips
+          placeholder="Kategori pemain"
+        ></v-autocomplete>
+      </div>
+      <div class="filter-player">
+        <span class="title">Jumlah Pemain</span>
+        <v-layout row wrap>
+          <v-flex xs5 class="row-player1">
+            <span>Minimum</span>
+            <v-text-field
+              v-model="minPlayer"
+              outlined
+              placeholder="Min pemain"
+              readonly
+              disabled
+            ></v-text-field>
+          </v-flex>
+          <v-flex xs6 class="row-player2">
+            <span>Maksimum</span>
+            <v-text-field
+              v-model="maxPlayer"
+              outlined
+              placeholder="Max pemain"
+            ></v-text-field>
+          </v-flex>
+        </v-layout>
+      </div>
+      <div class="fields">
+        <span class="title">Lokasi Main</span>
+        <vue-autosuggest
+          ref="autocomplete"
+          v-model="query"
+          :suggestions="suggestions"
+          :input-props="inputProps"
+          :section-configs="sectionConfigs"
+          :render-suggestion="renderSuggestion"
+          :get-suggestion-value="getSuggestionValue"
+          class="autofill mb-16"
+          clearable
+          @input="Dosearch"
+        >
+          <template slot-scope="{ suggestions }">
+            {{ suggestions }}
+            <!-- <div v-if="suggestion.length > 0">
               <span> Tambah lapangan </span>
             </div> -->
-              <span> Tambah lapangan </span>
-            </template>
-          </vue-autosuggest>
-          <div v-if="selected" style="margin-top: 10px">
-            You have selected:
-            <code>
-              <pre>{{ JSON.stringify(selected, null, 4) }}</pre>
-            </code>
+            <span> Tambah lapangan </span>
+          </template>
+        </vue-autosuggest>
+        <v-card v-if="selected" outlined class="detail-venue">
+          <div class="maps-area" style="width: 100%; height: 220px">
+            <span> Detail lapangan </span>
+            <l-map style="height: 200px" :zoom="zoom" :center="center">
+              <l-tile-layer :url="url"></l-tile-layer>
+              <l-marker ref="marker" :lat-lng="markerLatLng">
+                <l-popup ref="popup">{{ selected.cityName }}</l-popup>
+              </l-marker>
+            </l-map>
+            <br />
+            <v-layout row wrap class="venue-info">
+              <small>Alamat</small>
+              <p>{{ selected.address }}</p>
+              <v-flex xs6>
+                <small>Min. durasi main</small>
+                <p>{{ selected.minimumDurationRent }}</p>
+              </v-flex>
+              <v-flex xs6>
+                <small>Harga per jam</small>
+                <p>{{ selected.pricePerHours }}</p>
+              </v-flex>
+            </v-layout>
           </div>
+        </v-card>
+        <span class="title">Jadwal Main</span>
+        <v-menu
+          ref="dialog_tgl_awal"
+          v-model="modal_tgl_awal"
+          :close-on-content-click="false"
+          transition="scale-transition"
+          offset-y
+          max-width="290px"
+          min-width="auto"
+          class="datepicker customField"
+        >
+          <template #activator="{ on, attrs }">
+            <v-text-field
+              slot="activator"
+              v-model="tgl_awal"
+              clearable
+              persistent-hint
+              append-icon="mdi-calendar"
+              v-bind="attrs"
+              outlined
+              v-on="on"
+              @click="tgl_awal = currentDate"
+            ></v-text-field>
+          </template>
+          <v-date-picker v-model="tgl_awal" full-width scrollable no-title>
+            <v-spacer></v-spacer>
+            <v-btn depressed color="secondary" @click="modal_tgl_awal = false"
+              >Cancel</v-btn
+            >
+            <v-btn
+              depressed
+              color="primary"
+              @click="$refs.dialog_tgl_awal.save(tgl_awal)"
+              >OK</v-btn
+            >
+          </v-date-picker>
+        </v-menu>
+        <v-layout row wrap>
+          <v-flex xs5 class="row-player1">
+            <v-text-field
+              v-model="startTime"
+              outlined
+              placeholder="Waktu mulai"
+              append-icon="mdi-clock-outline"
+            ></v-text-field>
+          </v-flex>
+          <v-flex xs1></v-flex>
+          <v-flex xs5 class="row-player2">
+            <v-text-field
+              v-model="endTime"
+              outlined
+              placeholder="Waktu selesai"
+              append-icon="mdi-clock-outline"
+            ></v-text-field>
+          </v-flex>
+        </v-layout>
+        <div class="bottom-button">
+          <v-btn class="create-btn" depressed color="primary">
+            <span> Buat match</span>
+          </v-btn>
         </div>
-        <br />
-        <div class="filter-time">
-          <span class="title">Jadwal Main</span>
-          <v-menu
-            ref="dialog_tgl_awal"
-            v-model="modal_tgl_awal"
-            :close-on-content-click="false"
-            transition="scale-transition"
-            offset-y
-            max-width="290px"
-            min-width="auto"
-            class="datepicker customField"
-          >
-            <template #activator="{ on, attrs }">
-              <v-text-field
-                slot="activator"
-                v-model="tgl_awal"
-                clearable
-                persistent-hint
-                append-icon="mdi-calendar"
-                v-bind="attrs"
-                outlined
-                v-on="on"
-                @click="tgl_awal = currentDate"
-              ></v-text-field>
-            </template>
-            <v-date-picker v-model="tgl_awal" full-width scrollable no-title>
-              <v-spacer></v-spacer>
-              <v-btn depressed color="secondary" @click="modal_tgl_awal = false"
-                >Cancel</v-btn
-              >
-              <v-btn
-                depressed
-                color="primary"
-                @click="$refs.dialog_tgl_awal.save(tgl_awal)"
-                >OK</v-btn
-              >
-            </v-date-picker>
-          </v-menu>
-          <v-layout row wrap>
-            <v-flex xs5 class="row-player1">
-              <v-text-field
-                v-model="startTime"
-                outlined
-                placeholder="Waktu mulai"
-                append-icon="mdi-clock-outline"
-              ></v-text-field>
-            </v-flex>
-            <v-flex xs1></v-flex>
-            <v-flex xs5 class="row-player2">
-              <v-text-field
-                v-model="endTime"
-                outlined
-                placeholder="Waktu selesai"
-                append-icon="mdi-clock-outline"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-          <div class="bottom-button">
-            <v-btn class="create-btn" depressed color="primary">
-              <span> Buat match</span>
-            </v-btn>
-          </div>
-        </div>
-      </v-form>
-    </div>
+        <!-- <div v-if="selected" style="margin-top: 10px">
+          You have selected:
+          <code>
+            <pre>{{ JSON.stringify(selected, null, 4) }}</pre>
+          </code>
+        </div> -->
+      </div>
+      <!-- <br /> -->
+      <!-- <div class="filter-time">
+        
+      </div> -->
+    </v-form>
+  </div>
   <!-- </v-main> -->
 </template>
 <script>
 import { mapActions, mapState, mapMutations } from 'vuex'
 import { VueAutosuggest } from 'vue-autosuggest'
+import { LMap, LTileLayer, LMarker, LPopup } from 'vue2-leaflet'
+import 'leaflet/dist/leaflet.css'
 
 export default {
   name: 'CreateMatch',
   components: {
     VueAutosuggest,
+    LMap,
+    LTileLayer,
+    LMarker,
+    LPopup,
   },
   data() {
     return {
@@ -213,8 +244,11 @@ export default {
           },
         },
       },
-      selecteduser: null,
-      lapangan: [],
+      center: [-6, 106],
+      zoom: 10,
+      mapTypeId: 'terrain',
+      markerLatLng: [-6, 106],
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     }
   },
   computed: {
@@ -361,6 +395,23 @@ export default {
 }
 </script>
 <style scoped>
+small {
+  color: #BDBDBD;
+}
+.mb-16 {
+  margin-bottom: 16px !important;
+}
+.detail-venue {
+  margin-top: 16px;
+  padding: 20px;
+  height: 425px;
+}
+.venue-info {
+  padding: 16px;
+}
+.venue-info p {
+  font-size: 14px;
+}
 .filter-search {
   padding: 20px;
   box-shadow: 0 -0.1px 6px 0 rgba(0, 0, 0, 0.08);
@@ -400,6 +451,7 @@ export default {
   font-family: Poppins;
   padding-left: 20px;
   padding-right: 20px;
+  /* padding-bottom: 20px; */
 }
 .row-player1 {
   margin-left: 12px;
@@ -409,10 +461,9 @@ export default {
 .row-player2 {
   margin-top: 10px;
 }
-/* .bottom-button {
-  padding-left: 20px;
-  padding-right: 20px;
-} */
+.bottom-button {
+  padding-bottom: 20px;
+}
 .bottom-button >>> span {
   text-transform: capitalize !important;
   font-family: Poppins;

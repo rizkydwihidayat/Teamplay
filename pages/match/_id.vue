@@ -123,7 +123,7 @@
         <l-map style="height: 200px" :zoom="zoom" :center="center">
           <l-tile-layer :url="url"></l-tile-layer>
           <l-marker ref="marker" :lat-lng="markerLatLng">
-            <l-popup ref="popup">{{matchdetail.city}}</l-popup>
+            <l-popup ref="popup">{{matchdetail.cityName}}</l-popup>
           </l-marker>
         </l-map>
       </div>
