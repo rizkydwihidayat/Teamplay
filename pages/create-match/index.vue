@@ -272,10 +272,10 @@ export default {
           },
         },
       },
-      center: [-6, 106],
+      center: [-6.529217, 106.766574],
       zoom: 12,
       mapTypeId: 'terrain',
-      markerLatLng: [-6, 106],
+      markerLatLng: [-6.529217, 106.766574],
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     }
   },

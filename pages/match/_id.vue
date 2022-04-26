@@ -127,7 +127,7 @@
           </l-marker>
         </l-map>
       </div>
-      <v-btn block depressed rounded small class="btn-secondary mb-6"
+      <v-btn block depressed rounded small class="btn-secondary mb-6" @click="goToMaps"
         >Lihat petunjuk jalan</v-btn
       >
     </div>
@@ -178,10 +178,10 @@ export default {
   data() {
     return {
       matchDetail: [],
-      center: [ -6, 106 ],
+      center: [-6.529217, 106.766574],
       zoom: 12,
       mapTypeId: 'terrain',
-      markerLatLng: [ -6, 106 ],
+      markerLatLng: [-6.529217, 106.766574],
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     }
   },
@@ -232,6 +232,9 @@ export default {
       await store.dispatch('match/setMatchDetail', match)
       //   return this.matchDetail.push(match)
     },
+    goToMaps() {
+      window.location.href = `https://maps.google.com?q=${this.center[0]},${this.center[1]}`
+    }
   },
 }
 </script>
