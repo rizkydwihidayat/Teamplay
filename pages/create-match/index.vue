@@ -186,7 +186,6 @@
                 Rp{{
                   numberFormat(
                     totalPayment(
-                      selected.minimumDurationRent,
                       selected.pricePerHours
                     ),
                     0,
@@ -358,8 +357,9 @@ export default {
       }
     },
     // eslint-disable-next-line vue/no-dupe-keys
-    totalPayment(dur, price) {
-      const result = dur * price
+    totalPayment(price) {
+      const calculated = parseInt(this.endTime) - parseInt(this.startTime)
+      const result = calculated * price
       return result
     },
     checkMinPlayer(value) {
