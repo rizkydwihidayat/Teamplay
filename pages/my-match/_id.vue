@@ -1,5 +1,5 @@
 <template>
-  <div id="pageMatchDetail" class="compWrapper g-transition">
+  <div id="pageMatchDetail" class="compWrapper g-transition page">
     <!-- section header -->
     <div class="container-header pb-4 pt-4 mb-1">
       <v-row class="container-topbar ml-3 mr-3 mt-6 mb-10">

@@ -1,6 +1,6 @@
 <template>
   <!-- <v-main> -->
-  <div class="g-transition createMatch">
+  <div class="g-transition page">
     <div class="filter-search">
       <div class="top-filter">
         <v-btn icon :ripple="false" class="btnBack" @click="back">
@@ -37,6 +37,7 @@
           v-model="inputName"
           outlined
           placeholder="Nama permainan"
+          required
         ></v-text-field>
         <v-autocomplete
           v-model="gender"
@@ -44,6 +45,7 @@
           outlined
           small-chips
           placeholder="Kategori pemain"
+          required
         ></v-autocomplete>
       </div>
       <div class="filter-player">
@@ -65,6 +67,7 @@
               v-model="maxPlayer"
               outlined
               placeholder="Max pemain"
+              required
             ></v-text-field>
           </v-flex>
         </v-layout>
@@ -81,13 +84,10 @@
           :get-suggestion-value="getSuggestionValue"
           class="autofill mb-16"
           clearable
+          required
           @input="Dosearch"
         >
-          <template slot-scope="{ suggestions }">
-            {{ suggestions }}
-            <!-- <div v-if="suggestion.length > 0">
-              <span> Tambah lapangan </span>
-            </div> -->
+          <template slot>
             <span> Tambah lapangan </span>
           </template>
         </vue-autosuggest>
@@ -102,8 +102,12 @@
             </l-map>
             <br />
             <v-layout row wrap class="venue-info">
-              <small>Alamat</small>
+              <v-flex xs12>
+                <small>Alamat</small><br />
               <p>{{ selected.address }}</p>
+              </v-flex>
+            </v-layout>
+            <v-layout row wrap class="venue-info">
               <v-flex xs6>
                 <small>Min. durasi main</small>
                 <p>{{ selected.minimumDurationRent }}</p>
@@ -134,6 +138,7 @@
               persistent-hint
               append-icon="mdi-calendar"
               v-bind="attrs"
+              required
               outlined
               v-on="on"
               @click="tgl_awal = currentDate"
@@ -157,6 +162,7 @@
             <v-text-field
               v-model="startTime"
               outlined
+              required
               placeholder="Waktu mulai"
               append-icon="mdi-clock-outline"
             ></v-text-field>
@@ -166,13 +172,19 @@
             <v-text-field
               v-model="endTime"
               outlined
+              required
               placeholder="Waktu selesai"
               append-icon="mdi-clock-outline"
             ></v-text-field>
           </v-flex>
         </v-layout>
         <div class="bottom-button">
-          <v-btn class="create-btn" depressed color="primary">
+          <v-btn
+            class="create-btn"
+            depressed
+            color="primary"
+            @click="submitCreateMatch"
+          >
             <span> Buat match</span>
           </v-btn>
         </div>
@@ -183,10 +195,6 @@
           </code>
         </div> -->
       </div>
-      <!-- <br /> -->
-      <!-- <div class="filter-time">
-        
-      </div> -->
     </v-form>
   </div>
   <!-- </v-main> -->
@@ -209,6 +217,7 @@ export default {
   data() {
     return {
       itemsCategory: ['Pria', 'Wanita', 'Campuran'],
+      isDisable: false,
       startTime: '',
       endTime: '',
       minPlayer: 0,
@@ -278,6 +287,7 @@ export default {
     ...mapActions({
       getCity: 'match/getListCity',
       searchVenue: 'match/getListVenue',
+      createMatch: 'match/createMatch',
     }),
     ...mapMutations({
       setState: 'match/setState',
@@ -294,18 +304,38 @@ export default {
     renderSuggestion(suggestion) {
       return suggestion.item.venueName + ', ' + suggestion.item.cityName
     },
-    submitCreateMatch() {
+    async submitCreateMatch() {
+      this.setState({ isLoading: true })
+      const bearer = this.$store.state.user.accKey
       const params = {
-        venueId: this.selected,
+        venueId: this.selected.id,
         gameName: this.inputName,
         playerCategory: this.gender,
         playDate: this.tgl_awal,
         startTime: this.startTime,
         endTime: this.endTime,
         minPlayer: this.minPlayer,
-        maxPlayer: this.maxPlayer,
+        maxPlayer: parseInt(this.maxPlayer),
       }
-      console.warn(params)
+      const resultsearch = await this.createMatch({
+        params,
+        bearer,
+      }).catch((error) => {
+        if (error.response.status === 401) {
+          const alertMsg = {
+            msg: 'Sesi telah berakhir, merefresh halaman',
+          }
+          this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+        }
+        return false
+      })
+
+      // eslint-disable-next-line no-prototype-builtins
+      if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
+        await this.$store
+          .dispatch('match/setListMatch', resultsearch)
+          .finally(this.setState({ isLoading: false }))
+      }
     },
     checkMinPlayer(value) {
       switch (value) {
@@ -339,7 +369,7 @@ export default {
           }
           this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
           // this.$store.dispatch('user/refreshAuth', null, { root: true })
-          this.searchkey = ''
+          // this.searchkey = ''
           // const searchMsg = {
           //   msg: 'Silahkan lakukan pencarian kembali',
           //   color: 'primary',
@@ -354,25 +384,31 @@ export default {
           .dispatch('match/setListVenue', resultsearch)
           .finally(this.setState({ isLoading: false }))
         this.timeout = setTimeout(() => {
-          this.suggestions = []
-          this.selected = null
-          const venue = this.filterResults(
-            resultsearch.data,
-            this.query,
-            'venueName'
-          )
-          venue.length && this.suggestions.push({ data: venue })
-          // Promise.all(setlist).then(values => {
-          //   this.suggestions = [];
-          //   this.selected = null;
-          //   console.warn(values);
-          //   // const venue = this.filterResults(values.data, this.query, "title");
+          // this.suggestions = []
+          // this.selected = null
+          // const venue = this.filterResults(
+          //   resultsearch.data,
+          //   this.query,
+          //   'venueName'
+          // )
+          // venue.length && this.suggestions.push({ data: venue })
+          Promise.all([resultsearch]).then((values) => {
+            this.suggestions = []
+            this.selected = null
+            const venue = this.filterResults(
+              resultsearch.data,
+              this.query,
+              'venueName'
+            )
+            venue.length && this.suggestions.push({ data: venue })
+            console.warn(values)
+            // const venue = this.filterResults(values.data, this.query, "title");
 
-          //   // venue.length &&
-          //   //   this.suggestions.push({ name: "venue", data: venue });
-          // });
+            // venue.length &&
+            //   this.suggestions.push({ name: "venue", data: venue });
+          })
           // this.suggestions = this.listVenue
-        }, 250)
+        }, 25)
         this.setState({ isSearch: true })
       }
     },
@@ -396,7 +432,7 @@ export default {
 </script>
 <style scoped>
 small {
-  color: #BDBDBD;
+  color: #bdbdbd;
 }
 .mb-16 {
   margin-bottom: 16px !important;
@@ -404,10 +440,11 @@ small {
 .detail-venue {
   margin-top: 16px;
   padding: 20px;
-  height: 425px;
+  height: auto;
+  min-height: 400px;
 }
 .venue-info {
-  padding: 16px;
+  padding: 0px 16px 0px 16px;
 }
 .venue-info p {
   font-size: 14px;
@@ -431,6 +468,7 @@ small {
 }
 .createMatch {
   height: 100vh;
+  overflow-x: hidden;
   /* margin-bottom: 20px; */
   padding-bottom: 50px;
   background: #fff !important;
@@ -462,7 +500,7 @@ small {
   margin-top: 10px;
 }
 .bottom-button {
-  padding-bottom: 20px;
+  padding-bottom: 30px;
 }
 .bottom-button >>> span {
   text-transform: capitalize !important;

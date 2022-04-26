@@ -1,6 +1,6 @@
 <template>
 <v-main>
-  <div id="pageHome" class="compWrapper g-transition">
+  <div id="pageHome" class="compWrapper g-transition page">
     <HomeSearch />
     <HomeCategory />
   </div>

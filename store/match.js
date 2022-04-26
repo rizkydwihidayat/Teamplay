@@ -257,4 +257,48 @@ export const actions = {
         return false
       })
   },
+
+  createMatch({ context, commit, dispatch }, {params, bearer}) {
+    const axiosOption = {
+      headers: {
+        xToken: bearer,
+      },
+    }
+    const data = {
+      venueId: params.venueId,
+        gameName: params.gameName,
+        playerCategory: params.playerCategory,
+        playDate: params.playDate,
+        startTime: params.startTime,
+        endTime: params.endTime,
+        minPlayer: params.minPlayer,
+        maxPlayer: params.maxPlayer,
+    }
+    const postData = JSON.stringify(data)
+    return this.$axios
+      .$post('https://api.naufalbahri.com/api/v1/match', postData, axiosOption)
+      .catch((error) => {
+        if (error.response.status === 401) {
+          // const errMsg = error.response.data.message
+          //   ? error.response.data.message
+          //   : 'Invalid login credentials.'
+          const errMsg = 'Username atau kata sandi salah'
+          const alertMsg = {
+            msg: errMsg,
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+        } else {
+          // const errMsg = 'Unknown error please contact admin'
+          const errMsg =
+            'Terjadi kesalahan. Silahkan hubungi administrator kami'
+          const alertMsg = {
+            msg: errMsg,
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/')
+        }
+      })
+  }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="g-transition profile">
+  <div class="g-transition page">
     <div class="top-section">
       <div>
         <v-btn icon :ripple="false" class="btnBack" @click="back">
