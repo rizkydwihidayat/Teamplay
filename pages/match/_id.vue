@@ -123,7 +123,7 @@
         <l-map style="height: 200px" :zoom="zoom" :center="center">
           <l-tile-layer :url="url"></l-tile-layer>
           <l-marker ref="marker" :lat-lng="markerLatLng">
-            <l-popup ref="popup">{{matchdetail.cityName}}</l-popup>
+            <l-popup ref="popup">{{matchdetail.city}}</l-popup>
           </l-marker>
         </l-map>
       </div>
@@ -179,7 +179,7 @@ export default {
     return {
       matchDetail: [],
       center: [ -6, 106 ],
-      zoom: 10,
+      zoom: 12,
       mapTypeId: 'terrain',
       markerLatLng: [ -6, 106 ],
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
