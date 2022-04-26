@@ -104,7 +104,7 @@
             <v-layout row wrap class="venue-info">
               <v-flex xs12>
                 <small>Alamat</small><br />
-              <p>{{ selected.address }}</p>
+                <p>{{ selected.address }}</p>
               </v-flex>
             </v-layout>
             <v-layout row wrap class="venue-info">
@@ -114,7 +114,7 @@
               </v-flex>
               <v-flex xs6>
                 <small>Harga per jam</small>
-                <p>{{ selected.pricePerHours }}</p>
+                <p>Rp{{ numberFormat(selected.pricePerHours, 0, ',', '.') }}</p>
               </v-flex>
             </v-layout>
           </div>
@@ -179,6 +179,24 @@
           </v-flex>
         </v-layout>
         <div class="bottom-button">
+          <v-layout v-if="selected" row wrap class="total-pay">
+            <v-flex xs6><p>Total Bayar</p></v-flex>
+            <v-flex xs6 class="align-right"
+              ><span>
+                Rp{{
+                  numberFormat(
+                    totalPayment(
+                      selected.minimumDurationRent,
+                      selected.pricePerHours
+                    ),
+                    0,
+                    ',',
+                    '.'
+                  )
+                }}</span
+              ></v-flex
+            >
+          </v-layout>
           <v-btn
             class="create-btn"
             depressed
@@ -204,6 +222,7 @@ import { mapActions, mapState, mapMutations } from 'vuex'
 import { VueAutosuggest } from 'vue-autosuggest'
 import { LMap, LTileLayer, LMarker, LPopup } from 'vue2-leaflet'
 import 'leaflet/dist/leaflet.css'
+import { _numberFormat } from '~/utils'
 
 export default {
   name: 'CreateMatch',
@@ -224,6 +243,7 @@ export default {
       maxPlayer: 0,
       inputName: '',
       isCityId: '',
+      totalPay: 0,
       valid: false,
       modal_tgl_awal: false,
       tgl_awal: '',
@@ -254,7 +274,7 @@ export default {
         },
       },
       center: [-6, 106],
-      zoom: 10,
+      zoom: 12,
       mapTypeId: 'terrain',
       markerLatLng: [-6, 106],
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -337,6 +357,11 @@ export default {
           .finally(this.setState({ isLoading: false }))
       }
     },
+    // eslint-disable-next-line vue/no-dupe-keys
+    totalPayment(dur, price) {
+      const result = dur * price
+      return result
+    },
     checkMinPlayer(value) {
       switch (value) {
         case 'Futsal':
@@ -401,7 +426,6 @@ export default {
               'venueName'
             )
             venue.length && this.suggestions.push({ data: venue })
-            console.warn(values)
             // const venue = this.filterResults(values.data, this.query, "title");
 
             // venue.length &&
@@ -427,12 +451,24 @@ export default {
     getSuggestionValue(suggestion) {
       return suggestion.venueName
     },
+    numberFormat(number, decimals, decPoint, thousandSep) {
+      return typeof _numberFormat !== 'undefined'
+        ? _numberFormat(number, decimals, decPoint, thousandSep)
+        : (number, decimals, decPoint, thousandSep)
+    },
   },
 }
 </script>
 <style scoped>
 small {
   color: #bdbdbd;
+}
+.total-pay {
+  padding: 16px;
+}
+.total-pay p {
+  font-weight: 500;
+  color: #424242;
 }
 .mb-16 {
   margin-bottom: 16px !important;

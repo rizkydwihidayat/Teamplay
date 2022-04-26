@@ -4,3 +4,6 @@
   margin: auto;
   overflow-x: hidden;
 }
+.align-right {
+    text-align: right;
+}
