@@ -7,7 +7,7 @@
         <nuxt />
       </v-container>
     </v-main>
-    <!-- <BottomNavigation /> -->
+    <BottomNavigationTrusted />
   </v-app>
 </template>
 
@@ -17,13 +17,12 @@
 const components = {
 //   SnackBarMessage: () =>
 //     import('@/components/SnackBarMessage.vue' /* webpackChunkName: "SnackBarMessage" */),
-  // BottomNavigation: () =>
-  //   import('@/components/BottomNav.vue' /* webpackChunkName: "BottomNavigation" */),
+  BottomNavigationTrusted: () =>
+    import('@/components/BottomNavTrusted.vue' /* webpackChunkName: "BottomNavigation" */),
 //   OfflineAlert: () =>
 //     import('~/components/OfflineAlert.vue' /* webpackChunkName: "OfflineAlert" */)
 }
 export default {
-  name: "DefaultNav",
   components,
 //   methods: {
 //     ...mapActions({ doLogout: 'user/doLogout' }),
@@ -48,7 +47,10 @@ export default {
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
-  background: white;
   padding: 0px;
+  /* background: #0D47A1; */
+}
+.main {
+  background: lightgray;
 }
 </style>

@@ -1,0 +1,9 @@
+#app .page {
+    /* padding-top: 48px; */
+  max-width: 480px;
+  margin: auto;
+  overflow-x: hidden;
+}
+.align-right {
+    text-align: right;
+}

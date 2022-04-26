@@ -10,15 +10,15 @@
     <v-btn id="toHome" :ripple="false" text to="/">
       <span class="text-nav">Home</span>
       <img
-        v-if="routeName === 'home'"
-        src="~/assets/svg/home.svg"
+        v-if="routeName === 'index'"
+        src="~/assets/svg/Subtract.svg"
         alt="H"
         width="21"
         class="btmNavImg"
       />
       <img
         v-else
-        src="~/assets/svg/home-inactive.svg"
+        src="~/assets/svg/Subtract-inactive.svg"
         alt="H"
         width="21"
         class="btmNavImg"
@@ -28,16 +28,16 @@
       <span class="text-nav">Match</span>
       <img
         v-if="
-          routeName === 'my-match'
+          routeName === 'match'
         "
-        src="~/assets/svg/calendar.svg"
+        src="~/assets/svg/match.svg"
         alt="H"
         width="21"
         class="btmNavImg"
       />
       <img
         v-else
-        src="~/assets/svg/calendar-inactive.svg"
+        src="~/assets/svg/match-inactive.svg"
         width="21"
         alt="H"
         class="btmNavImg"
@@ -47,14 +47,14 @@
       <span class="text-nav">Search</span>
       <img
         v-if="routeName === 'search'"
-        src="~/assets/svg/search.svg"
+        src="~/assets/svg/search-normal-1.svg"
         width="21"
         alt="H"
         class="btmNavImg"
       />
       <img
         v-else
-        src="~/assets/svg/search-inactive.svg"
+        src="~/assets/svg/search-normal-inactive.svg"
         width="21"
         alt="H"
         class="btmNavImg"
@@ -64,14 +64,14 @@
       <span class="text-nav">Profile</span>
       <img
         v-if="routeName === 'profile'"
-        src="~/assets/svg/portrait.svg"
+        src="~/assets/svg/user-square.svg"
         width="21"
         alt="H"
         class="btmNavImg"
       />
       <img
         v-else
-        src="~/assets/svg/portrait-inactive.svg"
+        src="~/assets/svg/user-square-inactive.svg"
         width="21"
         alt="H"
         class="btmNavImg"

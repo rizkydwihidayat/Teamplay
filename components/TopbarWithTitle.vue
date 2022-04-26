@@ -66,7 +66,7 @@ export default {
 }
 .headTitle {
   font-family: Poppins;
-  font-size: 15px;
+  font-size: 16px;
   font-style: normal;
   font-stretch: normal;
   line-height: 1.33;
@@ -74,6 +74,7 @@ export default {
   text-align: center;
   color: black !important;
   padding-right: 16px;
+  font-weight: 600;
 }
 .ml-10 {
   margin-left: 10px !important;

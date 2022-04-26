@@ -1,11 +1,14 @@
 <template>
-  <div id="pageHome" class="compWrapper g-transition">
+<v-main>
+  <div id="pageHome" class="compWrapper g-transition page">
     <HomeSearch />
     <HomeCategory />
   </div>
+</v-main>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   name: "HomePage",
   components: {
@@ -14,7 +17,8 @@ export default {
     HomeCategory: () =>
       import('../components/HomeCategory.vue' /* webpackChunkName: "HomeSellerInfo" */),
   },
-  layout: 'bottom_nav',
+  // layout: 'bottom_nav',
+  layout: 'bottom_nav_trusted',
   head() {
     return {
       title: 'Home',
@@ -33,11 +37,16 @@ export default {
       ],
     }
   },
+  computed: {
+    ...mapState({
+      isLoading: (state) => state.match.isLoading,
+    }),
+  },
 }
 </script>
 <style>
-.main {
+.v-main {
   background: lightgray !important;
-  padding: 0px 0px !important;
+  padding: 0px !important;
 }
 </style>

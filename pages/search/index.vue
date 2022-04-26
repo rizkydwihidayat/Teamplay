@@ -15,6 +15,15 @@
             <span>Bekasi</span>
             <small>10 Feb - 17 Feb 2022</small>
           </div>
+          <!-- <v-chip-group v-model="inputCategory" active-class="primary--text">
+            <div class="filter">
+              <v-chip @click="openFilter">Filter</v-chip>
+            </div>
+            <v-chip v-for="data in filterCategory" :key="data" :value="data">{{
+              data
+            }}</v-chip>
+          </v-chip-group> -->
+
           <v-chip-group v-model="filter" active-class="primary--text" mandatory>
             <div class="filter">
               <v-chip @click="openFilter">Filter</v-chip>
@@ -26,238 +35,53 @@
             <v-chip>Sepak Bola</v-chip>
           </v-chip-group>
         </div>
-        <div class="list">
-          <v-card class="list-card" height="200" max-width="440" outlined>
-            <v-list-item three-line>
-              <v-layout row wrap>
-                <v-flex xs8 class="card-section-1"
-                  ><h3>Fun Futsal Bekasi</h3>
-                  <v-chip color="blue" outlined small>Futsal </v-chip>
-                  <v-chip color="blue" outlined small>Wanita </v-chip>
-                  <br /><br />
-                  <div class="center">
-                    <img src="~/assets/img/Vector.png" width="16" />
-                    <span class="txt-list"
-                      >Nayla Futsal, Kota Jakarta Barat</span
-                    >
-                  </div>
-                  <div class="center">
-                    <img src="~/assets/img/calendar-2.png" width="18" />
-                    <span class="txt-list">Sabtu, 19 Februari 2022</span>
-                  </div>
-                  <br />
-                  <v-layout row wrap>
-                    <v-flex xs6 class="pl-20"
-                      ><span class="fs-12 txt-black">Pemain</span
-                      ><span class="txt-list">(16/20)</span></v-flex
-                    >
-                    <v-flex xs6
-                      ><p>
-                        <v-avatar color="indigo" size="20">
-                          <span class="white--text fs-10">P1</span>
-                        </v-avatar>
-                        <v-avatar color="orange" size="20">
-                          <span class="white--text fs-10">P2</span>
-                        </v-avatar>
-                        <v-avatar color="blue" size="20">
-                          <span class="white--text fs-10">P3</span>
-                        </v-avatar>
-                        <v-avatar color="green" size="20">
-                          <span class="white--text fs-10">+13</span>
-                        </v-avatar>
-                        <span class="fs-12 red-text">4 orang lagi</span>
-                      </p></v-flex
-                    >
-                  </v-layout>
-                </v-flex>
-              </v-layout>
-            </v-list-item>
-          </v-card>
-          <v-card class="list-card" height="200" max-width="440" outlined>
-            <v-list-item three-line>
-              <v-layout row wrap>
-                <v-flex xs8 class="card-section-1"
-                  ><h3>Fun Futsal Bekasi</h3>
-                  <v-chip color="blue" outlined small>Futsal </v-chip>
-                  <v-chip color="blue" outlined small>Pria </v-chip>
-                  <br /><br />
-                  <div class="center">
-                    <img src="~/assets/img/Vector.png" width="16" />
-                    <span class="txt-list"
-                      >Nayla Futsal, Kota Jakarta Barat</span
-                    >
-                  </div>
-                  <div class="center">
-                    <img src="~/assets/img/calendar-2.png" width="18" />
-                    <span class="txt-list">Sabtu, 19 Februari 2022</span>
-                  </div>
-                  <br />
-                  <v-layout row wrap>
-                    <v-flex xs6 class="pl-20"
-                      ><span class="fs-12 txt-black">Pemain</span
-                      ><span class="txt-list">(16/20)</span></v-flex
-                    >
-                    <v-flex xs6
-                      ><p>
-                        <v-avatar color="indigo" size="20">
-                          <span class="white--text fs-10">P1</span>
-                        </v-avatar>
-                        <v-avatar color="orange" size="20">
-                          <span class="white--text fs-10">P2</span>
-                        </v-avatar>
-                        <v-avatar color="blue" size="20">
-                          <span class="white--text fs-10">P3</span>
-                        </v-avatar>
-                        <v-avatar color="green" size="20">
-                          <span class="white--text fs-10">+13</span>
-                        </v-avatar>
-                        <span class="fs-12 red-text">4 orang lagi</span>
-                      </p></v-flex
-                    >
-                  </v-layout>
-                </v-flex>
-              </v-layout>
-            </v-list-item>
-          </v-card>
-          <v-card class="list-card" height="200" max-width="440" outlined>
-            <v-list-item three-line>
-              <v-layout row wrap>
-                <v-flex xs8 class="card-section-1"
-                  ><h3>Fun Futsal Bekasi</h3>
-                  <v-chip color="blue" outlined small>Futsal </v-chip>
-                  <v-chip color="blue" outlined small>Pria </v-chip>
-                  <br /><br />
-                  <div class="center">
-                    <img src="~/assets/img/Vector.png" width="16" />
-                    <span class="txt-list"
-                      >Nayla Futsal, Kota Jakarta Barat</span
-                    >
-                  </div>
-                  <div class="center">
-                    <img src="~/assets/img/calendar-2.png" width="18" />
-                    <span class="txt-list">Sabtu, 19 Februari 2022</span>
-                  </div>
-                  <br />
-                  <v-layout row wrap>
-                    <v-flex xs6 class="pl-20"
-                      ><span class="fs-12 txt-black">Pemain</span
-                      ><span class="txt-list">(16/20)</span></v-flex
-                    >
-                    <v-flex xs6
-                      ><p>
-                        <v-avatar color="indigo" size="20">
-                          <span class="white--text fs-10">P1</span>
-                        </v-avatar>
-                        <v-avatar color="orange" size="20">
-                          <span class="white--text fs-10">P2</span>
-                        </v-avatar>
-                        <v-avatar color="blue" size="20">
-                          <span class="white--text fs-10">P3</span>
-                        </v-avatar>
-                        <v-avatar color="green" size="20">
-                          <span class="white--text fs-10">+13</span>
-                        </v-avatar>
-                        <span class="fs-12 red-text">4 orang lagi</span>
-                      </p></v-flex
-                    >
-                  </v-layout>
-                </v-flex>
-              </v-layout>
-            </v-list-item>
-          </v-card>
-          <v-card class="list-card" height="200" max-width="440" outlined>
-            <v-list-item three-line>
-              <v-layout row wrap>
-                <v-flex xs8 class="card-section-1"
-                  ><h3>Fun Futsal Bekasi</h3>
-                  <v-chip color="blue" outlined small>Futsal </v-chip>
-                  <v-chip color="blue" outlined small>Pria </v-chip>
-                  <br /><br />
-                  <div class="center">
-                    <img src="~/assets/img/Vector.png" width="16" />
-                    <span class="txt-list"
-                      >Nayla Futsal, Kota Jakarta Barat</span
-                    >
-                  </div>
-                  <div class="center">
-                    <img src="~/assets/img/calendar-2.png" width="18" />
-                    <span class="txt-list">Sabtu, 19 Februari 2022</span>
-                  </div>
-                  <br />
-                  <v-layout row wrap>
-                    <v-flex xs6 class="pl-20"
-                      ><span class="fs-12 txt-black">Pemain</span
-                      ><span class="txt-list">(16/20)</span></v-flex
-                    >
-                    <v-flex xs6
-                      ><p>
-                        <v-avatar color="indigo" size="20">
-                          <span class="white--text fs-10">P1</span>
-                        </v-avatar>
-                        <v-avatar color="orange" size="20">
-                          <span class="white--text fs-10">P2</span>
-                        </v-avatar>
-                        <v-avatar color="blue" size="20">
-                          <span class="white--text fs-10">P3</span>
-                        </v-avatar>
-                        <v-avatar color="green" size="20">
-                          <span class="white--text fs-10">+13</span>
-                        </v-avatar>
-                        <span class="fs-12 red-text">4 orang lagi</span>
-                      </p></v-flex
-                    >
-                  </v-layout>
-                </v-flex>
-              </v-layout>
-            </v-list-item>
-          </v-card>
-          <v-card class="list-card" height="200" max-width="440" outlined>
-            <v-list-item three-line>
-              <v-layout row wrap>
-                <v-flex xs8 class="card-section-1"
-                  ><h3>Fun Futsal Bekasi</h3>
-                  <v-chip color="blue" outlined small>Futsal </v-chip>
-                  <v-chip color="blue" outlined small>Wanita </v-chip>
-                  <br /><br />
-                  <div class="center">
-                    <img src="~/assets/img/Vector.png" width="16" />
-                    <span class="txt-list"
-                      >Nayla Futsal, Kota Jakarta Barat</span
-                    >
-                  </div>
-                  <div class="center">
-                    <img src="~/assets/img/calendar-2.png" width="18" />
-                    <span class="txt-list">Sabtu, 19 Februari 2022</span>
-                  </div>
-                  <br />
-                  <v-layout row wrap>
-                    <v-flex xs6 class="pl-20"
-                      ><span class="fs-12 txt-black">Pemain</span
-                      ><span class="txt-list">(16/20)</span></v-flex
-                    >
-                    <v-flex xs6
-                      ><p>
-                        <v-avatar color="indigo" size="20">
-                          <span class="white--text fs-10">P1</span>
-                        </v-avatar>
-                        <v-avatar color="orange" size="20">
-                          <span class="white--text fs-10">P2</span>
-                        </v-avatar>
-                        <v-avatar color="blue" size="20">
-                          <span class="white--text fs-10">P3</span>
-                        </v-avatar>
-                        <v-avatar color="green" size="20">
-                          <span class="white--text fs-10">+13</span>
-                        </v-avatar>
-                        <span class="fs-12 red-text">4 orang lagi</span>
-                      </p></v-flex
-                    >
-                  </v-layout>
-                </v-flex>
-              </v-layout>
-            </v-list-item>
-          </v-card>
+
+        <!-- card list -->
+        <div class="card">
+          <div v-for="(item, idx) in listAllMatch" :key="idx" class="list-card">
+            <!-- {{ listAllMatch }} -->
+            <v-card outlined>
+              <h3>{{ item.gamename }}</h3>
+              <div class="chips">
+                <v-chip color="blue" outlined small>
+                  <span class="txt-chips">{{ item.category }}</span>
+                </v-chip>
+                <v-chip color="blue" outlined small>
+                  <span class="txt-chips">{{ item.gender }}</span>
+                </v-chip>
+              </div>
+              <div class="pl-20 center">
+                <img src="~/assets/img/Vector.png" width="16" />
+                <span class="txt-list">{{ item.place }}</span>
+              </div>
+              <div class="pl-16 center">
+                <img src="~/assets/img/calendar-2.png" width="18" />
+                <span class="txt-list">{{ item.date }}</span>
+              </div>
+              <div class="pl-20">
+                <span class="fs-12">Pemain</span
+                ><span class="txt-list">(16/20)</span>
+                <p>
+                  <v-avatar color="indigo" size="20">
+                    <span class="white--text fs-10">P1</span>
+                  </v-avatar>
+                  <v-avatar color="orange" size="20">
+                    <span class="white--text fs-10">P2</span>
+                  </v-avatar>
+                  <v-avatar color="blue" size="20">
+                    <span class="white--text fs-10">P3</span>
+                  </v-avatar>
+                  <v-avatar color="green" size="20">
+                    <span class="white--text fs-10">+13</span>
+                  </v-avatar>
+                  <span class="fs-12 red-text">4 orang lagi</span>
+                </p>
+              </div>
+            </v-card>
+          </div>
         </div>
+        <!-- end of card list -->
+
         <v-dialog
           v-model="showdialog"
           transition="dialog-bottom-transition wrap-400"
@@ -282,32 +106,47 @@
                   placeholder="Mau maen dimana?"
                 ></v-text-field>
                 <v-menu
-                  ref="menu"
-                  v-model="menu"
+                  ref="dialog_tgl_awal"
+                  v-model="modal_tgl_awal"
                   :close-on-content-click="false"
-                  :return-value.sync="date"
                   transition="scale-transition"
                   offset-y
+                  max-width="290px"
                   min-width="auto"
+                  class="datepicker customField"
                 >
                   <template #activator="{ on, attrs }">
                     <v-text-field
-                      v-model="date"
-                      label="Tanggal main"
+                      slot="activator"
+                      v-model="tgl_awal"
+                      clearable
+                      persistent-hint
                       append-icon="mdi-calendar"
-                      outlined
                       v-bind="attrs"
+                      outlined
                       v-on="on"
+                      @click="tgl_awal = currentDate"
                     ></v-text-field>
                   </template>
-                  <v-date-picker v-model="date" range no-title scrollable>
+                  <v-date-picker
+                    v-model="tgl_awal"
+                    full-width
+                    scrollable
+                    no-title
+                  >
                     <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="menu = false">
-                      Cancel
-                    </v-btn>
-                    <v-btn text color="primary" @click="$refs.menu.save(date)">
-                      OK
-                    </v-btn>
+                    <v-btn
+                      depressed
+                      color="secondary"
+                      @click="modal_tgl_awal = false"
+                      >Cancel</v-btn
+                    >
+                    <v-btn
+                      depressed
+                      color="primary"
+                      @click="$refs.dialog_tgl_awal.save(tgl_awal)"
+                      >OK</v-btn
+                    >
                   </v-date-picker>
                 </v-menu>
               </div>
@@ -359,15 +198,46 @@
   </div>
 </template>
 <script>
+import { mapState } from 'vuex'
 export default {
   name: 'SearchPage',
   data() {
     return {
       showdialog: false,
-      filterCategory: '',
+      filterGender: ['Pria', 'Wanita', 'Campuran'],
+      inputGender: '',
+      listMatch: [],
+      inputCategory: '',
+      filterCategory: [
+        'Semua',
+        'Mini Soccer',
+        'Futsal',
+        'Basket',
+        'Sepak Bola',
+      ],
+      currentDate: new Date().toISOString().substr(0, 10),
+      modal_tgl_awal: false,
+      tgl_awal: '',
     }
   },
+  computed: {
+    ...mapState({
+      listAllMatch: (state) => state.match.listMatch,
+    }),
+  },
+  watch: {
+    date(val) {
+      this.dateFormatted = this.formatDate(this.date)
+    },
+  },
+  async mounted() {
+    await this.getMatch()
+  },
   methods: {
+    async getMatch(store = this.$store) {
+      const listData = await store.dispatch('match/getListMatch')
+      await store.dispatch('match/setListMatch', listData)
+    },
     back() {
       this.$store.$router.push('/')
     },
@@ -377,20 +247,60 @@ export default {
     closeDialog() {
       this.showdialog = false
     },
+    formatDate(date) {
+      if (!date) return null
+
+      const [year, month, day] = date.split('-')
+      return `${day}/${month}/${year}`
+    },
   },
 }
 </script>
 <style scoped>
 h3 {
-  font-family: Poppins;
   font-weight: 600;
-  color: black;
+  padding-left: 20px;
+  padding-top: 12px;
+  font-family: Poppins;
+}
+.pl-20 {
+  padding-left: 20px;
+}
+.pl-16 {
+  padding-left: 18px !important;
+}
+.pr-16 {
+  padding-right: 18px !important;
+}
+.fs-12 {
+  font-size: 12px;
+  color: black !important;
+}
+.fs-10 {
+  font-size: 10px;
+  font-weight: 600;
+}
+.txt-list {
+  font-size: 12px;
+  color: #757575;
+  margin-left: 10px;
+}
+.center {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.red-text {
+  color: #f16060 !important;
+  margin-left: 10px;
 }
 .search {
   padding-top: 20px;
   padding-bottom: 20px;
   background: white;
   height: 100%;
+  font-family: Poppins;
 }
 .filter-search {
   padding: 20px;
@@ -410,6 +320,7 @@ h3 {
 .filter {
   border-right: solid 1px lightgray;
   margin-right: 10px;
+  /* padding: 10px 0px 0px 0px; */
 }
 .top-filter {
   margin-bottom: 20px;
@@ -443,23 +354,32 @@ h3 {
 .pl-20 {
   padding-left: 16px;
 }
+.card {
+  margin-top: 140px;
+  margin-bottom: 20px;
+  height: 100vh;
+}
 .list-card {
   margin: 20px;
-  width: 100%;
+  /* width: 100%; */
   font-family: Poppins;
-  padding: 15px 10px 10px 15px;
-  border-radius: 15px;
+  /* padding: 15px 10px 10px 15px; */
+  /* border-radius: 15px; */
 }
 .list-card span {
   font-family: Poppins;
   color: white;
 }
-.card-section-1 {
-  padding: 15px 0px 0px 0px;
+.txt-chips {
+  font-family: Poppins;
+  font-weight: 500;
+  color: blue !important;
 }
-.card-section-2 {
-  padding: 15px 0px 0px 0px;
-  text-align: right;
+.chips {
+  padding-top: 5px;
+  padding-left: 20px;
+  padding-bottom: 12px;
+  margin-bottom: 10px;
 }
 .modalShare {
   position: absolute;
@@ -499,7 +419,7 @@ h3 {
 .filter-category,
 .filter-waktu-main,
 .filter-field {
-  font-family: Poppins;
+  font-family: Poppins !important;
   margin-bottom: 16px;
 }
 .close-modal {
@@ -507,6 +427,26 @@ h3 {
   font-weight: 500;
   color: #424242;
   cursor: pointer;
+}
+.btn-filter {
+  background: #dfe7ff;
+  color: #2962ff;
+  text-transform: capitalize;
+}
+.v-list,
+.v-picker {
+  font-family: Poppins !important;
+}
+.customField >>> .v-text-field__slot input {
+  margin-top: 0;
+  height: 48px;
+  max-height: 48px;
+  font-size: 16px;
+  padding: 0 5px;
+  font-family: Poppins !important;
+}
+.v-btn {
+  text-transform: capitalize !important;
 }
 </style>
 <style>
