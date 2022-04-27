@@ -3,6 +3,7 @@
   max-width: 480px;
   margin: auto;
   overflow-x: hidden;
+  height: 100vh;
 }
 .align-right {
     text-align: right;

@@ -186,7 +186,7 @@ export const actions = {
           userPhone: phone,
         })
         commit('setState', {
-          userPoint: result.data.totalPoint,
+          userPoint: result.data.totalPoin,
         })
         commit('setState', { isLoading: false })
       }))
