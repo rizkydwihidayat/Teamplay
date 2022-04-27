@@ -1,6 +1,7 @@
 import colors from 'vuetify/es5/util/colors'
 
 export default {
+  mode: 'spa',
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: '%s - Teamplay',
@@ -18,7 +19,11 @@ export default {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
-
+  manifest: {
+    lang: 'id',
+    theme_color: '#2962ff',
+    display: 'standalone'
+  },
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
     // '~/assets/style/app.styl',
@@ -53,6 +58,7 @@ export default {
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
     baseURL: 'http://localhost:3000',
+    retry: { retries: 3 },
     proxy: true,
     proxyHeaders: false,
     credentials: false
