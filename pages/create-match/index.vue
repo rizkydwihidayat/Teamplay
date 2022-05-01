@@ -185,9 +185,7 @@
               ><span>
                 Rp{{
                   numberFormat(
-                    totalPayment(
-                      selected.pricePerHours
-                    ),
+                    totalPayment(selected.pricePerHours),
                     0,
                     ',',
                     '.'
@@ -205,12 +203,6 @@
             <span> Buat match</span>
           </v-btn>
         </div>
-        <!-- <div v-if="selected" style="margin-top: 10px">
-          You have selected:
-          <code>
-            <pre>{{ JSON.stringify(selected, null, 4) }}</pre>
-          </code>
-        </div> -->
       </div>
     </v-form>
   </div>
@@ -402,7 +394,6 @@ export default {
         }
         return false
       })
-
       // eslint-disable-next-line no-prototype-builtins
       if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
         await this.$store
@@ -427,7 +418,6 @@ export default {
             )
             venue.length && this.suggestions.push({ data: venue })
             // const venue = this.filterResults(values.data, this.query, "title");
-
             // venue.length &&
             //   this.suggestions.push({ name: "venue", data: venue });
           })

@@ -92,7 +92,9 @@
     <div class="section-pemain">
       <v-row class="section-title ma-4">
         <h3>Pemain</h3>
-        <p class="desc-blue mb-0">Lihat semua</p>
+        <p class="desc-blue mb-0 btn-listplayer" @click="openListPlayer">
+          Lihat semua
+        </p>
       </v-row>
       <div class="player-mini-list description-wrapper ma-4 pb-2">
         <p class="desc-subdued mb-4">Rata-rata usia 25 tahun</p>
@@ -102,11 +104,46 @@
           <div class="player-ava mr-1"><span>AM</span></div>
           <div class="player-ava mr-1"><span>AM</span></div>
           <div class="player-number">
-            <p class="desc-subdued count mb-0">(17/20)</p>
-            <p class="desc-subdued left mb-0">3 pemain lagi</p>
+            <p class="desc-subdued count mb-0">
+              ({{ matchdetail.player.length }}/{{ minplayer }})
+            </p>
+            <p class="desc-subdued left mb-0">{{ sisaPlayer }} pemain lagi</p>
           </div>
         </v-row>
       </div>
+      <v-dialog
+        v-model="showdialog"
+        transition="dialog-bottom-transition wrap-400"
+      >
+        <v-card class="modalShare">
+          <v-card-title class="headerModal mt-2">
+            <v-layout row wrap>
+              <v-flex xs2 s2 class="close-modal">
+                <div class="align-right" @click="closeDialog">X</div>
+              </v-flex>
+              <v-flex xs6 s6>
+                <span class="title-filter">Pemain</span>
+              </v-flex>
+            </v-layout>
+          </v-card-title>
+          <hr class="hr-divider" />
+          <v-card-text class="list-player">
+            <p v-if="matchdetail.player.length === 0">
+              Belum ada yang bergabung
+            </p>
+            <div
+              v-for="(item, idx) in matchdetail.player"
+              :key="idx"
+              class="players"
+            >
+              <span
+                >{{ item.name }} ({{ convertAge(item.age) }})
+                {{ item.gender.charAt(0) }}</span
+              >
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
     </div>
 
     <!-- section location -->
@@ -120,14 +157,22 @@
       </p>
       <!-- maps -->
       <div class="maps-area" style="width: 100%; height: 220px">
-        <l-map style="height: 200px" :zoom="zoom" :center="center">
+        <l-map style="height: 200px; z-index: 0" :zoom="zoom" :center="center">
           <l-tile-layer :url="url"></l-tile-layer>
           <l-marker ref="marker" :lat-lng="markerLatLng">
-            <l-popup ref="popup">{{matchdetail.city}}</l-popup>
+            <l-tooltip :options="{ permanent: true, interactive: true }">
+              <small>{{ matchdetail.city }}</small>
+            </l-tooltip>
           </l-marker>
         </l-map>
       </div>
-      <v-btn block depressed rounded small class="btn-secondary mb-6" @click="goToMaps"
+      <v-btn
+        block
+        depressed
+        rounded
+        small
+        class="btn-secondary mb-6"
+        @click="goToMaps"
         >Lihat petunjuk jalan</v-btn
       >
     </div>
@@ -165,24 +210,28 @@
 </template>
 <script>
 import { mapState } from 'vuex'
-import { LMap, LTileLayer, LMarker, LPopup } from 'vue2-leaflet'
-import 'leaflet/dist/leaflet.css';
+import { LMap, LTileLayer, LMarker, LTooltip } from 'vue2-leaflet'
+import 'leaflet/dist/leaflet.css'
 export default {
   name: 'MatchDetailPage',
   components: {
     LMap,
     LTileLayer,
     LMarker,
-    LPopup,
+    LTooltip,
   },
   data() {
     return {
+      minplayer: 0,
+      sisaPlayer: 0,
+      showdialog: false,
       matchDetail: [],
       center: [-6.529217, 106.766574],
       zoom: 12,
       mapTypeId: 'terrain',
       markerLatLng: [-6.529217, 106.766574],
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      years: new Date().getFullYear(),
     }
   },
   //   layout: 'bottom_nav',
@@ -211,10 +260,12 @@ export default {
   },
   async mounted() {
     await this.getMatchDetail()
-    await this.getCoordinate()
-    this.$nextTick(() => {
-      this.$refs.marker.mapObject.openPopup();
-    });
+    // await this.getCoordinate()
+    // this.$nextTick(() => {
+    //   this.$refs.marker.mapObject.openPopup()
+    // })
+    await this.checkMinPlayer()
+    await this.checkCurrentPlayer()
   },
   methods: {
     back() {
@@ -223,7 +274,6 @@ export default {
     getCoordinate() {
       const temp = []
       temp.push(this.matchdetail.coordinate)
-      console.warn(temp);
     },
     async getMatchDetail(store = this.$store) {
       //   this.matchDetail = []
@@ -234,11 +284,82 @@ export default {
     },
     goToMaps() {
       window.location.href = `https://maps.google.com?q=${this.center[0]},${this.center[1]}`
-    }
+    },
+    checkMinPlayer() {
+      const category = this.matchdetail.sportCategory
+      switch (category) {
+        case 'Futsal':
+          this.minplayer = 15
+          break
+        case 'Basket':
+          this.minplayer = 15
+          break
+        case 'Mini Soccer':
+          this.minplayer = 18
+          break
+        case 'Sepak Bola':
+          this.minplayer = 25
+          break
+      }
+    },
+    checkCurrentPlayer() {
+      const result = this.matchdetail.player.length - this.minplayer
+      this.sisaPlayer = result
+      return this.sisaPlayer
+    },
+    closeDialog() {
+      this.showdialog = false
+    },
+    openListPlayer() {
+      this.showdialog = true
+    },
+    convertAge(val) {
+      const result = this.years - val
+      return result
+    },
   },
 }
 </script>
 <style scoped>
+.list-player p {
+  text-align: center !important;
+  margin: 35px 12px;
+}
+.players {
+  margin: 12px 0px;
+  padding-bottom: 10px;
+  border-bottom: lightgray solid 1px;
+}
+.btn-listplayer {
+  cursor: pointer;
+}
+.modalShare {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 480px;
+  height: 438px;
+  overflow: scroll;
+  margin: auto;
+  border-radius: 16px 16px 0px 0px;
+  font-family: Poppins;
+}
+.close-modal {
+  font-family: Poppins;
+  font-weight: 500;
+  color: gray;
+  cursor: pointer;
+  padding-right: 30px;
+  padding-left: 0px;
+}
+.hr-divider {
+  margin: 10px 0;
+  height: 1px;
+  border: 0;
+  background: #e3e3e3;
+}
 .container-header {
   background-image: url('~@/assets/img/futsal-bg.png');
   background-size: cover;

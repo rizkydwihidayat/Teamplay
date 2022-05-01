@@ -16,8 +16,6 @@ export const mutations = {
     keys.forEach((key) => (state[key] = params[key]))
   },
   setMatchDetail(state, resp) {
-    console.warn(resp.data.match.timePlay);
-
     const store = {
       id: resp.data.match.id,
       gameName: resp.data.match.gameName,
@@ -31,7 +29,9 @@ export const mutations = {
       coordinate: resp.data.venue.coordinate,
       city: resp.data.venue.city,
       name: resp.data.organizer.name,
-      created: resp.data.organizer.hasCreated
+      created: resp.data.organizer.hasCreated,
+      phone: resp.data.organizer.phoneNumber,
+      player: resp.data.players
     }
 
     state.matchdetail = store
@@ -142,39 +142,6 @@ export const actions = {
           commit('setState', { isLoading: false })
         }
 
-        return false
-      })
-  },
-
-  getListPlayer({ context, commit, dispatch }) {
-    const matchid = '0abdf2a0-96cf-11ec-b412-c10fd5947636'
-    const axiosOption = {
-      headers: {
-        xToken:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5hdWZhbGJhaHJpYXNhbEBnbWFpbC5jb20iLCJpZCI6Ijg3MjA0MmUwLTk2ZGQtMTFlYy1hZTBkLWRmZWIxYWI2YjUwNCIsImlhdCI6MTY0ODQ2OTAyOCwiZXhwIjoxNjQ5MDczODI4fQ.HK8vl7nOSCNRpEOBsqDSNn9jNxZMRWE-AqYmKFwOMMU',
-      },
-    }
-    return this.$axios
-      .$get(
-        `https://api.naufalbahri.com/api/v1/users/match/${matchid}/match`,
-        axiosOption
-      )
-      .catch((error) => {
-        // handle error
-        if (error.response.status !== '404') {
-          const alertMsg = {
-            msg: 'Token kadaluwarsa, silahkan login kembali.',
-            color: 'secondary',
-          }
-          dispatch('ui/showAlert', alertMsg, { root: true })
-          this.$router.push('/login')
-          //   dispatch('user/refreshAuth', null, { root: true })
-        } else {
-          const alertMsg = {
-            msg: 'Get item store failed',
-          }
-          dispatch('ui/showAlert', alertMsg, { root: true })
-        }
         return false
       })
   },
