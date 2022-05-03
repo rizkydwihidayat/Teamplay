@@ -110,25 +110,23 @@ export default {
   },
   methods: {
     async getMatch(store = this.$store) {
-      // const city = 'bogor'
-      // const startDate = '2022-01-01'
-      // const endDate = '2022-05-20'
-      // const time = '1-2'
-      const listData = await store.dispatch('match/getListMatch')
-      // {
-      //   city,
-      //   startDate,
-      //   endDate,
-      //   time,
-      // })
-        await store.dispatch('match/setListMatch', listData)
+      const week = new Date()
+      week.setDate(week.getDate() + 7)
+      const params = {
+        city: this.fieldCity,
+        startDate: this.currentDate,
+        endDate: week.toISOString().substr(0, 10),
+        time: '1-2',
+      }
+      const listData = await store.dispatch('match/getListMatch', { params })
+      await store.dispatch('match/setListMatch', listData)
     },
     goToSearch() {
       this.$store.$router.push('/search')
     },
     goToDetailMatch(id) {
       this.$router.push(`/match/${id}`)
-    }
+    },
   },
 }
 </script>

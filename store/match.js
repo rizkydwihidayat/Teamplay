@@ -8,6 +8,7 @@ export const state = () => ({
   offset: 0,
   isLoading: true,
   isSearch: false,
+  filterCity: ''
 })
 
 export const mutations = {
@@ -104,16 +105,16 @@ export const actions = {
   },
   getListMatch(
     { context, commit, dispatch },
-    // { city, startDate, endDate, time }
+    { params }
   ) {
     const axiosOption = {
       params: {
         limit: state.limit,
         offset: state.offset,
-        q: 'bogor',
-        from: '2022-01-01',
-        to: '2022-05-20',
-        timeCategory: '1-2',
+        q: params.city,
+        from: params.startDate,
+        to: params.endDate,
+        timeCategory: params.time,
       },
     }
 

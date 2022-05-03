@@ -12,8 +12,8 @@
                 alt="<"
               />
             </v-btn>
-            <span>Bekasi</span>
-            <small>10 Feb - 17 Feb 2022</small>
+            <span>{{ fieldCity }}</span>
+            <p class="date">{{ dateFormat(currentDate) }} - {{ dateFormat(lastday) }}</p>
           </div>
           <!-- <v-chip-group v-model="inputCategory" active-class="primary--text">
             <div class="filter">
@@ -37,7 +37,13 @@
         </div>
 
         <!-- card list -->
-        <div class="card">
+        <div v-if="listAllMatch.length === 0" class="card">
+          <h4 class="empt-data"
+            >Hasil pencarian tidak ditemukan. <br />
+            Silahkan perbarui filter, <br />untuk menampilkan data.</h4
+          >
+        </div>
+        <div v-else class="card">
           <div v-for="(item, idx) in listAllMatch" :key="idx" class="list-card">
             <!-- {{ listAllMatch }} -->
             <v-card outlined>
@@ -89,7 +95,7 @@
           <v-card class="modalShare">
             <v-card-title class="headerModal mt-2">
               <v-layout row wrap>
-                <v-flex xs1 s1 class="close-modal">
+                <v-flex xs2 s2 class="close-modal">
                   <div class="align-right" @click="closeDialog">X</div>
                 </v-flex>
                 <v-flex xs6 s6>
@@ -199,6 +205,7 @@
 </template>
 <script>
 import { mapState } from 'vuex'
+import { _formatDateTime } from '~/utils'
 export default {
   name: 'SearchPage',
   data() {
@@ -218,11 +225,14 @@ export default {
       currentDate: new Date().toISOString().substr(0, 10),
       modal_tgl_awal: false,
       tgl_awal: '',
+      fieldCity: '',
+      lastday: '',
     }
   },
   computed: {
     ...mapState({
       listAllMatch: (state) => state.match.listMatch,
+      filterCity: (state) => state.match.filterCity,
     }),
   },
   watch: {
@@ -232,10 +242,21 @@ export default {
   },
   async mounted() {
     await this.getMatch()
+    this.fieldCity = this.filterCity
   },
   methods: {
     async getMatch(store = this.$store) {
-      const listData = await store.dispatch('match/getListMatch')
+      const week = new Date()
+      week.setDate(week.getDate() + 7)
+      this.lastday = week.toISOString().substr(0, 10)
+      // console.warn(week.toISOString().substr(0, 10))
+      const params = {
+        city: this.fieldCity,
+        startDate: this.currentDate,
+        endDate: week.toISOString().substr(0, 10),
+        time: '1-2',
+      }
+      const listData = await store.dispatch('match/getListMatch', { params })
       await store.dispatch('match/setListMatch', listData)
     },
     back() {
@@ -253,10 +274,29 @@ export default {
       const [year, month, day] = date.split('-')
       return `${day}/${month}/${year}`
     },
+    dateFormat(date) {
+      return typeof _formatDateTime !== 'undefined'
+        ? _formatDateTime(date, 'short', true)
+        : date
+    },
   },
 }
 </script>
 <style scoped>
+.empt-data {
+  text-align: center !important;
+  color: #939393;
+  font-size: 14px;
+  font-weight: 400;
+  padding-top: 75px;
+  /* padding-left: 12px;
+  padding-right: 12px; */
+}
+.date {
+  margin-left: 40px;
+  font-size: 12px;
+  margin-bottom: 0px;
+}
 h3 {
   font-weight: 600;
   padding-left: 20px;
@@ -323,7 +363,11 @@ h3 {
   /* padding: 10px 0px 0px 0px; */
 }
 .top-filter {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+}
+.top-filter span {
+  font-weight: 600;
+  font-size: 18px;
 }
 .list {
   margin-top: 130px;
@@ -427,6 +471,7 @@ h3 {
   font-weight: 500;
   color: #424242;
   cursor: pointer;
+  padding-right: 30px;
 }
 .btn-filter {
   background: #dfe7ff;
