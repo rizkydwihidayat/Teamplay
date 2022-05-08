@@ -8,7 +8,12 @@ export const state = () => ({
   offset: 0,
   isLoading: true,
   isSearch: false,
-  filterCity: ''
+  filterCity: '',
+  isFutsal: false,
+  isSoccer: false,
+  isBasket: false,
+  isMiniSoccer: false,
+  timeDur: ''
 })
 
 export const mutations = {
@@ -32,13 +37,14 @@ export const mutations = {
       name: resp.data.organizer.name,
       created: resp.data.organizer.hasCreated,
       phone: resp.data.organizer.phoneNumber,
-      player: resp.data.players
+      player: resp.data.players,
     }
 
     state.matchdetail = store
   },
   setListMatch(state, list) {
-    state.listMatch =
+    if(list.data) {
+      state.listMatch =
       list.data.length > 0 && list.data[0] !== null
         ? // eslint-disable-next-line array-callback-return
           list.data.map((value, key) => {
@@ -54,6 +60,25 @@ export const mutations = {
             }
           }, {})
         : []
+    } else {
+      state.listMatch =
+      list.length > 0 && list[0] !== null
+        ? // eslint-disable-next-line array-callback-return
+          list.map((value, key) => {
+            return {
+              id: value.match.id,
+              gamename: value.match.gameName,
+              category: value.match.sportCategory,
+              gender: value.match.playerCategory,
+              date: value.match.playDate,
+              time: value.match.timePlay,
+              place: value.venue.venueName,
+              status: value.match.status,
+            }
+          }, {})
+        : []
+    }
+    
   },
   setListCity(state, list) {
     state.listCity =
@@ -103,23 +128,20 @@ export const actions = {
   setMatchDetail({ commit }, storeData) {
     commit('setMatchDetail', storeData)
   },
-  getListMatch(
-    { context, commit, dispatch },
-    { params }
-  ) {
-    const axiosOption = {
-      params: {
-        limit: state.limit,
-        offset: state.offset,
-        q: params.city,
-        from: params.startDate,
-        to: params.endDate,
-        timeCategory: params.time,
-      },
+  getListMatch({ state, commit, dispatch }, { params }) {
+    const param = {
+      limit: state.limit,
+      offset: state.offset,
+      q: params.city,
+      from: params.startDate,
+      to: params.endDate,
+      timeCategory: params.time,
     }
 
     return this.$axios
-      .$get('https://api.naufalbahri.com/api/v1/match', axiosOption)
+      .$get(
+        `https://api.naufalbahri.com/api/v1/match?limit=${param.limit}&offset=${param.offset}&q=${param.q}&from=${param.from}&to=${param.to}&timeCategory=${param.timeCategory}`
+      )
       .then((result) => {
         commit('setState', { isLoading: false })
         return result
@@ -147,7 +169,7 @@ export const actions = {
       })
   },
 
-  getMatchId({ context, commit, dispatch }, {id}) {
+  getMatchId({ context, commit, dispatch }, { id }) {
     return this.$axios
       .$get(`https://api.naufalbahri.com/api/v1/match/${id}`)
       .catch((error) => {
@@ -226,7 +248,7 @@ export const actions = {
       })
   },
 
-  createMatch({ context, commit, dispatch }, {params, bearer}) {
+  createMatch({ context, commit, dispatch }, { params, bearer }) {
     const axiosOption = {
       headers: {
         xToken: bearer,
@@ -234,13 +256,13 @@ export const actions = {
     }
     const data = {
       venueId: params.venueId,
-        gameName: params.gameName,
-        playerCategory: params.playerCategory,
-        playDate: params.playDate,
-        startTime: params.startTime,
-        endTime: params.endTime,
-        minPlayer: params.minPlayer,
-        maxPlayer: params.maxPlayer,
+      gameName: params.gameName,
+      playerCategory: params.playerCategory,
+      playDate: params.playDate,
+      startTime: params.startTime,
+      endTime: params.endTime,
+      minPlayer: params.minPlayer,
+      maxPlayer: params.maxPlayer,
     }
     const postData = JSON.stringify(data)
     return this.$axios
@@ -268,5 +290,5 @@ export const actions = {
           this.$router.push('/')
         }
       })
-  }
+  },
 }

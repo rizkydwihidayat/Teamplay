@@ -1,5 +1,5 @@
 <template>
-  <div class="g-transition search">
+  <div class="g-transition search page">
     <div class="headBar">
       <div class="container">
         <div class="filter-search">
@@ -13,7 +13,9 @@
               />
             </v-btn>
             <span>{{ fieldCity }}</span>
-            <p class="date">{{ dateFormat(currentDate) }} - {{ dateFormat(lastday) }}</p>
+            <p class="date">
+              {{ dateFormat(currentDate) }} - {{ dateFormat(lastday) }}
+            </p>
           </div>
           <!-- <v-chip-group v-model="inputCategory" active-class="primary--text">
             <div class="filter">
@@ -28,20 +30,31 @@
             <div class="filter">
               <v-chip @click="openFilter">Filter</v-chip>
             </div>
-            <v-chip>Semua</v-chip>
-            <v-chip>Mini Soccer</v-chip>
-            <v-chip>Futsal</v-chip>
-            <v-chip>Basket</v-chip>
-            <v-chip>Sepak Bola</v-chip>
+            <v-chip value="semua" @click="useFilter">Semua</v-chip>
+            <v-chip
+              v-model="isMiniSoccer"
+              value="Mini Soccer"
+              @click="useFilter"
+              >Mini Soccer</v-chip
+            >
+            <v-chip v-model="isFutsal" value="Futsal" @click="useFilter"
+              >Futsal</v-chip
+            >
+            <v-chip v-model="isBasket" value="Basket" @click="useFilter"
+              >Basket</v-chip
+            >
+            <v-chip v-model="isSoccer" value="Sepak Bola" @click="useFilter"
+              >Sepak Bola</v-chip
+            >
           </v-chip-group>
         </div>
 
         <!-- card list -->
         <div v-if="listAllMatch.length === 0" class="card">
-          <h4 class="empt-data"
-            >Hasil pencarian tidak ditemukan. <br />
-            Silahkan perbarui filter, <br />untuk menampilkan data.</h4
-          >
+          <h4 class="empt-data">
+            Hasil pencarian tidak ditemukan. <br />
+            Silahkan perbarui filter, <br />untuk menampilkan data.
+          </h4>
         </div>
         <div v-else class="card">
           <div v-for="(item, idx) in listAllMatch" :key="idx" class="list-card">
@@ -159,7 +172,7 @@
               <div class="filter-category">
                 <h3>Kategori Pemain</h3>
                 <v-chip-group
-                  v-model="filterCategory"
+                  v-model="filterGender"
                   active-class="primary--text"
                   mandatory
                 >
@@ -214,6 +227,7 @@ export default {
       filterGender: ['Pria', 'Wanita', 'Campuran'],
       inputGender: '',
       listMatch: [],
+      tempList: [],
       inputCategory: '',
       filterCategory: [
         'Semua',
@@ -227,12 +241,18 @@ export default {
       tgl_awal: '',
       fieldCity: '',
       lastday: '',
+      isFutsal: '',
+      isSoccer: '',
+      isBasket: '',
+      isMiniSoccer: '',
+      catFilter: '',
     }
   },
   computed: {
     ...mapState({
       listAllMatch: (state) => state.match.listMatch,
       filterCity: (state) => state.match.filterCity,
+      timeDur: (state) => state.match.timeDur,
     }),
   },
   watch: {
@@ -241,23 +261,52 @@ export default {
     },
   },
   async mounted() {
-    await this.getMatch()
+    await this.getMatch(this.catFilter)
     this.fieldCity = this.filterCity
   },
   methods: {
-    async getMatch(store = this.$store) {
+    async getMatch(store = this.$store, key) {
       const week = new Date()
       week.setDate(week.getDate() + 7)
       this.lastday = week.toISOString().substr(0, 10)
-      // console.warn(week.toISOString().substr(0, 10))
       const params = {
         city: this.fieldCity,
         startDate: this.currentDate,
         endDate: week.toISOString().substr(0, 10),
-        time: '1-2',
+        time: this.timeDur,
       }
-      const listData = await store.dispatch('match/getListMatch', { params })
-      await store.dispatch('match/setListMatch', listData)
+      const listData = await this.$store.dispatch('match/getListMatch', {
+        params,
+      })
+      if (this.catFilter === 'Futsal') {
+        const test = listData.data.filter(
+          (item) => item.match.sportCategory === this.catFilter
+        )
+        await this.$store.dispatch('match/setListMatch', test)
+      } else if (this.catFilter === 'Mini Soccer') {
+        const test = listData.data.filter(
+          (item) => item.match.sportCategory === this.catFilter
+        )
+        await this.$store.dispatch('match/setListMatch', test)
+      } else if (this.catFilter === 'Basket') {
+        const test = listData.data.filter(
+          (item) => item.match.sportCategory === this.catFilter
+        )
+        await this.$store.dispatch('match/setListMatch', test)
+      } else if (this.catFilter === 'Sepak Bola') {
+        const test = listData.data.filter(
+          (item) => item.match.sportCategory === this.catFilter
+        )
+        await this.$store.dispatch('match/setListMatch', test)
+      } else if (this.catFilter === 'Semua') {
+        // const test = listData.data.filter(item => item.match.sportCategory === this.catFilter)
+        await this.$store.dispatch('match/setListMatch', listData)
+      }
+    },
+    useFilter(val) {
+      const filter = val.target.textContent
+      this.catFilter = filter
+      this.getMatch(filter)
     },
     back() {
       this.$store.$router.push('/')

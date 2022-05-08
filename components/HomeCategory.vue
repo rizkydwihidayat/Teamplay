@@ -35,7 +35,7 @@
       ></v-progress-circular>
     </div>
     <div v-else>
-      <div v-if="listAllMatch.length > 0">
+      <div v-if="listAllMatch.length > 0" class="bg-white">
         <div v-for="(item, idx) in listAllMatch" :key="idx" class="card-list">
           <v-card outlined @click="goToDetailMatch(item.id)">
             <h3>{{ item.gamename }}</h3>
@@ -76,48 +76,56 @@
             </div>
           </v-card>
         </div>
-      </div>
-      <div v-else class="emptyState">
-        <span>Saat ini Anda tidak memiliki jadwal pertandingan.</span>
-      </div>
-    </div>
-    <!-- end of card list -->
-
-    <!-- bottom button -->
+        <!-- bottom button -->
     <div v-if="listAllMatch.length > 0" class="bottom-button">
       <v-btn depressed color="primary" @click="goToSearch">
         <span> Lihat Pertandingan Lainnya</span>
       </v-btn>
+      <br /><br /><br /><br />
     </div>
+      </div>
+      <div v-else class="emptyState">
+        <span>Saat ini Anda tidak memiliki jadwal pertandingan.</span>
+      </div>
+      
+    </div>
+    <!-- end of card list -->
+    
   </div>
 </template>
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 export default {
   data() {
     return {
       listMatch: [],
+      currentDate: new Date().toISOString().substr(0, 10),
     }
   },
   computed: {
     ...mapState({
       listAllMatch: (state) => state.match.listMatch,
       isLoading: (state) => state.match.isLoading,
+      timeDur: (state) => state.match.timeDur
     }),
   },
   async mounted() {
     await this.getMatch()
   },
   methods: {
+    ...mapMutations({
+      setState: 'match/setState',
+    }),
     async getMatch(store = this.$store) {
       const week = new Date()
       week.setDate(week.getDate() + 7)
       const params = {
-        city: this.fieldCity,
+        city: '',
         startDate: this.currentDate,
         endDate: week.toISOString().substr(0, 10),
-        time: '1-2',
+        time: '',
       }
+      console.warn(this.listAllMatch.length);
       const listData = await store.dispatch('match/getListMatch', { params })
       await store.dispatch('match/setListMatch', listData)
     },
@@ -180,11 +188,6 @@ span {
   font-weight: 500;
   font-family: Poppins;
 }
-.container-category {
-  /* padding-top: 20px;
-  padding-bottom: 20px; */
-  background: white;
-}
 .card-list {
   margin: 20px;
   cursor: pointer;
@@ -228,8 +231,13 @@ span {
   margin-left: 10px;
 }
 .bottom-button {
+  background: white;
+  height: 20vh;
+  /* margin: 0px; */
+  padding-top: 20px;
   padding-left: 20px;
   padding-right: 20px;
+  /* margin-bottom: 40px; */
 }
 .bottom-button >>> span {
   text-transform: capitalize !important;
