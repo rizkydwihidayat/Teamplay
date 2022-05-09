@@ -11,3 +11,13 @@
 .bg-white {
   background-color: white;
 }
+.cursor-pointer {
+  cursor: pointer;
+}
+.align-center {
+  text-align: center;
+}
+.p-12-20 {
+  padding-top: 12px;
+  padding-bottom: 20px;
+}

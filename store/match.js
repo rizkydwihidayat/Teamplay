@@ -6,7 +6,7 @@ export const state = () => ({
   matchdetail: {},
   limit: 10,
   offset: 0,
-  isLoading: true,
+  isLoading: false,
   isSearch: false,
   filterCity: '',
   isFutsal: false,

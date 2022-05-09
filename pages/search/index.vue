@@ -4,27 +4,25 @@
       <div class="container">
         <div class="filter-search">
           <div class="top-filter">
-            <v-btn icon :ripple="false" class="btnBack" @click="back">
-              <img
-                width="32"
-                height="32"
-                src="~/assets/svg/ic-back-cevron.svg"
-                alt="<"
-              />
-            </v-btn>
-            <span>{{ fieldCity }}</span>
-            <p class="date">
-              {{ dateFormat(currentDate) }} - {{ dateFormat(lastday) }}
-            </p>
+            <v-layout row wrap class="p-12-20">
+              <v-flex xs1 s1>
+                <v-btn icon :ripple="false" class="btnBack" @click="back">
+                  <img
+                    width="32"
+                    height="32"
+                    src="~/assets/svg/ic-back-cevron.svg"
+                    alt="<"
+                  />
+                </v-btn>
+              </v-flex>
+              <v-flex xs10 s10>
+                <v-text-field v-model="fieldCity" outlined dense class="field-city" @change="getByCity"></v-text-field>
+                <p class="date">
+                  {{ dateFormat(currentDate) }} - {{ dateFormat(lastday) }}
+                </p>
+              </v-flex>
+            </v-layout>
           </div>
-          <!-- <v-chip-group v-model="inputCategory" active-class="primary--text">
-            <div class="filter">
-              <v-chip @click="openFilter">Filter</v-chip>
-            </div>
-            <v-chip v-for="data in filterCategory" :key="data" :value="data">{{
-              data
-            }}</v-chip>
-          </v-chip-group> -->
 
           <v-chip-group v-model="filter" active-class="primary--text" mandatory>
             <div class="filter">
@@ -50,7 +48,15 @@
         </div>
 
         <!-- card list -->
-        <div v-if="listAllMatch.length === 0" class="card">
+        <div v-if="isLoading" class="align-center loading">
+          <v-progress-circular
+            color="#0d47a1"
+            :indeterminate="isLoading"
+            :size="35"
+            :width="2"
+          ></v-progress-circular>
+        </div>
+        <div v-else-if="listAllMatch.length === 0" class="card">
           <h4 class="empt-data">
             Hasil pencarian tidak ditemukan. <br />
             Silahkan perbarui filter, <br />untuk menampilkan data.
@@ -58,7 +64,6 @@
         </div>
         <div v-else class="card">
           <div v-for="(item, idx) in listAllMatch" :key="idx" class="list-card">
-            <!-- {{ listAllMatch }} -->
             <v-card outlined>
               <h3>{{ item.gamename }}</h3>
               <div class="chips">
@@ -184,22 +189,18 @@
               <div class="filter-waktu-main">
                 <h3>Waktu Main</h3>
                 <v-checkbox
-                  v-model="checkbox"
                   label="Pagi (06.00 - 12.00)"
                   hide-details
                 ></v-checkbox>
                 <v-checkbox
-                  v-model="checkbox"
                   label="Siang (12.00 - 15.00)"
                   hide-details
                 ></v-checkbox>
                 <v-checkbox
-                  v-model="checkbox"
                   label="Sore (15.00 - 18.00)"
                   hide-details
                 ></v-checkbox>
                 <v-checkbox
-                  v-model="checkbox"
                   label="Malam (18.00 - 23.00)"
                   hide-details
                 ></v-checkbox>
@@ -217,7 +218,7 @@
   </div>
 </template>
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import { _formatDateTime } from '~/utils'
 export default {
   name: 'SearchPage',
@@ -253,6 +254,11 @@ export default {
       listAllMatch: (state) => state.match.listMatch,
       filterCity: (state) => state.match.filterCity,
       timeDur: (state) => state.match.timeDur,
+      Futsal: (state) => state.match.isFutsal,
+      Basket: (state) => state.match.isBasket,
+      MiniSoccer: (state) => state.match.isMiniSoccer,
+      Soccer: (state) => state.match.isSoccer,
+      isLoading: (state) => state.match.isLoading,
     }),
   },
   watch: {
@@ -261,11 +267,16 @@ export default {
     },
   },
   async mounted() {
-    await this.getMatch(this.catFilter)
     this.fieldCity = this.filterCity
+    await this.getMatch(this.catFilter)
+    await this.checkCategory()
   },
   methods: {
-    async getMatch(store = this.$store, key) {
+    ...mapMutations({
+      setState: 'match/setState',
+    }),
+    async getMatch(store = this.$store) {
+      this.setState({ isLoading: true })
       const week = new Date()
       week.setDate(week.getDate() + 7)
       this.lastday = week.toISOString().substr(0, 10)
@@ -278,28 +289,28 @@ export default {
       const listData = await this.$store.dispatch('match/getListMatch', {
         params,
       })
-      if (this.catFilter === 'Futsal') {
+
+      if (this.catFilter === 'Futsal' || this.Futsal === true) {
         const test = listData.data.filter(
-          (item) => item.match.sportCategory === this.catFilter
+          (item) => item.match.sportCategory === 'Futsal'
         )
         await this.$store.dispatch('match/setListMatch', test)
-      } else if (this.catFilter === 'Mini Soccer') {
+      } else if (this.catFilter === 'Mini Soccer' || this.MiniSoccer === true) {
         const test = listData.data.filter(
-          (item) => item.match.sportCategory === this.catFilter
+          (item) => item.match.sportCategory === 'Mini Soccer'
         )
         await this.$store.dispatch('match/setListMatch', test)
-      } else if (this.catFilter === 'Basket') {
+      } else if (this.catFilter === 'Basket' || this.Basket === true) {
         const test = listData.data.filter(
-          (item) => item.match.sportCategory === this.catFilter
+          (item) => item.match.sportCategory === 'Basket'
         )
         await this.$store.dispatch('match/setListMatch', test)
-      } else if (this.catFilter === 'Sepak Bola') {
+      } else if (this.catFilter === 'Sepak Bola' || this.Soccer === true) {
         const test = listData.data.filter(
-          (item) => item.match.sportCategory === this.catFilter
+          (item) => item.match.sportCategory === 'Sepak Bola'
         )
         await this.$store.dispatch('match/setListMatch', test)
-      } else if (this.catFilter === 'Semua') {
-        // const test = listData.data.filter(item => item.match.sportCategory === this.catFilter)
+      } else if (this.catFilter === 'Semua' || this.fieldCity !== 'undefined') {
         await this.$store.dispatch('match/setListMatch', listData)
       }
     },
@@ -308,7 +319,31 @@ export default {
       this.catFilter = filter
       this.getMatch(filter)
     },
+    checkCategory() {
+      if (this.Futsal === true) {
+        this.catFilter = 'Futsal'
+        this.isFutsal = 'Futsal'
+      } else if (this.Basket === true) {
+        this.catFilter = 'Basket'
+        this.isBasket = 'Basket'
+      } else if (this.MiniSoccer === true) {
+        this.catFilter = 'Mini Soccer'
+        this.isMiniSoccer = 'Mini Soccer'
+      } else if (this.Soccer === true) {
+        this.catFilter = 'Soccer'
+        this.isSoccer = 'Soccer'
+      }
+    },
+    getByCity(e) {
+      this.fieldCity = e
+      this.getMatch(this.fieldCity)
+    },
     back() {
+      this.setState({ isFutsal: false })
+      this.setState({ isBasket: false })
+      this.setState({ isMiniSoccer: false })
+      this.setState({ isSoccer: false })
+      this.setState({ filterCity: '' })
       this.$store.$router.push('/')
     },
     openFilter() {
@@ -332,6 +367,13 @@ export default {
 }
 </script>
 <style scoped>
+.loading {
+  margin-top: 160px;
+}
+.field-city {
+  margin: 0px;
+  padding: 0px;
+}
 .empt-data {
   text-align: center !important;
   color: #939393;
@@ -342,9 +384,10 @@ export default {
   padding-right: 12px; */
 }
 .date {
-  margin-left: 40px;
+  /* margin-left: 40px; */
   font-size: 12px;
   margin-bottom: 0px;
+  margin-top: -15px;
 }
 h3 {
   font-weight: 600;
@@ -448,7 +491,7 @@ h3 {
   padding-left: 16px;
 }
 .card {
-  margin-top: 140px;
+  margin-top: 160px;
   margin-bottom: 20px;
   height: 100vh;
 }

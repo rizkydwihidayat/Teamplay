@@ -3,24 +3,24 @@
     <div class="mb-10">
       <h2>Kategori Olahraga</h2>
       <v-layout row wrap class="ic-category">
-        <v-flex xs2 class="category"
+        <v-flex xs2 class="category cursor-pointer" @click="sportFutsal"
           ><img src="~/assets/img/soccer-ball(1).png" width="24"
         /></v-flex>
-        <v-flex xs2 class="category"
+        <v-flex xs2 class="category cursor-pointer" @click="sportBasket"
           ><img src="~/assets/img/basket-ball.png" width="24"
         /></v-flex>
-        <v-flex xs2 class="category"
+        <v-flex xs2 class="category cursor-pointer" @click="sportMiniSoccer"
           ><img src="~/assets/img/soccer-ball.png" width="24"
         /></v-flex>
-        <v-flex xs2 class="category"
+        <v-flex xs2 class="category cursor-pointer" @click="sportSoccer"
           ><img src="~/assets/img/soccer-ball.png" width="24"
         /></v-flex>
       </v-layout>
       <v-layout row wrap class="ic-category">
-        <v-flex xs2 class="txt-category"><span>Futsal</span></v-flex>
-        <v-flex xs2 class="txt-category"><span>Basket</span></v-flex>
-        <v-flex xs2 class="txt-category"><span>Mini Soccer</span></v-flex>
-        <v-flex xs2 class="txt-category"><span>Sepak Bola</span></v-flex>
+        <v-flex xs2 class="txt-category cursor-pointer"><span>Futsal</span></v-flex>
+        <v-flex xs2 class="txt-category cursor-pointer"><span>Basket</span></v-flex>
+        <v-flex xs2 class="txt-category cursor-pointer"><span>Mini Soccer</span></v-flex>
+        <v-flex xs2 class="txt-category cursor-pointer"><span>Sepak Bola</span></v-flex>
       </v-layout>
     </div>
     <!-- end of category -->
@@ -117,6 +117,7 @@ export default {
       setState: 'match/setState',
     }),
     async getMatch(store = this.$store) {
+      this.setState({ isLoading: true })
       const week = new Date()
       week.setDate(week.getDate() + 7)
       const params = {
@@ -125,7 +126,6 @@ export default {
         endDate: week.toISOString().substr(0, 10),
         time: '',
       }
-      console.warn(this.listAllMatch.length);
       const listData = await store.dispatch('match/getListMatch', { params })
       await store.dispatch('match/setListMatch', listData)
     },
@@ -135,6 +135,22 @@ export default {
     goToDetailMatch(id) {
       this.$router.push(`/match/${id}`)
     },
+    sportFutsal() {
+      this.setState({ isFutsal: true })
+      this.$store.$router.push('/search')
+    },
+    sportBasket() {
+      this.setState({ isBasket: true })
+      this.$store.$router.push('/search')
+    },
+    sportMiniSoccer() {
+      this.setState({ isMiniSoccer: true })
+      this.$store.$router.push('/search')
+    },
+    sportSoccer() {
+      this.setState({ isSoccer: true })
+      this.$store.$router.push('/search')
+    }
   },
 }
 </script>
