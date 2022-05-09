@@ -299,7 +299,7 @@ span {
 }
 .login-button {
   position: absolute;
-  bottom: 5px;
+  bottom: 20px;
   left: 0%;
   right: 0%;
   text-align: center;

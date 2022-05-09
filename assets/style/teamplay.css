@@ -3,7 +3,21 @@
   max-width: 480px;
   margin: auto;
   overflow-x: hidden;
+  height: 100vh;
 }
 .align-right {
     text-align: right;
+}
+.bg-white {
+  background-color: white;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.align-center {
+  text-align: center;
+}
+.p-12-20 {
+  padding-top: 12px;
+  padding-bottom: 20px;
 }

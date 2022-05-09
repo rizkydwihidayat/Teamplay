@@ -228,6 +228,7 @@
 </v-main>
 </template>
 <script>
+import { mapState } from 'vuex'
 import IcPlus from '~/components/svg/IcPlus'
 export default {
     components: {
@@ -246,6 +247,9 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      isVerified: (state) => state.user.isVerified,
+    }),
     routeName: {
       get() {
         return this.$route.name
@@ -254,10 +258,12 @@ export default {
   },
   mounted() {
     const token = this.$store.state.user.accKey
+    const verified = this.$store.state.user.isVerified
     if (token === "") {
       this.isNotLogin = true
-    } else if (token !== "") {
-      // this.isDefault = true
+    } else if (token !== "" && verified === false) {
+      this.isDefault = true
+    } else if (verified) {
       this.isTrusted = true
     }
   }

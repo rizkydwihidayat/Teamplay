@@ -175,6 +175,7 @@
               required
               placeholder="Waktu selesai"
               append-icon="mdi-clock-outline"
+              @change="checkEndTime"
             ></v-text-field>
           </v-flex>
         </v-layout>
@@ -185,9 +186,7 @@
               ><span>
                 Rp{{
                   numberFormat(
-                    totalPayment(
-                      selected.pricePerHours
-                    ),
+                    totalPayment(selected.pricePerHours),
                     0,
                     ',',
                     '.'
@@ -205,12 +204,6 @@
             <span> Buat match</span>
           </v-btn>
         </div>
-        <!-- <div v-if="selected" style="margin-top: 10px">
-          You have selected:
-          <code>
-            <pre>{{ JSON.stringify(selected, null, 4) }}</pre>
-          </code>
-        </div> -->
       </div>
     </v-form>
   </div>
@@ -277,12 +270,14 @@ export default {
       mapTypeId: 'terrain',
       markerLatLng: [-6.529217, 106.766574],
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      tempTime: ''
     }
   },
   computed: {
     ...mapState({
       isLoading: (state) => state.match.isLoading,
       ListVenue: (state) => state.match.listVenue,
+      timeDur: (state) => state.match.timeDur
     }),
     filteredOptions() {
       return [
@@ -339,7 +334,11 @@ export default {
       const resultsearch = await this.createMatch({
         params,
         bearer,
-      }).catch((error) => {
+      })
+      .then(() => {
+        this.$store.$router.push('/')
+      })
+      .catch((error) => {
         if (error.response.status === 401) {
           const alertMsg = {
             msg: 'Sesi telah berakhir, merefresh halaman',
@@ -355,6 +354,13 @@ export default {
           .dispatch('match/setListMatch', resultsearch)
           .finally(this.setState({ isLoading: false }))
       }
+    },
+    checkEndTime(e) {
+      const start = parseInt(this.startTime)
+      const end = parseInt(e)
+      const temp = end - start
+      const result = '1-' + temp.toString()
+      this.setState({timeDur: result})
     },
     // eslint-disable-next-line vue/no-dupe-keys
     totalPayment(price) {
@@ -402,7 +408,6 @@ export default {
         }
         return false
       })
-
       // eslint-disable-next-line no-prototype-builtins
       if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
         await this.$store
@@ -427,7 +432,6 @@ export default {
             )
             venue.length && this.suggestions.push({ data: venue })
             // const venue = this.filterResults(values.data, this.query, "title");
-
             // venue.length &&
             //   this.suggestions.push({ name: "venue", data: venue });
           })

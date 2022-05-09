@@ -17,7 +17,8 @@
           <v-flex xs7 s7 class="profile-name">
             <span class="name">{{ namaUser }}</span
             ><br />
-            <v-chip color="#eeeeee33" small>Member </v-chip>
+            <v-chip v-if="isTrustedMember === false" color="#eeeeee33" small>Member </v-chip>
+            <v-chip v-else color="#eeeeee33" small>Trusted Member </v-chip>
             <br />
             <span class="point"
               >Poinku
@@ -123,7 +124,9 @@ export default {
   name: 'ProfilePage',
   data() {
     return {
-      initialName: ''
+      initialName: '',
+      showBtnTrusted: false,
+      isTrustedMember: false
     }
   },
   computed: {
@@ -133,11 +136,12 @@ export default {
       userPhone: (state) => state.user.userPhone,
       namaUser: (state) => state.user.nameGoogleAcc,
       isLoginWithGoogle: (state) => state.user.isLoginWithGoogle,
-      isLoading: (state) => state.user.isLoading
+      isLoading: (state) => state.user.isLoading,
     }),
   },
   async mounted() {
     await this.getProfile()
+    this.checkPoint(this.userPoint)
   },
   methods: {
     back() {
@@ -147,15 +151,33 @@ export default {
       const bearer = this.$store.state.user.accKey
       const userID = this.$store.state.user.userID
       await store.dispatch('user/getUserProfile', { bearer, userID })
-      this.initialName = this.namaUser.split(' ').map(x => x[0].toUpperCase()).join('')
+      this.initialName = this.namaUser
+        .split(' ')
+        .map((x) => x[0].toUpperCase())
+        .join('')
     },
     goSignOut() {
       this.$store.$router.push('/login')
+    },
+    checkPoint(point) {
+      if (point >= 0 && point < 100) {
+        const bar = document.getElementsByClassName('progress-bar')[0]
+        const width = 20 + '%';
+        bar.style.width = width
+      } else if (point === 100) {
+        this.showBtnTrusted = true
+      }
     }
   },
 }
 </script>
 <style scoped>
+.v-slider__track-container {
+   height: 10px;
+}
+.v-slider__track {
+   height: 10px;
+}
 h3 {
   font-family: Poppins;
   font-weight: 600;
@@ -163,7 +185,7 @@ h3 {
 }
 .top-section {
   background-image: linear-gradient(to bottom right, #0d47a1, #2962ff);
-  height: 230px;
+  height: 250px;
   padding: 25px 20px;
 }
 .btnBack {
@@ -195,7 +217,7 @@ h3 {
 .profile-name {
   font-family: Poppins;
   color: white;
-  margin-left: 20px;
+  margin-right: 20px;
 }
 .profile-name span {
   font-weight: 600;
@@ -253,15 +275,15 @@ h3 {
 }
 
 .progress {
-  padding: 4px;
+  padding: 2px;
   /* background: rgba(0, 0, 0, 0.25); */
   background: white;
   border-radius: 15px;
 }
 
 .progress-bar {
-  width: 50%;
-  height: 15px;
+  /* width: 50%; */
+  height: 12px;
   border-radius: 10px;
   /* background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
   background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
@@ -281,5 +303,12 @@ h3 {
   text-align: center;
   margin-top: 20px;
   margin-bottom: 20px;
+}
+@media (max-width: 375px) {
+  .avatar {
+    height: 60px;
+    margin: auto;
+    padding: 10px 10px;
+  }
 }
 </style>

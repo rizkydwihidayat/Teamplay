@@ -6,6 +6,7 @@ export const state = () => ({
   isLogin: false,
   isLoginWithGoogle: false,
   isLoading: true,
+  isVerified: false,
   accKey: '',
   userID: '',
   userEmail: '',
@@ -57,6 +58,11 @@ export const actions = {
     const postData = JSON.stringify(data)
     return this.$axios
       .$post('https://api.naufalbahri.com/api/v1/users/login', postData)
+      .then((result) => {
+        commit('setAuthToken', {
+          accKey: result.token,
+        })
+      })
       .catch((error) => {
         // handle error
         if (error.response.status === 401) {
@@ -104,6 +110,9 @@ export const actions = {
         })
         commit('setState', {
           userID: result.data.id,
+        })
+        commit('setState', {
+          isVerified: result.data.isVerified,
         })
         localStorage.setItem('accKey', result.token)
       })
@@ -186,7 +195,7 @@ export const actions = {
           userPhone: phone,
         })
         commit('setState', {
-          userPoint: result.data.totalPoint,
+          userPoint: result.data.totalPoin,
         })
         commit('setState', { isLoading: false })
       }))
