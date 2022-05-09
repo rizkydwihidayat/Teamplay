@@ -172,6 +172,12 @@ export default {
 }
 </script>
 <style scoped>
+.v-slider__track-container {
+   height: 10px;
+}
+.v-slider__track {
+   height: 10px;
+}
 h3 {
   font-family: Poppins;
   font-weight: 600;
