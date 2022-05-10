@@ -91,6 +91,14 @@
             <span> Tambah lapangan </span>
           </template>
         </vue-autosuggest>
+        <v-btn
+          v-if="selected"
+          depressed
+          color="primary"
+          outlined
+          rounded
+          @click="addNewVenue"
+        >Tambah Lapangan</v-btn>
         <v-card v-if="selected" outlined class="detail-venue">
           <div class="maps-area" style="width: 100%; height: 220px">
             <span> Detail lapangan </span>
@@ -119,6 +127,27 @@
             </v-layout>
           </div>
         </v-card>
+        <v-dialog
+          v-model="showdialogadd"
+          transition="dialog-bottom-transition wrap-400"
+        >
+        <v-card class="modalShare">
+            <v-card-title class="headerModal mt-2">
+              <v-layout row wrap>
+                <v-flex xs2 s2 class="close-modal">
+                  <div class="align-right" @click="closeDialog">X</div>
+                </v-flex>
+                <v-flex xs6 s6>
+                  <span class="title-filter">Tambah Lapangan</span>
+                </v-flex>
+              </v-layout>
+            </v-card-title>
+            <hr class="hr-divider" />
+            <v-card-text>
+
+            </v-card-text>
+        </v-card>
+        </v-dialog>
         <span class="title">Jadwal Main</span>
         <v-menu
           ref="dialog_tgl_awal"
@@ -270,14 +299,16 @@ export default {
       mapTypeId: 'terrain',
       markerLatLng: [-6.529217, 106.766574],
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      tempTime: ''
+      tempTime: '',
+      showdialogadd: false,
+      sport: ''
     }
   },
   computed: {
     ...mapState({
       isLoading: (state) => state.match.isLoading,
       ListVenue: (state) => state.match.listVenue,
-      timeDur: (state) => state.match.timeDur
+      timeDur: (state) => state.match.timeDur,
     }),
     filteredOptions() {
       return [
@@ -306,6 +337,9 @@ export default {
     ...mapMutations({
       setState: 'match/setState',
     }),
+    addNewVenue() {
+      this.showdialogadd = true
+    },
     back() {
       this.$store.$router.push('/')
     },
@@ -335,18 +369,18 @@ export default {
         params,
         bearer,
       })
-      .then(() => {
-        this.$store.$router.push('/')
-      })
-      .catch((error) => {
-        if (error.response.status === 401) {
-          const alertMsg = {
-            msg: 'Sesi telah berakhir, merefresh halaman',
+        .then(() => {
+          this.$store.$router.push('/')
+        })
+        .catch((error) => {
+          if (error.response.status === 401) {
+            const alertMsg = {
+              msg: 'Sesi telah berakhir, merefresh halaman',
+            }
+            this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
           }
-          this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-        }
-        return false
-      })
+          return false
+        })
 
       // eslint-disable-next-line no-prototype-builtins
       if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
@@ -360,7 +394,7 @@ export default {
       const end = parseInt(e)
       const temp = end - start
       const result = '1-' + temp.toString()
-      this.setState({timeDur: result})
+      this.setState({ timeDur: result })
     },
     // eslint-disable-next-line vue/no-dupe-keys
     totalPayment(price) {
@@ -372,15 +406,19 @@ export default {
       switch (value) {
         case 'Futsal':
           this.minPlayer = 15
+          this.sport = 'Futsal'
           break
         case 'Basket':
           this.minPlayer = 15
+          this.sport = 'Basket'
           break
         case 'Mini Soccer':
           this.minPlayer = 18
+          this.sport = 'Mini Soccer'
           break
         case 'Sepak Bola':
           this.minPlayer = 25
+          this.sport = 'Sepak Bola'
           break
       }
     },
@@ -389,10 +427,12 @@ export default {
       const bearer = this.$store.state.user.accKey
       const keyword = this.query
       const cityID = 24
+      const sport = this.sport
       const resultsearch = await this.searchVenue({
         keyword,
         cityID,
         bearer,
+        sport
       }).catch((error) => {
         if (error.response.status === 401) {
           const alertMsg = {

@@ -217,7 +217,7 @@ export const actions = {
       })
   },
 
-  getListVenue({ context, commit, dispatch }, { keyword, cityID, bearer }) {
+  getListVenue({ context, commit, dispatch }, { keyword, cityID, bearer, sport }) {
     const axiosOption = {
       headers: {
         xToken: bearer,
@@ -225,18 +225,18 @@ export const actions = {
     }
     return this.$axios
       .$get(
-        `https://api.naufalbahri.com/api/v1/venue?q=${keyword}&cityId=${cityID}`,
+        `https://api.naufalbahri.com/api/v1/venue?q=${keyword}&cityId=${cityID}&sport=${sport}`,
         axiosOption
       )
       .catch((error) => {
         // handle error
-        if (error.response.status !== '404') {
+        if (error.response.status !== '400') {
           const alertMsg = {
-            msg: 'Token kadaluwarsa, silahkan login kembali.',
+            msg: error.response.data.message,
             color: 'secondary',
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
-          this.$router.push('/login')
+          // this.$router.push('/login')
           //   dispatch('user/refreshAuth', null, { root: true })
         } else {
           const alertMsg = {
