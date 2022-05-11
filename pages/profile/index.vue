@@ -27,7 +27,7 @@
               <img width="12" height="12" src="~/assets/svg/alert.svg" alt="<"
             /></span>
             <div class="progress">
-              <div class="progress-bar"></div>
+              <div class="progress-bar">{{userPoint}}</div>
             </div>
             <br />
           </v-flex>
