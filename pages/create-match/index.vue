@@ -87,18 +87,12 @@
           required
           @input="Dosearch"
         >
-          <template slot>
-            <span> Tambah lapangan </span>
-          </template>
         </vue-autosuggest>
-        <v-btn
-          v-if="selected"
-          depressed
-          color="primary"
-          outlined
-          rounded
-          @click="addNewVenue"
-        >Tambah Lapangan</v-btn>
+        <div v-if="showBtnAdd">
+          <v-btn depressed color="primary" outlined rounded @click="addNewVenue"
+            >Tambah Lapangan</v-btn
+          >
+        </div>
         <v-card v-if="selected" outlined class="detail-venue">
           <div class="maps-area" style="width: 100%; height: 220px">
             <span> Detail lapangan </span>
@@ -131,7 +125,7 @@
           v-model="showdialogadd"
           transition="dialog-bottom-transition wrap-400"
         >
-        <v-card class="modalShare">
+          <v-card class="modalShare">
             <v-card-title class="headerModal mt-2">
               <v-layout row wrap>
                 <v-flex xs2 s2 class="close-modal">
@@ -144,9 +138,51 @@
             </v-card-title>
             <hr class="hr-divider" />
             <v-card-text>
-
+              <div class="fields">
+                <v-text-field
+                  v-model="inputLapangan"
+                  outlined
+                  placeholder="Nama lapangan"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  v-model="inputKota"
+                  outlined
+                  placeholder="Kota"
+                  required
+                ></v-text-field>
+                <v-textarea
+                  v-model="inputAlamat"
+                  placeholder="Alamat lengkap"
+                  auto-grow
+                  outlined
+                  rows="3"
+                  row-height="25"
+                ></v-textarea>
+                <v-text-field
+                  v-model="inputSewa"
+                  outlined
+                  placeholder="Harga sewa per jam"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  v-model="inputDurasi"
+                  outlined
+                  placeholder="Minimum durasi sewa"
+                  required
+                ></v-text-field>
+                <v-alert
+              outlined
+              text
+              type="warning"
+              icon="mdi-alert-circle"
+              class="mg-20"
+            >
+            <span class="txt-black">Harga sewa /jam dan minimum durasi sewa jangan salah isi ya!</span>
+            </v-alert>
+              </div>
             </v-card-text>
-        </v-card>
+          </v-card>
         </v-dialog>
         <span class="title">Jadwal Main</span>
         <v-menu
@@ -194,6 +230,7 @@
               required
               placeholder="Waktu mulai"
               append-icon="mdi-clock-outline"
+              @keypress="checkValue($event)"
             ></v-text-field>
           </v-flex>
           <v-flex xs1></v-flex>
@@ -205,6 +242,7 @@
               placeholder="Waktu selesai"
               append-icon="mdi-clock-outline"
               @change="checkEndTime"
+              @keypress="checkValue($event)"
             ></v-text-field>
           </v-flex>
         </v-layout>
@@ -263,6 +301,11 @@ export default {
       minPlayer: 0,
       maxPlayer: 0,
       inputName: '',
+      inputLapangan: '',
+      inputKota: '',
+      inputAlamat: '',
+      inputDurasi: '',
+      inputSewa: '',
       isCityId: '',
       totalPay: 0,
       valid: false,
@@ -301,7 +344,8 @@ export default {
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       tempTime: '',
       showdialogadd: false,
-      sport: ''
+      showBtnAdd: false,
+      sport: '',
     }
   },
   computed: {
@@ -432,7 +476,7 @@ export default {
         keyword,
         cityID,
         bearer,
-        sport
+        sport,
       }).catch((error) => {
         if (error.response.status === 401) {
           const alertMsg = {
@@ -478,6 +522,8 @@ export default {
           // this.suggestions = this.listVenue
         }, 25)
         this.setState({ isSearch: true })
+      } else if (this.selected === null) {
+        this.showBtnAdd = true
       }
     },
     filterResults(data, text, field) {
@@ -500,10 +546,49 @@ export default {
         ? _numberFormat(number, decimals, decPoint, thousandSep)
         : (number, decimals, decPoint, thousandSep)
     },
+    checkValue(evt) {
+      evt = evt || window.event
+      const charCode = evt.which ? evt.which : evt.keyCode
+      if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+        evt.preventDefault()
+      } else {
+        return true
+      }
+    },
   },
 }
 </script>
 <style scoped>
+.modalShare {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 480px;
+  max-height: 700px;
+  overflow: scroll;
+  margin: auto;
+  border-radius: 16px 16px 0px 0px;
+}
+.hr-divider {
+  margin: 10px 0;
+  height: 1px;
+  border: 0;
+  background: #e3e3e3;
+}
+.close-modal {
+  font-family: Poppins;
+  font-weight: 500;
+  color: #424242;
+  cursor: pointer;
+  padding-right: 30px;
+}
+.title-filter {
+  font-family: Poppins;
+  font-weight: 600;
+  font-size: 20px;
+}
 small {
   color: #bdbdbd;
 }
