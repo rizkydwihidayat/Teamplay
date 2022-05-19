@@ -88,7 +88,7 @@
         </v-flex>
       </v-layout>
       <hr class="hr-divider" />
-      <v-layout row wrap class="info-pribadi" @click="changePass">
+      <v-layout v-if="!isLoginWithGoogle" row wrap class="info-pribadi" @click="changePass">
         <v-flex xs6 s6>
           <span>Ubah Password</span>
         </v-flex>
@@ -166,6 +166,7 @@
                   depressed
                   color="primary"
                   rounded
+                  :disabled="!validPass"
                   @click="submitChangePass"
                 >
                   <span>Simpan</span>
@@ -194,7 +195,8 @@ export default {
       showdialogchangepass: false,
       oldPass: false,
       showpass: false,
-      passInput: ''
+      passInput: '',
+      validPass: true
     }
   },
   computed: {

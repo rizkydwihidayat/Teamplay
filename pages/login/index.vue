@@ -41,7 +41,7 @@
             @focus="resetEmail"
           ></v-text-field>
           <div class="login-button">
-            <v-btn depressed color="primary" rounded @click="submitEmailGoogle">
+            <v-btn depressed color="primary" rounded :disabled="!validGoogle" @click="submitEmailGoogle">
               <span>Masuk Google</span>
             </v-btn>
           </div></v-form
@@ -101,7 +101,7 @@
           </v-text-field>
           <span>Lupa Password?</span>
           <div class="login-button">
-            <v-btn depressed color="primary" rounded @click="submit">
+            <v-btn depressed color="primary" rounded :disabled="!valid" @click="submit">
               <span>Masuk</span>
             </v-btn>
           </div>
@@ -128,8 +128,8 @@ export default {
   data() {
     return {
       showpass: false,
-      valid: false,
-      validGoogle: false,
+      valid: true,
+      validGoogle: true,
       refFocus: false,
       showFormLogin: false,
       showFormLoginWithGoogle: false,

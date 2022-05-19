@@ -266,6 +266,7 @@
             class="create-btn"
             depressed
             color="primary"
+            :disabled="!valid"
             @click="submitCreateMatch"
           >
             <span> Buat match</span>
@@ -308,7 +309,7 @@ export default {
       inputSewa: '',
       isCityId: '',
       totalPay: 0,
-      valid: false,
+      valid: true,
       modal_tgl_awal: false,
       tgl_awal: '',
       gender: '',
