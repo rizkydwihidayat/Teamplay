@@ -138,49 +138,64 @@
             </v-card-title>
             <hr class="hr-divider" />
             <v-card-text>
-              <div class="fields">
-                <v-text-field
-                  v-model="inputLapangan"
-                  outlined
-                  placeholder="Nama lapangan"
-                  required
-                ></v-text-field>
-                <v-text-field
-                  v-model="inputKota"
-                  outlined
-                  placeholder="Kota"
-                  required
-                ></v-text-field>
-                <v-textarea
-                  v-model="inputAlamat"
-                  placeholder="Alamat lengkap"
-                  auto-grow
-                  outlined
-                  rows="3"
-                  row-height="25"
-                ></v-textarea>
-                <v-text-field
-                  v-model="inputSewa"
-                  outlined
-                  placeholder="Harga sewa per jam"
-                  required
-                ></v-text-field>
-                <v-text-field
-                  v-model="inputDurasi"
-                  outlined
-                  placeholder="Minimum durasi sewa"
-                  required
-                ></v-text-field>
-                <v-alert
-              outlined
-              text
-              type="warning"
-              icon="mdi-alert-circle"
-              class="mg-20"
-            >
-            <span class="txt-black">Harga sewa /jam dan minimum durasi sewa jangan salah isi ya!</span>
-            </v-alert>
-              </div>
+              <v-form
+                ref="form"
+                v-model="valid"
+                lazy-validation
+                @keyup.native.enter="valid && submitAddVenue($event)"
+              >
+                <div class="fields">
+                  <v-text-field
+                    v-model="inputLapangan"
+                    outlined
+                    placeholder="Nama lapangan"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="inputKota"
+                    outlined
+                    placeholder="Kota"
+                    required
+                  ></v-text-field>
+                  <v-textarea
+                    v-model="inputAlamat"
+                    placeholder="Alamat lengkap"
+                    auto-grow
+                    outlined
+                    rows="3"
+                    row-height="25"
+                  ></v-textarea>
+                  <v-text-field
+                    v-model="inputSewa"
+                    outlined
+                    placeholder="Harga sewa per jam"
+                    required
+                    @keypress="checkValue($event)"
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="inputDurasi"
+                    outlined
+                    placeholder="Minimum durasi sewa"
+                    required
+                    @keypress="checkValue($event)"
+                  ></v-text-field>
+                  <v-alert outlined text type="warning" icon="mdi-alert-circle">
+                    <span
+                      >Harga sewa /jam dan minimum durasi sewa jangan salah isi
+                      ya!</span
+                    >
+                  </v-alert>
+                  <v-btn
+                    class="create-btn"
+                    depressed
+                    color="primary"
+                    :disabled="!valid"
+                    @click="submitAddVenue"
+                  >
+                    <span> Simpan</span>
+                  </v-btn>
+                </div>
+              </v-form>
             </v-card-text>
           </v-card>
         </v-dialog>
@@ -385,6 +400,9 @@ export default {
     addNewVenue() {
       this.showdialogadd = true
     },
+    closeDialog() {
+      this.showdialogadd = false
+    },
     back() {
       this.$store.$router.push('/')
     },
@@ -469,62 +487,65 @@ export default {
     },
     async Dosearch() {
       this.setState({ isLoading: true })
-      const bearer = this.$store.state.user.accKey
-      const keyword = this.query
-      const cityID = 24
-      const sport = this.sport
-      const resultsearch = await this.searchVenue({
-        keyword,
-        cityID,
-        bearer,
-        sport,
-      }).catch((error) => {
-        if (error.response.status === 401) {
-          const alertMsg = {
-            msg: 'Sesi telah berakhir, merefresh halaman',
+      if (this.query.length >= 4) {
+        const bearer = this.$store.state.user.accKey
+        const keyword = this.query
+        const cityID = 24
+        const sport = this.sport
+        const resultsearch = await this.searchVenue({
+          keyword,
+          cityID,
+          bearer,
+          sport,
+        }).catch((error) => {
+          if (error.response.status === 401) {
+            const alertMsg = {
+              msg: 'Sesi telah berakhir, merefresh halaman',
+            }
+            this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+            // this.$store.dispatch('user/refreshAuth', null, { root: true })
+            // this.searchkey = ''
+            // const searchMsg = {
+            //   msg: 'Silahkan lakukan pencarian kembali',
+            //   color: 'primary',
+            // }
           }
-          this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-          // this.$store.dispatch('user/refreshAuth', null, { root: true })
-          // this.searchkey = ''
-          // const searchMsg = {
-          //   msg: 'Silahkan lakukan pencarian kembali',
-          //   color: 'primary',
-          // }
+          return false
+        })
+        // eslint-disable-next-line no-prototype-builtins
+        if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
+          await this.$store
+            .dispatch('match/setListVenue', resultsearch)
+            .finally(this.setState({ isLoading: false }))
+          this.timeout = setTimeout(() => {
+            // this.suggestions = []
+            // this.selected = null
+            // const venue = this.filterResults(
+            //   resultsearch.data,
+            //   this.query,
+            //   'venueName'
+            // )
+            // venue.length && this.suggestions.push({ data: venue })
+            Promise.all([resultsearch]).then((values) => {
+              this.suggestions = []
+              this.selected = null
+              const venue = this.filterResults(
+                resultsearch.data,
+                this.query,
+                'venueName'
+              )
+              venue.length && this.suggestions.push({ data: venue })
+              console.warn(venue);
+              // const venue = this.filterResults(values.data, this.query, "title");
+              // venue.length &&
+              //   this.suggestions.push({ name: "venue", data: venue });
+            })
+            // this.suggestions = this.listVenue
+          }, 25)
+          this.setState({ isSearch: true })
+        } else if (this.selected === null) {
+          this.showBtnAdd = true
         }
-        return false
-      })
-      // eslint-disable-next-line no-prototype-builtins
-      if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
-        await this.$store
-          .dispatch('match/setListVenue', resultsearch)
-          .finally(this.setState({ isLoading: false }))
-        this.timeout = setTimeout(() => {
-          // this.suggestions = []
-          // this.selected = null
-          // const venue = this.filterResults(
-          //   resultsearch.data,
-          //   this.query,
-          //   'venueName'
-          // )
-          // venue.length && this.suggestions.push({ data: venue })
-          Promise.all([resultsearch]).then((values) => {
-            this.suggestions = []
-            this.selected = null
-            const venue = this.filterResults(
-              resultsearch.data,
-              this.query,
-              'venueName'
-            )
-            venue.length && this.suggestions.push({ data: venue })
-            // const venue = this.filterResults(values.data, this.query, "title");
-            // venue.length &&
-            //   this.suggestions.push({ name: "venue", data: venue });
-          })
-          // this.suggestions = this.listVenue
-        }, 25)
-        this.setState({ isSearch: true })
-      } else if (this.selected === null) {
-        this.showBtnAdd = true
       }
     },
     filterResults(data, text, field) {

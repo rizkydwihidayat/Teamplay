@@ -27,7 +27,7 @@
           ref="formGoogle"
           v-model="validGoogle"
           lazy-validation
-          @keyup.native.enter="valid && submitEmailGoogle($event)"
+          @keyup.native.enter="validGoogle && submitEmailGoogle($event)"
         >
           <v-text-field
             id="emailGoogle"
@@ -35,10 +35,12 @@
             outlined
             placeholder="Masukkan email Google"
             required
-            validate-on-blur
             prepend-inner-icon="mdi-email-outline"
-            @input="(val) => inputEmail(val)"
-            @focus="resetEmail"
+            :rules="emailRules"
+            :clearable="widthClearable"
+            clear-icon="mdi-close"
+            @blur="widthClearable = false"
+            @focus="widthClearable = true"
           ></v-text-field>
           <div class="login-button">
             <v-btn depressed color="primary" rounded :disabled="!validGoogle" @click="submitEmailGoogle">
@@ -75,10 +77,12 @@
             placeholder="Email"
             required
             type="text"
-            validate-on-blur
             prepend-inner-icon="mdi-email-outline"
-            @input="(val) => inputEmail(val)"
-            @focus="resetEmail"
+            :rules="emailRules"
+            :clearable="widthClearable"
+            clear-icon="mdi-close"
+            @blur="widthClearable = false"
+            @focus="widthClearable = true"
           ></v-text-field>
           <v-text-field
             v-model="passInput"
@@ -129,7 +133,7 @@ export default {
     return {
       showpass: false,
       valid: true,
-      validGoogle: true,
+      validGoogle: false,
       refFocus: false,
       showFormLogin: false,
       showFormLoginWithGoogle: false,
@@ -138,6 +142,16 @@ export default {
       emailInput: '',
       passInput: '',
       emailGoogle: '',
+      widthClearable: true,
+      emailRules: [
+        v => !!v || 'Email wajib diisi.',
+        v =>
+          v && v.length > 4
+            ? /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+                v
+              ) || 'Format email tidak valid.'
+            : 'Email minimal 5 karakter.'
+      ],
     }
   },
   computed: {
@@ -183,7 +197,12 @@ export default {
           }
         })
         .catch((error) => {
-          console.log(error)
+          const alertMsg = {
+            msg: error,
+            timeout: 3000,
+            color: 'secondary',
+          }
+          this.$store.dispatch('ui/showAlert', alertMsg)
         })
     },
     submitEmailGoogle() {
@@ -199,7 +218,12 @@ export default {
             }
           })
           .catch((error) => {
-            console.log(error)
+            const alertMsg = {
+              msg: error,
+              timeout: 3000,
+              color: 'secondary',
+            }
+            this.$store.dispatch('ui/showAlert', alertMsg)
           })
       }
     },

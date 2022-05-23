@@ -148,7 +148,7 @@ export const actions = {
       })
       .catch((error) => {
         // handle error
-        if (error.response.status !== '404') {
+        if (error.response.status !== 404) {
           const alertMsg = {
             msg: 'Token kadaluwarsa, silahkan login kembali.',
             color: 'secondary',
@@ -174,7 +174,7 @@ export const actions = {
       .$get(`https://api.naufalbahri.com/api/v1/match/${id}`)
       .catch((error) => {
         // handle error
-        if (error.response.status !== '404') {
+        if (error.response.status !== 404) {
           const alertMsg = {
             msg: 'Token kadaluwarsa, silahkan login kembali.',
             color: 'secondary',
@@ -182,9 +182,10 @@ export const actions = {
           dispatch('ui/showAlert', alertMsg, { root: true })
           this.$router.push('/login')
           //   dispatch('user/refreshAuth', null, { root: true })
-        } else if (error.response.status === '500') {
+        } else if (error.response.status === 500) {
           const alertMsg = {
-            msg: 'Get item store failed',
+            msg: error,
+            color: 'secondary',
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
           this.$router.push('/login')
@@ -209,7 +210,8 @@ export const actions = {
           //   dispatch('user/refreshAuth', null, { root: true })
         } else {
           const alertMsg = {
-            msg: 'Get item store failed',
+            msg: error,
+            color: 'secondary',
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
         }
@@ -230,17 +232,18 @@ export const actions = {
       )
       .catch((error) => {
         // handle error
-        if (error.response.status !== '400') {
+        if (error.response.status === 403) {
           const alertMsg = {
             msg: error.response.data.message,
             color: 'secondary',
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
-          // this.$router.push('/login')
+          this.$router.push('/login')
           //   dispatch('user/refreshAuth', null, { root: true })
         } else {
           const alertMsg = {
-            msg: 'Get item store failed',
+            msg: error.response.data.message,
+            color: 'secondary',
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
         }
