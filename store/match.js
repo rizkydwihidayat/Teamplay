@@ -195,12 +195,11 @@ export const actions = {
   },
 
   getListCity({ context, commit, dispatch }, { keyword }) {
-    const params = { q: keyword }
     return this.$axios
-      .$get(`https://api.naufalbahri.com/api/v1/static/cities`, params)
+      .$get(`https://api.naufalbahri.com/api/v1/static/cities?q=${keyword}`)
       .catch((error) => {
         // handle error
-        if (error.response.status !== '404') {
+        if (error.response.status !== 404) {
           const alertMsg = {
             msg: 'Token kadaluwarsa, silahkan login kembali.',
             color: 'secondary',
