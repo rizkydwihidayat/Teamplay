@@ -157,15 +157,20 @@
                     placeholder="Kota"
                     required
                   ></v-text-field> -->
-                  <v-autocomplete
+                  <vue-autosuggest
+                    ref="autocity"
                     v-model="inputKota"
-                    :items="itemsCity"
-                    outlined
-                    small-chips
-                    placeholder="Kota"
+                    :suggestions="cities"
+                    :input-props="cityProps"
+                    :section-configs="cityConfigs"
+                    :render-suggestion="citySuggestion"
+                    :get-suggestion-value="getSuggestionCity"
+                    class="autofill mb-16"
+                    clearable
                     required
-                    @input="SearchCity"
-                  ></v-autocomplete>
+                    @input="Searchcity"
+                  >
+                  </vue-autosuggest>
                   <v-textarea
                     v-model="inputAlamat"
                     placeholder="Alamat lengkap"
@@ -188,6 +193,21 @@
                     required
                     @keypress="checkValue($event)"
                   ></v-text-field>
+                  <div class="filter-category">
+                    <span class="title">Kategori Olahraga</span>
+                    <v-chip-group
+                      v-model="inputCategory"
+                      active-class="primary--text"
+                    >
+                      <v-chip
+                        v-for="data in filterCategory"
+                        :key="data"
+                        :value="data"
+                        @input="checkMinPlayer(data)"
+                        >{{ data }}</v-chip
+                      >
+                    </v-chip-group>
+                  </div>
                   <v-alert outlined text type="warning" icon="mdi-alert-circle">
                     <span
                       >Harga sewa /jam dan minimum durasi sewa jangan salah isi
@@ -332,7 +352,7 @@ export default {
       inputAlamat: '',
       inputDurasi: '',
       inputSewa: '',
-      isCityId: '',
+      isCityId: 0,
       totalPay: 0,
       valid: true,
       modal_tgl_awal: false,
@@ -351,8 +371,16 @@ export default {
         class: 'form-control',
         name: 'hello',
       },
+      cityProps: {
+        id: 'autosuggest__input',
+        placeholder: 'Kota',
+        class: 'form-control',
+        name: 'hello',
+      },
       selected: null,
+      selectedCity: null,
       suggestions: [],
+      cities: [],
       sectionConfigs: {
         default: {
           limit: 10,
@@ -360,6 +388,16 @@ export default {
           onSelected: (selected) => {
             this.selected = selected.item
             this.query = selected.item.venueName
+          },
+        },
+      },
+      cityConfigs: {
+        default: {
+          limit: 10,
+          label: 'Daftar Kota',
+          onSelected: (selected) => {
+            this.selectedCity = selected.item
+            this.inputKota = selected.item.name
           },
         },
       },
@@ -424,6 +462,14 @@ export default {
     },
     renderSuggestion(suggestion) {
       return suggestion.item.venueName + ', ' + suggestion.item.cityName
+    },
+    citySuggestion(cities) {
+      return cities.item.name
+    },
+    async submitAddVenue() {
+      this.showdialogadd = false
+      this.query = this.inputLapangan
+      await this.Dosearch()
     },
     async submitCreateMatch() {
       this.setState({ isLoading: true })
@@ -497,7 +543,7 @@ export default {
     },
     async Dosearch() {
       this.setState({ isLoading: true })
-      if (this.query.length >= 4) {
+      if (this.query.length >= 4 || this.isCityId === 0) {
         const bearer = this.$store.state.user.accKey
         const keyword = this.query
         const cityID = 24
@@ -513,12 +559,6 @@ export default {
               msg: 'Sesi telah berakhir, merefresh halaman',
             }
             this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-            // this.$store.dispatch('user/refreshAuth', null, { root: true })
-            // this.searchkey = ''
-            // const searchMsg = {
-            //   msg: 'Silahkan lakukan pencarian kembali',
-            //   color: 'primary',
-            // }
           }
           return false
         })
@@ -545,7 +585,6 @@ export default {
                 'venueName'
               )
               venue.length && this.suggestions.push({ data: venue })
-              console.warn(venue);
               // const venue = this.filterResults(values.data, this.query, "title");
               // venue.length &&
               //   this.suggestions.push({ name: "venue", data: venue });
@@ -553,8 +592,104 @@ export default {
             // this.suggestions = this.listVenue
           }, 25)
           this.setState({ isSearch: true })
-        } else if (this.selected === null) {
-          this.showBtnAdd = true
+        }
+        this.showBtnAdd = true
+      } else if (this.isCityId !== 0) {
+        const bearer = this.$store.state.user.accKey
+        const keyword = this.query
+        const cityID = this.isCityId
+        const sport = this.sport
+        const resultsearch = await this.searchVenue({
+          keyword,
+          cityID,
+          bearer,
+          sport,
+        }).catch((error) => {
+          if (error.response.status === 401) {
+            const alertMsg = {
+              msg: 'Sesi telah berakhir, merefresh halaman',
+            }
+            this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+          }
+          return false
+        })
+        // eslint-disable-next-line no-prototype-builtins
+        if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
+          await this.$store
+            .dispatch('match/setListVenue', resultsearch)
+            .finally(this.setState({ isLoading: false }))
+          this.timeout = setTimeout(() => {
+            // this.suggestions = []
+            // this.selected = null
+            // const venue = this.filterResults(
+            //   resultsearch.data,
+            //   this.query,
+            //   'venueName'
+            // )
+            // venue.length && this.suggestions.push({ data: venue })
+            Promise.all([resultsearch]).then((values) => {
+              this.suggestions = []
+              this.selected = null
+              const venue = this.filterResults(
+                resultsearch.data,
+                this.query,
+                'venueName'
+              )
+              venue.length && this.suggestions.push({ data: venue })
+              // const venue = this.filterResults(values.data, this.query, "title");
+              // venue.length &&
+              //   this.suggestions.push({ name: "venue", data: venue });
+            })
+            // this.suggestions = this.listVenue
+          }, 25)
+          this.setState({ isSearch: true })
+        }
+        this.showBtnAdd = true
+      }
+    },
+    async Searchcity() {
+      this.setState({ isLoading: true })
+      if (this.inputKota.length >= 4) {
+        const keyword = this.inputKota
+        const result = await this.getCity({ keyword }).catch((error) => {
+          if (error.response.status === 401) {
+            const alertMsg = {
+              msg: 'Sesi telah berakhir, merefresh halaman',
+            }
+            this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+          }
+          return false
+        })
+        // eslint-disable-next-line no-prototype-builtins
+        if (result.hasOwnProperty('data') && result.data) {
+          await this.$store
+            .dispatch('match/setListCity', result)
+            .finally(this.setState({ isLoading: false }))
+          this.timeout = setTimeout(() => {
+            Promise.all([result]).then((values) => {
+              this.cities = []
+              this.selectedCity = null
+              const city = this.filterResults(
+                result.data,
+                this.inputKota,
+                'name'
+              )
+              city.length && this.cities.push({ data: city })
+              // const venue = this.filterResults(values.data, this.query, "title");
+              // venue.length &&
+              //   this.suggestions.push({ name: "venue", data: venue });
+            })
+            // if (this.selectedCity !== null) {
+            //   // this.isCityId = this.selectedCity.id
+            //   console.warn(this.selectedCity.id);
+            // }
+            // this.suggestions = this.listVenue
+          }, 25)
+          this.setState({ isSearch: true })
+        }
+        if (this.selectedCity !== null) {
+          this.isCityId = this.selectedCity.id
+          console.warn(this.isCityId)
         }
       }
     },
@@ -572,6 +707,9 @@ export default {
     },
     getSuggestionValue(suggestion) {
       return suggestion.venueName
+    },
+    getSuggestionCity(cities) {
+      return cities.name
     },
     numberFormat(number, decimals, decPoint, thousandSep) {
       return typeof _numberFormat !== 'undefined'
