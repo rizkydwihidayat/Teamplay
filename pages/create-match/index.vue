@@ -151,12 +151,21 @@
                     placeholder="Nama lapangan"
                     required
                   ></v-text-field>
-                  <v-text-field
+                  <!-- <v-text-field
                     v-model="inputKota"
                     outlined
                     placeholder="Kota"
                     required
-                  ></v-text-field>
+                  ></v-text-field> -->
+                  <v-autocomplete
+                    v-model="inputKota"
+                    :items="itemsCity"
+                    outlined
+                    small-chips
+                    placeholder="Kota"
+                    required
+                    @input="SearchCity"
+                  ></v-autocomplete>
                   <v-textarea
                     v-model="inputAlamat"
                     placeholder="Alamat lengkap"
@@ -311,6 +320,7 @@ export default {
   data() {
     return {
       itemsCategory: ['Pria', 'Wanita', 'Campuran'],
+      itemsCity: [],
       isDisable: false,
       startTime: '',
       endTime: '',
