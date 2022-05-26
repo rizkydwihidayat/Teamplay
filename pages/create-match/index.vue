@@ -88,7 +88,7 @@
           @input="Dosearch"
         >
         </vue-autosuggest>
-        <div v-if="showBtnAdd">
+        <div v-if="showBtnAdd" class="mb-10">
           <v-btn depressed color="primary" outlined rounded @click="addNewVenue"
             >Tambah Lapangan</v-btn
           >
@@ -171,6 +171,9 @@
                     @input="Searchcity"
                   >
                   </vue-autosuggest>
+                  <div class="maps-area" style="width: 100%;height: 220px;margin-bottom: 15px">
+                    <GeoSelector :key="key" v-model="location" />
+                  </div>
                   <v-textarea
                     v-model="inputAlamat"
                     placeholder="Alamat lengkap"
@@ -193,7 +196,7 @@
                     required
                     @keypress="checkValue($event)"
                   ></v-text-field>
-                  <div class="filter-category">
+                  <div class="mb-10">
                     <span class="title">Kategori Olahraga</span>
                     <v-chip-group
                       v-model="inputCategory"
@@ -325,7 +328,7 @@
 import { mapActions, mapState, mapMutations } from 'vuex'
 import { VueAutosuggest } from 'vue-autosuggest'
 import { LMap, LTileLayer, LMarker, LPopup } from 'vue2-leaflet'
-import 'leaflet/dist/leaflet.css'
+import GeoSelector from "~/components/GeoSelector";
 import { _numberFormat } from '~/utils'
 
 export default {
@@ -336,11 +339,14 @@ export default {
     LTileLayer,
     LMarker,
     LPopup,
+    // LGeosearch,
+    GeoSelector
   },
   data() {
     return {
       itemsCategory: ['Pria', 'Wanita', 'Campuran'],
       itemsCity: [],
+      key: 1,
       isDisable: false,
       startTime: '',
       endTime: '',
@@ -410,6 +416,7 @@ export default {
       showdialogadd: false,
       showBtnAdd: false,
       sport: '',
+      location: {},
     }
   },
   computed: {
@@ -427,9 +434,6 @@ export default {
         },
       ]
     },
-    // computedDateFormatted() {
-    //   return this.formatDate(this.date)
-    // },
   },
   watch: {
     date(val) {
