@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-geosearch/dist/geosearch.css'
 export default {
@@ -38,12 +37,7 @@ export default {
         },
       ],
     }
-  },
-  computed: {
-    ...mapState({
-      isLoading: (state) => state.match.isLoading,
-    }),
-  },
+  }
 }
 </script>
 <style>

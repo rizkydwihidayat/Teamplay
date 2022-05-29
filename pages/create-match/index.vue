@@ -151,12 +151,6 @@
                     placeholder="Nama lapangan"
                     required
                   ></v-text-field>
-                  <!-- <v-text-field
-                    v-model="inputKota"
-                    outlined
-                    placeholder="Kota"
-                    required
-                  ></v-text-field> -->
                   <vue-autosuggest
                     ref="autocity"
                     v-model="inputKota"
@@ -449,7 +443,7 @@ export default {
             this.selected = selected.item
             this.query = selected.item.venueName
           },
-        },
+        }
       },
       cityConfigs: {
         default: {
@@ -525,10 +519,10 @@ export default {
     citySuggestion(cities) {
       return cities.item.name
     },
-    async submitAddVenue() {
+    submitAddVenue() {
       this.showdialogadd = false
       this.query = this.inputLapangan
-      await this.Dosearch()
+      // await this.Dosearch()
     },
     async submitCreateMatch() {
       this.setState({ isLoading: true })
@@ -622,93 +616,95 @@ export default {
           return false
         })
         // eslint-disable-next-line no-prototype-builtins
-        if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
-          await this.$store
-            .dispatch('match/setListVenue', resultsearch)
-            .finally(this.setState({ isLoading: false }))
-          this.timeout = setTimeout(() => {
-            // this.suggestions = []
-            // this.selected = null
-            // const venue = this.filterResults(
-            //   resultsearch.data,
-            //   this.query,
-            //   'venueName'
-            // )
-            // venue.length && this.suggestions.push({ data: venue })
-            Promise.all([resultsearch]).then((values) => {
-              this.suggestions = []
-              this.selected = null
-              const venue = this.filterResults(
-                resultsearch.data,
-                this.query,
-                'venueName'
-              )
-              venue.length && this.suggestions.push({ data: venue })
-              // const venue = this.filterResults(values.data, this.query, "title");
-              // venue.length &&
-              //   this.suggestions.push({ name: "venue", data: venue });
-            })
-            // this.suggestions = this.listVenue
-          }, 25)
-          this.setState({ isSearch: true })
-        }
-        this.showBtnAdd = true
-      } else if (this.isCityId !== 0) {
-        const bearer = this.$store.state.user.accKey
-        const keyword = this.query
-        const cityID = this.isCityId
-        const sport = this.sport
-        const resultsearch = await this.searchVenue({
-          keyword,
-          cityID,
-          bearer,
-          sport,
-        }).catch((error) => {
-          if (error.response.status === 401) {
-            const alertMsg = {
-              msg: 'Sesi telah berakhir, merefresh halaman',
-            }
-            this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-          }
-          return false
-        })
-        // eslint-disable-next-line no-prototype-builtins
-        if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
-          await this.$store
-            .dispatch('match/setListVenue', resultsearch)
-            .finally(this.setState({ isLoading: false }))
-          this.timeout = setTimeout(() => {
-            // this.suggestions = []
-            // this.selected = null
-            // const venue = this.filterResults(
-            //   resultsearch.data,
-            //   this.query,
-            //   'venueName'
-            // )
-            // venue.length && this.suggestions.push({ data: venue })
-            Promise.all([resultsearch]).then((values) => {
-              this.suggestions = []
-              this.selected = null
-              const venue = this.filterResults(
-                resultsearch.data,
-                this.query,
-                'venueName'
-              )
-              venue.length && this.suggestions.push({ data: venue })
-              // const venue = this.filterResults(values.data, this.query, "title");
-              // venue.length &&
-              //   this.suggestions.push({ name: "venue", data: venue });
-            })
-            // this.suggestions = this.listVenue
-          }, 25)
-          this.setState({ isSearch: true })
-        }
+            if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
+        await this.$store
+          .dispatch('match/setListVenue', resultsearch)
+          .finally(this.setState({ isLoading: false }))
+        this.timeout = setTimeout(() => {
+          // this.suggestions = []
+          // this.selected = null
+          // const venue = this.filterResults(
+          //   resultsearch.data,
+          //   this.query,
+          //   'venueName'
+          // )
+          // venue.length && this.suggestions.push({ data: venue })
+          Promise.all([resultsearch]).then((values) => {
+            this.suggestions = []
+            this.selected = null
+            const venue = this.filterResults(
+              resultsearch.data,
+              this.query,
+              'venueName'
+            )
+            venue.length && this.suggestions.push({ data: venue })
+            // const venue = this.filterResults(values.data, this.query, "title");
+            // venue.length &&
+            //   this.suggestions.push({ name: "venue", data: venue });
+          })
+          // this.suggestions = this.listVenue
+        }, 250)
+        this.setState({ isSearch: true })
+      }
         this.showBtnAdd = true
       }
+      // else if (this.isCityId !== 0) {
+      //   const bearer = this.$store.state.user.accKey
+      //   const keyword = this.query
+      //   const cityID = this.isCityId
+      //   const sport = this.sport
+      //   const resultsearch = await this.searchVenue({
+      //     keyword,
+      //     cityID,
+      //     bearer,
+      //     sport,
+      //   }).catch((error) => {
+      //     if (error.response.status === 401) {
+      //       const alertMsg = {
+      //         msg: 'Sesi telah berakhir, merefresh halaman',
+      //       }
+      //       this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+      //     }
+      //     return false
+      //   })
+      //   // eslint-disable-next-line no-prototype-builtins
+      //   if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
+      //     await this.$store
+      //       .dispatch('match/setListVenue', resultsearch)
+      //       .finally(this.setState({ isLoading: false }))
+      //     this.timeout = setTimeout(() => {
+      //       // this.suggestions = []
+      //       // this.selected = null
+      //       // const venue = this.filterResults(
+      //       //   resultsearch.data,
+      //       //   this.query,
+      //       //   'venueName'
+      //       // )
+      //       // venue.length && this.suggestions.push({ data: venue })
+      //       Promise.all([resultsearch]).then((values) => {
+      //         this.suggestions = []
+      //         this.selected = null
+      //         const venue = this.filterResults(
+      //           resultsearch.data,
+      //           this.query,
+      //           'venueName'
+      //         )
+      //         venue.length && this.suggestions.push({ data: venue })
+      //         // const venue = this.filterResults(values.data, this.query, "title");
+      //         // venue.length &&
+      //         //   this.suggestions.push({ name: "venue", data: venue });
+      //       })
+      //       // this.suggestions = this.listVenue
+      //     }, 25)
+      //     this.setState({ isSearch: true })
+      //   }
+      //   this.showBtnAdd = true
+      //   console.warn(this.selected)
+      // }
     },
     async Searchcity() {
       this.setState({ isLoading: true })
-      if (this.inputKota.length >= 4) {
+      if (this.inputKota.length > 3) {
         const keyword = this.inputKota
         const result = await this.getCity({ keyword }).catch((error) => {
           if (error.response.status === 401) {
@@ -745,10 +741,8 @@ export default {
             // this.suggestions = this.listVenue
           }, 25)
           this.setState({ isSearch: true })
-        }
-        if (this.selectedCity !== null) {
+        } else if (this.selectedCity !== null) {
           this.isCityId = this.selectedCity.id
-          console.warn(this.isCityId)
         }
       }
     },

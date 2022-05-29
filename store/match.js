@@ -13,7 +13,9 @@ export const state = () => ({
   isSoccer: false,
   isBasket: false,
   isMiniSoccer: false,
-  timeDur: ''
+  timeDur: '',
+  lat: 0,
+  lng: 0
 })
 
 export const mutations = {
