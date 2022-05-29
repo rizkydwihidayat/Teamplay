@@ -171,7 +171,10 @@
                     @input="Searchcity"
                   >
                   </vue-autosuggest>
-                  <div class="maps-area" style="height: 300px; width: 100%;margin-bottom: 15px">
+                  <div
+                    class="maps-area"
+                    style="height: 300px; width: 100%; margin-bottom: 15px"
+                  >
                     <GeoSelector :key="key" v-model="location" />
                   </div>
                   <v-textarea
@@ -271,26 +274,75 @@
         </v-menu>
         <v-layout row wrap>
           <v-flex xs5 class="row-player1">
-            <v-text-field
+            <v-menu
+              ref="menu"
               v-model="startTime"
-              outlined
-              required
-              placeholder="Waktu mulai"
-              append-icon="mdi-clock-outline"
-              @keypress="checkValue($event)"
-            ></v-text-field>
+              :close-on-content-click="false"
+              :nudge-right="40"
+              :return-value.sync="time"
+              transition="scale-transition"
+              offset-y
+              max-width="290px"
+              min-width="290px"
+            >
+              <template #activator="{ on, attrs }">
+                <v-text-field
+                  v-model="time"
+                  outlined
+                  required
+                  placeholder="Waktu mulai"
+                  append-icon="mdi-clock-outline"
+                  readonly
+                  v-bind="attrs"
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-time-picker
+                v-if="startTime"
+                ref="picker"
+                v-model="time"
+                format="24hr"
+                class="custom-time-picker"
+                :class="{ 'use-hours-only': useHoursOnly }"
+                @click:hour="selectingHourIfUseHoursOnly(time)"
+              ></v-time-picker>
+            </v-menu>
           </v-flex>
           <v-flex xs1></v-flex>
           <v-flex xs5 class="row-player2">
-            <v-text-field
+            <v-menu
+              ref="menu2"
               v-model="endTime"
-              outlined
-              required
-              placeholder="Waktu selesai"
-              append-icon="mdi-clock-outline"
-              @change="checkEndTime"
-              @keypress="checkValue($event)"
-            ></v-text-field>
+              :close-on-content-click="false"
+              :nudge-right="40"
+              :return-value.sync="time2"
+              transition="scale-transition"
+              offset-y
+              max-width="290px"
+              min-width="290px"
+            >
+              <template #activator="{ on, attrs }">
+                <v-text-field
+                  v-model="time2"
+                  outlined
+                  required
+                  placeholder="Waktu selesai"
+                  append-icon="mdi-clock-outline"
+                  readonly
+                  v-bind="attrs"
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-time-picker
+                v-if="endTime"
+                ref="picker2"
+                v-model="time2"
+                format="24hr"
+                class="custom-time-picker"
+                :class="{ 'use-hours-only': useHoursOnly }"
+                @click:hour="selectingEndTime(time2)"
+              ></v-time-picker>
+            </v-menu>
           </v-flex>
         </v-layout>
         <div class="bottom-button">
@@ -328,7 +380,7 @@
 import { mapActions, mapState, mapMutations } from 'vuex'
 import { VueAutosuggest } from 'vue-autosuggest'
 import { LMap, LTileLayer, LMarker, LPopup } from 'vue2-leaflet'
-import GeoSelector from "~/components/GeoSelector";
+import GeoSelector from '~/components/GeoSelector'
 import { _numberFormat } from '~/utils'
 
 export default {
@@ -340,7 +392,7 @@ export default {
     LMarker,
     LPopup,
     // LGeosearch,
-    GeoSelector
+    GeoSelector,
   },
   data() {
     return {
@@ -348,7 +400,9 @@ export default {
       itemsCity: [],
       key: 1,
       isDisable: false,
-      startTime: '',
+      time: "00:00",
+      time2: "00:00",
+      startTime: false,
       endTime: '',
       minPlayer: 0,
       maxPlayer: 0,
@@ -417,6 +471,7 @@ export default {
       showBtnAdd: false,
       sport: '',
       location: {},
+      useHoursOnly: true,
     }
   },
   computed: {
@@ -729,6 +784,22 @@ export default {
         return true
       }
     },
+    selectingHourIfUseHoursOnly(time) {
+      if (this.useHoursOnly) {
+        this.$nextTick(() => {
+          this.$refs.picker.selectingHour = true;
+          this.$refs.menu.save(time)
+        });
+      }
+    },
+    selectingEndTime(time) {
+      if (this.useHoursOnly) {
+        this.$nextTick(() => {
+          this.$refs.picker2.selectingHour = true;
+          this.$refs.menu2.save(time)
+        });
+      }
+    }
   },
 }
 </script>
