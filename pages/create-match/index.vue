@@ -131,7 +131,7 @@
                 <v-flex xs2 s2 class="close-modal">
                   <div class="align-right" @click="closeDialog">X</div>
                 </v-flex>
-                <v-flex xs6 s6>
+                <v-flex xs8 s8>
                   <span class="title-filter">Tambah Lapangan</span>
                 </v-flex>
               </v-layout>
@@ -811,7 +811,7 @@ export default {
   left: 0;
   right: 0;
   max-width: 480px;
-  max-height: 800px;
+  max-height: 700px;
   overflow: scroll;
   margin: auto;
   border-radius: 16px 16px 0px 0px;
