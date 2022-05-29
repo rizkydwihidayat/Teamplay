@@ -127,7 +127,7 @@
             </v-layout>
           </v-card-title>
           <hr class="hr-divider" />
-          <v-card-text class="list-player">
+          <!-- <v-card-text class="list-player">
             <p v-if="matchdetail.player.length === 0">
               Belum ada yang bergabung
             </p>
@@ -141,7 +141,7 @@
                 {{ item.gender.charAt(0) }}</span
               >
             </div>
-          </v-card-text>
+          </v-card-text> -->
         </v-card>
       </v-dialog>
     </div>

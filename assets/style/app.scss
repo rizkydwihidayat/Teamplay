@@ -30,6 +30,17 @@ p {
 .ml-16 {
   margin-left: 16px !important;
 }
-span {
-  color: black;
+// span {
+//   color: black;
+// }
+.custom-time-picker {
+  .v-time-picker-title {
+    justify-content: center;
+  }
+
+  &.use-hours-only {
+    .v-time-picker-title {
+      pointer-events: none;
+    }
+  }
 }

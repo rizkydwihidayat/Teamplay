@@ -9,6 +9,8 @@
 
 <script>
 import { mapState } from 'vuex'
+import 'leaflet/dist/leaflet.css'
+import 'leaflet-geosearch/dist/geosearch.css'
 export default {
   name: "HomePage",
   components: {

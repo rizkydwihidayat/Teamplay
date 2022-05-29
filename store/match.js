@@ -148,7 +148,7 @@ export const actions = {
       })
       .catch((error) => {
         // handle error
-        if (error.response.status !== '404') {
+        if (error.response.status !== 404) {
           const alertMsg = {
             msg: 'Token kadaluwarsa, silahkan login kembali.',
             color: 'secondary',
@@ -174,7 +174,7 @@ export const actions = {
       .$get(`https://api.naufalbahri.com/api/v1/match/${id}`)
       .catch((error) => {
         // handle error
-        if (error.response.status !== '404') {
+        if (error.response.status !== 404) {
           const alertMsg = {
             msg: 'Token kadaluwarsa, silahkan login kembali.',
             color: 'secondary',
@@ -182,9 +182,10 @@ export const actions = {
           dispatch('ui/showAlert', alertMsg, { root: true })
           this.$router.push('/login')
           //   dispatch('user/refreshAuth', null, { root: true })
-        } else if (error.response.status === '500') {
+        } else if (error.response.status === 500) {
           const alertMsg = {
-            msg: 'Get item store failed',
+            msg: error,
+            color: 'secondary',
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
           this.$router.push('/login')
@@ -194,12 +195,11 @@ export const actions = {
   },
 
   getListCity({ context, commit, dispatch }, { keyword }) {
-    const params = { q: keyword }
     return this.$axios
-      .$get(`https://api.naufalbahri.com/api/v1/static/cities`, params)
+      .$get(`https://api.naufalbahri.com/api/v1/static/cities?q=${keyword}`)
       .catch((error) => {
         // handle error
-        if (error.response.status !== '404') {
+        if (error.response.status !== 404) {
           const alertMsg = {
             msg: 'Token kadaluwarsa, silahkan login kembali.',
             color: 'secondary',
@@ -209,7 +209,8 @@ export const actions = {
           //   dispatch('user/refreshAuth', null, { root: true })
         } else {
           const alertMsg = {
-            msg: 'Get item store failed',
+            msg: error,
+            color: 'secondary',
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
         }
@@ -217,7 +218,7 @@ export const actions = {
       })
   },
 
-  getListVenue({ context, commit, dispatch }, { keyword, cityID, bearer }) {
+  getListVenue({ context, commit, dispatch }, { keyword, cityID, bearer, sport }) {
     const axiosOption = {
       headers: {
         xToken: bearer,
@@ -225,14 +226,14 @@ export const actions = {
     }
     return this.$axios
       .$get(
-        `https://api.naufalbahri.com/api/v1/venue?q=${keyword}&cityId=${cityID}`,
+        `https://api.naufalbahri.com/api/v1/venue?q=${keyword}&cityId=${cityID}&sport=${sport}`,
         axiosOption
       )
       .catch((error) => {
         // handle error
-        if (error.response.status !== '404') {
+        if (error.response.status === 403) {
           const alertMsg = {
-            msg: 'Token kadaluwarsa, silahkan login kembali.',
+            msg: error.response.data.message,
             color: 'secondary',
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
@@ -240,7 +241,8 @@ export const actions = {
           //   dispatch('user/refreshAuth', null, { root: true })
         } else {
           const alertMsg = {
-            msg: 'Get item store failed',
+            msg: error.response.data.message,
+            color: 'secondary',
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
         }

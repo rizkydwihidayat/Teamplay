@@ -17,7 +17,9 @@
           <v-flex xs7 s7 class="profile-name">
             <span class="name">{{ namaUser }}</span
             ><br />
-            <v-chip v-if="isTrustedMember === false" color="#eeeeee33" small>Member </v-chip>
+            <v-chip v-if="isTrustedMember === false" color="#eeeeee33" small
+              >Member
+            </v-chip>
             <v-chip v-else color="#eeeeee33" small>Trusted Member </v-chip>
             <br />
             <span class="point"
@@ -25,7 +27,7 @@
               <img width="12" height="12" src="~/assets/svg/alert.svg" alt="<"
             /></span>
             <div class="progress">
-              <div class="progress-bar"></div>
+              <div class="progress-bar">{{userPoint}}</div>
             </div>
             <br />
           </v-flex>
@@ -86,7 +88,7 @@
         </v-flex>
       </v-layout>
       <hr class="hr-divider" />
-      <v-layout row wrap class="info-pribadi">
+      <v-layout v-if="!isLoginWithGoogle" row wrap class="info-pribadi" @click="changePass">
         <v-flex xs6 s6>
           <span>Ubah Password</span>
         </v-flex>
@@ -116,17 +118,85 @@
       </v-layout>
       <hr class="hr-divider" />
     </div>
+    <v-dialog
+      v-model="showdialogchangepass"
+      transition="dialog-bottom-transition wrap-400"
+    >
+      <v-card class="modalShare">
+        <v-card-title class="headerModal mt-2">
+          <v-layout row wrap>
+            <v-flex xs2 s2 class="close-modal">
+              <div class="align-right" @click="closeDialogPass">X</div>
+            </v-flex>
+            <v-flex xs6 s6>
+              <span class="title-filter">Ubah Password</span>
+            </v-flex>
+          </v-layout>
+        </v-card-title>
+        <hr class="hr-divider" />
+        <v-card-text>
+          <div>
+            <p>Password Baru</p>
+            <v-form
+              ref="formPass"
+              v-model="validPass"
+              lazy-validation
+              @keyup.native.enter="valid && submitChangePass($event)"
+            >
+              <v-text-field
+                v-model="passInput"
+                :type="showpass ? 'text' : 'password'"
+                :validate-on-blur="true"
+                autocomplete="password"
+                required
+                outlined
+                placeholder="Password"
+                :maxlength="27"
+                @click:append="showpass = !showpass"
+              >
+                <template #append>
+                  <div @click="showpass = !showpass">
+                    <IcSeen v-if="!showpass" class="form-icon" />
+                    <IcSeen v-else :reveal="true" class="form-icon" />
+                  </div>
+                </template>
+              </v-text-field>
+              <div class="login-button">
+                <v-btn
+                  depressed
+                  color="primary"
+                  rounded
+                  :disabled="!validPass"
+                  @click="submitChangePass"
+                >
+                  <span>Simpan</span>
+                </v-btn>
+              </div></v-form
+            >
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
+const components = {
+  IcSeen: () => import('~/components/svg/IcSeen'),
+}
 export default {
   name: 'ProfilePage',
+  components,
   data() {
     return {
       initialName: '',
       showBtnTrusted: false,
-      isTrustedMember: false
+      isTrustedMember: false,
+      showdialogchangepass: false,
+      oldPass: false,
+      showpass: false,
+      passInput: '',
+      validPass: true
     }
   },
   computed: {
@@ -144,6 +214,9 @@ export default {
     this.checkPoint(this.userPoint)
   },
   methods: {
+    ...mapActions({
+      changePassword: 'user/changePassword',
+    }),
     back() {
       this.$store.$router.push('/')
     },
@@ -159,13 +232,38 @@ export default {
     goSignOut() {
       this.$store.$router.push('/login')
     },
+    changePass() {
+      this.showdialogchangepass = true
+    },
+    closeDialogPass() {
+      this.showdialogchangepass = false
+    },
     checkPoint(point) {
       if (point >= 0 && point < 100) {
         const bar = document.getElementsByClassName('progress-bar')[0]
-        const width = 20 + '%';
+        const width = 20 + '%'
         bar.style.width = width
       } else if (point === 100) {
         this.showBtnTrusted = true
+      }
+    },
+    submitChangePass() {
+      if (this.$refs.formPass.validate()) {
+        const bearer = this.$store.state.user.accKey
+        const userID = this.$store.state.user.userID
+        const params = {
+          password: this.passInput,
+        }
+        this.changePassword({params, bearer, userID})
+          .then((resp) => {
+            console.warn(resp);
+            if (this.isLoginWithGoogle) {
+              this.$router.push('/')
+            }
+          })
+          .catch((error) => {
+            console.log(error)
+          })
       }
     }
   },
@@ -173,10 +271,35 @@ export default {
 </script>
 <style scoped>
 .v-slider__track-container {
-   height: 10px;
+  height: 10px;
 }
 .v-slider__track {
-   height: 10px;
+  height: 10px;
+}
+.login-button {
+  /* position: absolute; */
+  /* bottom: 20px; */
+  /* left: 0%;
+  right: 0%; */
+  text-align: center;
+  /* margin: 0px 20px; */
+}
+.title-filter {
+  font-family: Poppins;
+  font-weight: 600;
+  font-size: 20px;
+}
+.close-modal {
+  font-family: Poppins;
+  font-weight: 500;
+  color: #424242;
+  cursor: pointer;
+  padding-right: 30px;
+}
+.form-icon {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
 }
 h3 {
   font-family: Poppins;
@@ -241,9 +364,13 @@ h3 {
   border: 0;
   background: #e3e3e3;
 }
+span, p {
+  font-family: Poppins !important;
+  text-transform: capitalize;
+}
 .info-pribadi,
 .version {
-  font-family: Poppins;
+  font-family: Poppins !important;
   margin-left: 20px;
   margin-bottom: 10px;
   margin-top: 10px;
@@ -310,5 +437,23 @@ h3 {
     margin: auto;
     padding: 10px 10px;
   }
+}
+.modalShare {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 480px;
+  max-height: 700px;
+  overflow: scroll;
+  margin: auto;
+  border-radius: 16px 16px 0px 0px;
+}
+.hr-divider {
+  margin: 10px 0;
+  height: 1px;
+  border: 0;
+  background: #e3e3e3;
 }
 </style>

@@ -253,5 +253,56 @@ export const actions = {
         }
         return false
       })
+  },
+
+  changePassword({ dispatch, commit, state }, { bearer, userID, params }) {
+    this.$axios.setHeader(
+      'Content-Type',
+      'application/json',
+      ['put']
+    )
+    const axiosOption = {
+      headers: {
+        xToken: bearer
+      }
+    }
+    const data = {
+      password: params.password,
+    }
+    console.warn(data);
+    const postData = JSON.stringify(data)
+    console.warn('pust', postData);
+    return this.$axios
+      .$put(
+        `https://api.naufalbahri.com/api/v1/users/${userID}/password`, postData, axiosOption
+      )
+      .then((result) => {
+        commit('setState', { isLoading: false })
+        const alertMsg = {
+          msg: 'Password berhasil diperbarui.',
+          color: 'primary',
+        }
+        dispatch('ui/showAlert', alertMsg, { root: true })
+        this.$router.push('/profile')
+        return result
+      })
+      .catch((error) => {
+        // handle error
+        if (error.response.status !== '404') {
+          const alertMsg = {
+            msg: 'Token kadaluwarsa, silahkan login kembali.',
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/login')
+          //   dispatch('user/refreshAuth', null, { root: true })
+        } else {
+          const alertMsg = {
+            msg: 'Get item store failed',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+        }
+        return false
+      })
   }
 }
