@@ -27,6 +27,7 @@
           ref="formGoogle"
           v-model="validGoogle"
           lazy-validation
+          @submit.prevent="submitEmailGoogle($event)"
           @keyup.native.enter="validGoogle && submitEmailGoogle($event)"
         >
           <v-text-field

@@ -6,13 +6,13 @@
       position.lat || userLocation.lat || defaultLocation.lat,
       position.lng || userLocation.lng || defaultLocation.lng,
     ]"
-    @dblclick="onMapClick"
+    style="height: 300px; width: 100%"
+    @click="onMapClick"
   >
     <l-tile-layer
       :url="tileProvider.url"
       :attribution="tileProvider.attribution"
     />
-    <l-geosearch :options="geoSearchOptions"></l-geosearch>
     <l-marker
       v-if="position.lat && position.lng"
       visible
@@ -24,15 +24,17 @@
     >
       <l-tooltip :content="tooltipContent" :options="{ permanent: true }" />
     </l-marker>
+    <v-geosearch :options="geoSearchOptions"></v-geosearch>
   </l-map>
 </template>
 <script>
 import { LMap, LMarker, LTileLayer, LTooltip } from 'vue2-leaflet'
 import { OpenStreetMapProvider } from 'leaflet-geosearch'
-import { LGeosearch } from 'vue2-leaflet-geosearch'
+import VGeosearch from 'vue2-leaflet-geosearch'
 import { icon } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-geosearch/dist/geosearch.css'
+
 export default {
   name: 'GeoSelector',
   components: {
@@ -40,7 +42,7 @@ export default {
     LTileLayer,
     LMarker,
     LTooltip,
-    LGeosearch,
+    VGeosearch,
   },
   props: {
     value: {
@@ -76,8 +78,15 @@ export default {
           '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
         url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       },
-      zoom: 18,
+      zoom: 12,
       dragging: false,
+    }
+  },
+  head() {
+    return {
+      link: [
+        { rel: 'stylesheet', href: 'https://unpkg.com/leaflet-geosearch@2.6.0/assets/css/leaflet.css' },
+      ],
     }
   },
   computed: {

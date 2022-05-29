@@ -171,7 +171,7 @@
                     @input="Searchcity"
                   >
                   </vue-autosuggest>
-                  <div class="maps-area" style="width: 100%;height: 220px;margin-bottom: 15px">
+                  <div class="maps-area" style="height: 300px; width: 100%;margin-bottom: 15px">
                     <GeoSelector :key="key" v-model="location" />
                   </div>
                   <v-textarea
@@ -547,7 +547,7 @@ export default {
     },
     async Dosearch() {
       this.setState({ isLoading: true })
-      if (this.query.length >= 4 || this.isCityId === 0) {
+      if (this.query.length === 3 && this.isCityId === 0) {
         const bearer = this.$store.state.user.accKey
         const keyword = this.query
         const cityID = 24
@@ -740,7 +740,7 @@ export default {
   left: 0;
   right: 0;
   max-width: 480px;
-  max-height: 700px;
+  max-height: 800px;
   overflow: scroll;
   margin: auto;
   border-radius: 16px 16px 0px 0px;
