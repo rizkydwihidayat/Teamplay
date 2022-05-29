@@ -144,7 +144,7 @@
                 lazy-validation
                 @keyup.native.enter="valid && submitAddVenue($event)"
               >
-                <div class="fields">
+                <div class="fields-add-venue">
                   <v-text-field
                     v-model="inputLapangan"
                     outlined
@@ -215,7 +215,7 @@
                     </v-chip-group>
                   </div>
                   <v-alert outlined text type="warning" icon="mdi-alert-circle">
-                    <span
+                    <span class="notif"
                       >Harga sewa /jam dan minimum durasi sewa jangan salah isi
                       ya!</span
                     >
@@ -899,7 +899,6 @@ small {
   font-family: Poppins;
   padding-left: 20px;
   padding-right: 20px;
-  /* padding-bottom: 20px; */
 }
 .row-player1 {
   margin-left: 12px;
@@ -921,6 +920,7 @@ small {
 .create-btn {
   width: 100% !important;
 }
+.fields-add-venue,
 .v-list,
 .v-picker {
   font-family: Poppins !important;
@@ -936,80 +936,7 @@ small {
 .v-btn {
   text-transform: capitalize !important;
 }
-</style>
-<style>
-.main {
-  background: lightgray !important;
-  padding: 0px 0px !important;
-  /* height: 100vh !; */
-}
-#autosuggest__input {
-  outline: none;
-  outline: #616161;
-  position: relative;
-  display: block !important;
-  border: 1px solid #616161 !important;
-  border-radius: 3px;
-  padding: 10px;
-  width: 100%;
-  box-sizing: border-box;
-  height: 56px !important;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-}
-
-#autosuggest__input.autosuggest__input-open {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-.autosuggest__results-container {
-  position: relative;
-  width: 100%;
-}
-
-.autosuggest__results {
-  font-weight: 300;
-  margin: 0;
-  position: absolute;
-  z-index: 5;
-  width: 100%;
-  border: 1px solid #e0e0e0;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  background: white;
-  padding: 0px 20px 0px 20px;
-  max-height: 200px;
-  overflow-y: scroll !important;
-}
-
-.autosuggest__results ul {
-  list-style: none;
-  padding-left: 0;
-  margin: 5px;
-}
-
-.autosuggest__results .autosuggest__results-item {
-  cursor: pointer;
-  padding: 15px !important;
-}
-
-#autosuggest ul:nth-child(1) > .autosuggest__results_title {
-  border-top: none;
-}
-
-.autosuggest__results .autosuggest__results-before {
-  color: gray;
-  font-size: 12px;
-  margin-left: 0;
-  padding: 15px 13px 5px;
-  border-top: 1px solid lightgray;
-}
-
-.autosuggest__results .autosuggest__results-item:active,
-.autosuggest__results .autosuggest__results-item:hover,
-.autosuggest__results .autosuggest__results-item:focus,
-.autosuggest__results
-  .autosuggest__results-item.autosuggest__results-item--highlighted {
-  background-color: #f6f6f6;
+.notif {
+  color: #424242;
 }
 </style>
