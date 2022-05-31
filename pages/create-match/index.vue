@@ -96,7 +96,11 @@
         <v-card v-if="selected" outlined class="detail-venue">
           <div class="maps-area" style="width: 100%; height: 220px">
             <span> Detail lapangan </span>
-            <l-map style="height: 200px" :zoom="zoom" :center="center">
+            <l-map
+              style="height: 200px; z-index: 0"
+              :zoom="zoom"
+              :center="center"
+            >
               <l-tile-layer :url="url"></l-tile-layer>
               <l-marker ref="marker" :lat-lng="markerLatLng">
                 <l-popup ref="popup">{{ selected.cityName }}</l-popup>
@@ -140,9 +144,9 @@
             <v-card-text>
               <v-form
                 ref="form"
-                v-model="valid"
+                v-model="validVenue"
                 lazy-validation
-                @keyup.native.enter="valid && submitAddVenue($event)"
+                @keyup.native.enter="validVenue && submitAddVenue($event)"
               >
                 <div class="fields-add-venue">
                   <v-text-field
@@ -218,7 +222,7 @@
                     class="create-btn"
                     depressed
                     color="primary"
-                    :disabled="!valid"
+                    :disabled="!validVenue"
                     @click="submitAddVenue"
                   >
                     <span> Simpan</span>
@@ -394,8 +398,8 @@ export default {
       itemsCity: [],
       key: 1,
       isDisable: false,
-      time: "00:00",
-      time2: "00:00",
+      time: '00:00',
+      time2: '00:00',
       startTime: false,
       endTime: '',
       minPlayer: 0,
@@ -404,11 +408,12 @@ export default {
       inputLapangan: '',
       inputKota: '',
       inputAlamat: '',
-      inputDurasi: '',
-      inputSewa: '',
+      inputDurasi: 0,
+      inputSewa: 0,
       isCityId: 0,
       totalPay: 0,
-      valid: true,
+      valid: false,
+      validVenue: false,
       modal_tgl_awal: false,
       tgl_awal: '',
       gender: '',
@@ -443,7 +448,7 @@ export default {
             this.selected = selected.item
             this.query = selected.item.venueName
           },
-        }
+        },
       },
       cityConfigs: {
         default: {
@@ -456,6 +461,7 @@ export default {
         },
       },
       center: [-6.529217, 106.766574],
+      // center: [ this.latitude, this.longitude],
       zoom: 12,
       mapTypeId: 'terrain',
       markerLatLng: [-6.529217, 106.766574],
@@ -473,6 +479,9 @@ export default {
       isLoading: (state) => state.match.isLoading,
       ListVenue: (state) => state.match.listVenue,
       timeDur: (state) => state.match.timeDur,
+      latitude: (state) => state.match.lat,
+      longitude: (state) => state.match.lng,
+      address: (state) => state.match.address
     }),
     filteredOptions() {
       return [
@@ -494,6 +503,7 @@ export default {
       getCity: 'match/getListCity',
       searchVenue: 'match/getListVenue',
       createMatch: 'match/createMatch',
+      createVenue: 'match/createVenue',
     }),
     ...mapMutations({
       setState: 'match/setState',
@@ -519,10 +529,48 @@ export default {
     citySuggestion(cities) {
       return cities.item.name
     },
-    submitAddVenue() {
-      this.showdialogadd = false
-      this.query = this.inputLapangan
+    async submitAddVenue() {
+      // this.showdialogadd = false
+      // this.query = this.inputLapangan
+      if (this.latitude !== 0 && this.latitude !== 0) {
+        // this.inputAlamat = this.address
+        const lat = this.latitude.toString()
+        const lot = this.longitude.toString()
+        const temp = lat + ', ' + lot
+        lat.concat(lot)
+        const bearer = this.$store.state.user.accKey
+        const params = {
+          cityId: this.isCityId,
+          sportCategory: this.sport,
+          name: this.inputLapangan,
+          address: this.inputAlamat,
+          coordinate: temp,
+          minimumDuration: this.inputDurasi,
+          pricePerHours: this.inputSewa
+        }
+        console.warn('cek params', params);
+      await this.createVenue({
+        params,
+        bearer,
+      })
+        .then(async () => {
+          // this.$store.$router.push('/')
+          this.showdialogadd = false
+          this.query = this.inputLapangan
+          await this.Dosearch()
+        })
+        .catch((error) => {
+          if (error.response.status === 401) {
+            const alertMsg = {
+              msg: 'Sesi telah berakhir, merefresh halaman',
+            }
+            this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+          }
+          return false
+        })
+      }
       // await this.Dosearch()
+      
     },
     async submitCreateMatch() {
       this.setState({ isLoading: true })
@@ -616,95 +664,75 @@ export default {
           return false
         })
         // eslint-disable-next-line no-prototype-builtins
-            if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
-        await this.$store
-          .dispatch('match/setListVenue', resultsearch)
-          .finally(this.setState({ isLoading: false }))
-        this.timeout = setTimeout(() => {
-          // this.suggestions = []
-          // this.selected = null
-          // const venue = this.filterResults(
-          //   resultsearch.data,
-          //   this.query,
-          //   'venueName'
-          // )
-          // venue.length && this.suggestions.push({ data: venue })
-          Promise.all([resultsearch]).then((values) => {
-            this.suggestions = []
-            this.selected = null
-            const venue = this.filterResults(
-              resultsearch.data,
-              this.query,
-              'venueName'
-            )
-            venue.length && this.suggestions.push({ data: venue })
-            // const venue = this.filterResults(values.data, this.query, "title");
-            // venue.length &&
-            //   this.suggestions.push({ name: "venue", data: venue });
-          })
-          // this.suggestions = this.listVenue
-        }, 250)
-        this.setState({ isSearch: true })
-      }
+        if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
+          await this.$store
+            .dispatch('match/setListVenue', resultsearch)
+            .finally(this.setState({ isLoading: false }))
+          this.timeout = setTimeout(() => {
+            Promise.all([resultsearch]).then((values) => {
+              this.suggestions = []
+              this.selected = null
+              const venue = this.filterResults(
+                resultsearch.data,
+                this.query,
+                'venueName'
+              )
+              venue.length && this.suggestions.push({ data: venue })
+            })
+            // this.suggestions = this.listVenue
+          }, 250)
+          this.setState({ isSearch: true })
+        }
         this.showBtnAdd = true
       }
-      // else if (this.isCityId !== 0) {
-      //   const bearer = this.$store.state.user.accKey
-      //   const keyword = this.query
-      //   const cityID = this.isCityId
-      //   const sport = this.sport
-      //   const resultsearch = await this.searchVenue({
-      //     keyword,
-      //     cityID,
-      //     bearer,
-      //     sport,
-      //   }).catch((error) => {
-      //     if (error.response.status === 401) {
-      //       const alertMsg = {
-      //         msg: 'Sesi telah berakhir, merefresh halaman',
-      //       }
-      //       this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-      //     }
-      //     return false
-      //   })
-      //   // eslint-disable-next-line no-prototype-builtins
-      //   if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
-      //     await this.$store
-      //       .dispatch('match/setListVenue', resultsearch)
-      //       .finally(this.setState({ isLoading: false }))
-      //     this.timeout = setTimeout(() => {
-      //       // this.suggestions = []
-      //       // this.selected = null
-      //       // const venue = this.filterResults(
-      //       //   resultsearch.data,
-      //       //   this.query,
-      //       //   'venueName'
-      //       // )
-      //       // venue.length && this.suggestions.push({ data: venue })
-      //       Promise.all([resultsearch]).then((values) => {
-      //         this.suggestions = []
-      //         this.selected = null
-      //         const venue = this.filterResults(
-      //           resultsearch.data,
-      //           this.query,
-      //           'venueName'
-      //         )
-      //         venue.length && this.suggestions.push({ data: venue })
-      //         // const venue = this.filterResults(values.data, this.query, "title");
-      //         // venue.length &&
-      //         //   this.suggestions.push({ name: "venue", data: venue });
-      //       })
-      //       // this.suggestions = this.listVenue
-      //     }, 25)
-      //     this.setState({ isSearch: true })
-      //   }
-      //   this.showBtnAdd = true
-      //   console.warn(this.selected)
-      // }
+      else if (this.query.length === 3 && this.isCityId !== 0) {
+        this.center.push(this.latitude, this.longitude)
+        console.warn(this.center);
+        const bearer = this.$store.state.user.accKey
+        const keyword = this.query
+        const cityID = this.isCityId
+        const sport = this.sport
+        const resultsearch = await this.searchVenue({
+          keyword,
+          cityID,
+          bearer,
+          sport,
+        }).catch((error) => {
+          if (error.response.status === 401) {
+            const alertMsg = {
+              msg: 'Sesi telah berakhir, merefresh halaman',
+            }
+            this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+          }
+          return false
+        })
+        // eslint-disable-next-line no-prototype-builtins
+        if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
+          await this.$store
+            .dispatch('match/setListVenue', resultsearch)
+            .finally(this.setState({ isLoading: false }))
+          this.timeout = setTimeout(() => {
+            Promise.all([resultsearch]).then((values) => {
+              this.suggestions = []
+              this.selected = null
+              const venue = this.filterResults(
+                resultsearch.data,
+                this.query,
+                'venueName'
+              )
+              venue.length && this.suggestions.push({ data: venue })
+            })
+            // this.suggestions = this.listVenue
+          }, 250)
+          this.setState({ isSearch: true })
+        }
+        this.showBtnAdd = true
+        console.warn(this.selected)
+      }
     },
     async Searchcity() {
       this.setState({ isLoading: true })
-      if (this.inputKota.length > 3) {
+      if (this.inputKota.length === 3) {
         const keyword = this.inputKota
         const result = await this.getCity({ keyword }).catch((error) => {
           if (error.response.status === 401) {
@@ -730,9 +758,6 @@ export default {
                 'name'
               )
               city.length && this.cities.push({ data: city })
-              // const venue = this.filterResults(values.data, this.query, "title");
-              // venue.length &&
-              //   this.suggestions.push({ name: "venue", data: venue });
             })
             // if (this.selectedCity !== null) {
             //   // this.isCityId = this.selectedCity.id
@@ -762,7 +787,10 @@ export default {
       return suggestion.venueName
     },
     getSuggestionCity(cities) {
-      return cities.name
+      // const temp = cities.id
+      this.isCityId = cities.item.id
+      console.warn('iddd', this.isCityId);
+      return cities.name && this.isCityId
     },
     numberFormat(number, decimals, decPoint, thousandSep) {
       return typeof _numberFormat !== 'undefined'
@@ -781,19 +809,19 @@ export default {
     selectingHourIfUseHoursOnly(time) {
       if (this.useHoursOnly) {
         this.$nextTick(() => {
-          this.$refs.picker.selectingHour = true;
+          this.$refs.picker.selectingHour = true
           this.$refs.menu.save(time)
-        });
+        })
       }
     },
     selectingEndTime(time) {
       if (this.useHoursOnly) {
         this.$nextTick(() => {
-          this.$refs.picker2.selectingHour = true;
+          this.$refs.picker2.selectingHour = true
           this.$refs.menu2.save(time)
-        });
+        })
       }
-    }
+    },
   },
 }
 </script>
@@ -809,6 +837,7 @@ export default {
   overflow: scroll;
   margin: auto;
   border-radius: 16px 16px 0px 0px;
+  z-index: 10;
 }
 .hr-divider {
   margin: 10px 0;

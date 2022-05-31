@@ -1,6 +1,7 @@
 <template>
   <l-map
     ref="map"
+    v-resize="onResize"
     :zoom="zoom"
     :center="[
       position.lat || userLocation.lat || defaultLocation.lat,
@@ -65,6 +66,8 @@ export default {
         provider: new OpenStreetMapProvider(),
         showMarker: false,
         autoClose: true,
+        style: 'bar',
+        notFoundMessage: 'Maaf, alamat yang kamu cari tidak ditemukan.',
       },
       userLocation: {},
       icon: icon({
@@ -119,6 +122,9 @@ export default {
     ...mapMutations({
       setState: 'match/setState',
     }),
+    onResize() {
+      this.$refs.map.mapObject._onResize();
+    },
     async getAddress() {
       this.loading = true
       let address = 'Unresolved address'
@@ -141,7 +147,8 @@ export default {
       // place the marker on the clicked spot
       this.position = value.latlng
       this.setState({ lat: value.latlng.lat })
-      this.setState({ lat: value.latlng.lng })
+      this.setState({ lng: value.latlng.lng })
+      this.setState({ address: this.address })
     },
     onSearch(value) {
       const loc = value.location
