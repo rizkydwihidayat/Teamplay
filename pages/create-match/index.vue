@@ -553,7 +553,6 @@ export default {
     },
     async submitAddVenue() {
       // this.showdialogadd = false
-      // this.query = this.inputLapangan
       if (this.latitude !== 0 && this.latitude !== 0) {
         // this.inputAlamat = this.address
         const lat = this.latitude.toString()
@@ -561,7 +560,6 @@ export default {
         const temp = lat + ', ' + lot
         lat.concat(lot)
         const bearer = this.$store.state.user.accKey
-        this.query = this.inputLapangan
         const params = {
           cityId: this.isCityId,
           sportCategory: this.sport,
@@ -580,7 +578,6 @@ export default {
           .then(() => {
             // this.$store.$router.push('/')
             this.showdialogadd = false
-            this.query = this.inputLapangan
             this.Dosearch(this.query)
           })
           .catch((error) => {
