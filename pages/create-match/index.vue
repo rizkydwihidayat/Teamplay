@@ -75,6 +75,20 @@
       <div class="fields">
         <span class="title">Lokasi Main</span>
         <vue-autosuggest
+          ref="autocity"
+          v-model="inputKota"
+          :suggestions="cities"
+          :input-props="cityProps"
+          :section-configs="cityConfigs"
+          :render-suggestion="citySuggestion"
+          :get-suggestion-value="getSuggestionCity"
+          class="autofill mb-16"
+          clearable
+          required
+          @input="Searchcity"
+        >
+        </vue-autosuggest>
+        <vue-autosuggest
           ref="autocomplete"
           v-model="query"
           :suggestions="suggestions"
@@ -85,7 +99,7 @@
           class="autofill mb-16"
           clearable
           required
-          @input="Dosearch"
+          @input="Dosearch()"
         >
         </vue-autosuggest>
         <div v-if="showBtnAdd" class="mb-10">
@@ -149,6 +163,21 @@
                 @keyup.native.enter="validVenue && submitAddVenue($event)"
               >
                 <div class="fields-add-venue">
+                  <div class="mb-10">
+                    <span class="title">Kategori Olahraga</span>
+                    <v-chip-group
+                      v-model="inputCategory"
+                      active-class="primary--text"
+                    >
+                      <v-chip
+                        v-for="data in filterCategory"
+                        :key="data"
+                        :value="data"
+                        @input="checkMinPlayer(data)"
+                        >{{ data }}</v-chip
+                      >
+                    </v-chip-group>
+                  </div>
                   <v-text-field
                     v-model="inputLapangan"
                     outlined
@@ -186,6 +215,7 @@
                   <v-text-field
                     v-model="inputSewa"
                     outlined
+                    label="Harga sewa per jam"
                     placeholder="Harga sewa per jam"
                     required
                     @keypress="checkValue($event)"
@@ -193,25 +223,11 @@
                   <v-text-field
                     v-model="inputDurasi"
                     outlined
+                    label="Minimum durasi sewa"
                     placeholder="Minimum durasi sewa"
                     required
                     @keypress="checkValue($event)"
                   ></v-text-field>
-                  <div class="mb-10">
-                    <span class="title">Kategori Olahraga</span>
-                    <v-chip-group
-                      v-model="inputCategory"
-                      active-class="primary--text"
-                    >
-                      <v-chip
-                        v-for="data in filterCategory"
-                        :key="data"
-                        :value="data"
-                        @input="checkMinPlayer(data)"
-                        >{{ data }}</v-chip
-                      >
-                    </v-chip-group>
-                  </div>
                   <v-alert outlined text type="warning" icon="mdi-alert-circle">
                     <span class="notif"
                       >Harga sewa /jam dan minimum durasi sewa jangan salah isi
@@ -288,6 +304,7 @@
                   v-model="time"
                   outlined
                   required
+                  label="Waktu mulai"
                   placeholder="Waktu mulai"
                   append-icon="mdi-clock-outline"
                   readonly
@@ -324,6 +341,7 @@
                   v-model="time2"
                   outlined
                   required
+                  label="Waktu selesai"
                   placeholder="Waktu selesai"
                   append-icon="mdi-clock-outline"
                   readonly
@@ -401,7 +419,7 @@ export default {
       time: '00:00',
       time2: '00:00',
       startTime: false,
-      endTime: '',
+      endTime: false,
       minPlayer: 0,
       maxPlayer: 0,
       inputName: '',
@@ -446,7 +464,7 @@ export default {
           label: 'Venue Lapangan',
           onSelected: (selected) => {
             this.selected = selected.item
-            this.query = selected.item.venueName
+            this.query = selected.item.venueName + ', ' + selected.item.cityName
           },
         },
       },
@@ -472,6 +490,8 @@ export default {
       sport: '',
       location: {},
       useHoursOnly: true,
+      tempCityName: '',
+      temp: '',
     }
   },
   computed: {
@@ -481,7 +501,7 @@ export default {
       timeDur: (state) => state.match.timeDur,
       latitude: (state) => state.match.lat,
       longitude: (state) => state.match.lng,
-      address: (state) => state.match.address
+      address: (state) => state.match.address,
     }),
     filteredOptions() {
       return [
@@ -513,6 +533,8 @@ export default {
     },
     closeDialog() {
       this.showdialogadd = false
+      this.inputKota = ''
+      this.isCityId = 0
     },
     back() {
       this.$store.$router.push('/')
@@ -539,6 +561,7 @@ export default {
         const temp = lat + ', ' + lot
         lat.concat(lot)
         const bearer = this.$store.state.user.accKey
+        this.query = this.inputLapangan
         const params = {
           cityId: this.isCityId,
           sportCategory: this.sport,
@@ -546,31 +569,31 @@ export default {
           address: this.inputAlamat,
           coordinate: temp,
           minimumDuration: this.inputDurasi,
-          pricePerHours: this.inputSewa
+          pricePerHours: this.inputSewa,
         }
-        console.warn('cek params', params);
-      await this.createVenue({
-        params,
-        bearer,
-      })
-        .then(async () => {
-          // this.$store.$router.push('/')
-          this.showdialogadd = false
-          this.query = this.inputLapangan
-          await this.Dosearch()
+        console.warn('cek params', params)
+        this.Dosearch()
+        await this.createVenue({
+          params,
+          bearer,
         })
-        .catch((error) => {
-          if (error.response.status === 401) {
-            const alertMsg = {
-              msg: 'Sesi telah berakhir, merefresh halaman',
+          .then(() => {
+            // this.$store.$router.push('/')
+            this.showdialogadd = false
+            this.query = this.inputLapangan
+            this.Dosearch(this.query)
+          })
+          .catch((error) => {
+            if (error.response.status === 401) {
+              const alertMsg = {
+                msg: 'Sesi telah berakhir, merefresh halaman',
+              }
+              this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
             }
-            this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-          }
-          return false
-        })
+            return false
+          })
       }
-      // await this.Dosearch()
-      
+      // this.Dosearch()
     },
     async submitCreateMatch() {
       this.setState({ isLoading: true })
@@ -618,7 +641,8 @@ export default {
     },
     // eslint-disable-next-line vue/no-dupe-keys
     totalPayment(price) {
-      const calculated = parseInt(this.endTime) - parseInt(this.startTime)
+      console.warn(parseInt(this.time2));
+      const calculated = parseInt(this.time2) - parseInt(this.time)
       const result = calculated * price
       return result
     },
@@ -642,54 +666,11 @@ export default {
           break
       }
     },
-    async Dosearch() {
+    async Dosearch(val) {
       this.setState({ isLoading: true })
-      if (this.query.length === 3 && this.isCityId === 0) {
+      if (this.query.length === 3 && this.isCityId !== 0) {
         const bearer = this.$store.state.user.accKey
-        const keyword = this.query
-        const cityID = 24
-        const sport = this.sport
-        const resultsearch = await this.searchVenue({
-          keyword,
-          cityID,
-          bearer,
-          sport,
-        }).catch((error) => {
-          if (error.response.status === 401) {
-            const alertMsg = {
-              msg: 'Sesi telah berakhir, merefresh halaman',
-            }
-            this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-          }
-          return false
-        })
-        // eslint-disable-next-line no-prototype-builtins
-        if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
-          await this.$store
-            .dispatch('match/setListVenue', resultsearch)
-            .finally(this.setState({ isLoading: false }))
-          this.timeout = setTimeout(() => {
-            Promise.all([resultsearch]).then((values) => {
-              this.suggestions = []
-              this.selected = null
-              const venue = this.filterResults(
-                resultsearch.data,
-                this.query,
-                'venueName'
-              )
-              venue.length && this.suggestions.push({ data: venue })
-            })
-            // this.suggestions = this.listVenue
-          }, 250)
-          this.setState({ isSearch: true })
-        }
-        this.showBtnAdd = true
-      }
-      else if (this.query.length === 3 && this.isCityId !== 0) {
-        this.center.push(this.latitude, this.longitude)
-        console.warn(this.center);
-        const bearer = this.$store.state.user.accKey
-        const keyword = this.query
+        const keyword = val === 'undefined' ? val : this.query
         const cityID = this.isCityId
         const sport = this.sport
         const resultsearch = await this.searchVenue({
@@ -727,8 +708,7 @@ export default {
           this.setState({ isSearch: true })
         }
         this.showBtnAdd = true
-        console.warn(this.selected)
-      }
+      } 
     },
     async Searchcity() {
       this.setState({ isLoading: true })
@@ -784,12 +764,13 @@ export default {
       )
     },
     getSuggestionValue(suggestion) {
-      return suggestion.venueName
+      this.tempCityName = suggestion.item.cityName
+      return suggestion.venueName && this.tempCityName
     },
     getSuggestionCity(cities) {
       // const temp = cities.id
       this.isCityId = cities.item.id
-      console.warn('iddd', this.isCityId);
+      console.warn('iddd', this.isCityId)
       return cities.name && this.isCityId
     },
     numberFormat(number, decimals, decPoint, thousandSep) {
@@ -814,11 +795,11 @@ export default {
         })
       }
     },
-    selectingEndTime(time) {
+    selectingEndTime(time2) {
       if (this.useHoursOnly) {
         this.$nextTick(() => {
           this.$refs.picker2.selectingHour = true
-          this.$refs.menu2.save(time)
+          this.$refs.menu2.save(time2)
         })
       }
     },

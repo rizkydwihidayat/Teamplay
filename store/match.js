@@ -309,8 +309,8 @@ export const actions = {
       name: params.name,
       address: params.address,
       coordinate: params.coordinate,
-      minimumDuration: params.minimumDuration,
-      pricePerHours: params.pricePerHours
+      minimumDuration: parseInt(params.minimumDuration),
+      pricePerHours: parseInt(params.pricePerHours)
     }
     const postData = JSON.stringify(data)
     return this.$axios
