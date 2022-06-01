@@ -13,7 +13,10 @@ export const state = () => ({
   isSoccer: false,
   isBasket: false,
   isMiniSoccer: false,
-  timeDur: ''
+  timeDur: '',
+  lat: 0,
+  lng: 0,
+  address: ''
 })
 
 export const mutations = {
@@ -293,4 +296,47 @@ export const actions = {
         }
       })
   },
+
+  createVenue({ context, commit, dispatch }, { params, bearer }) {
+    const axiosOption = {
+      headers: {
+        xToken: bearer,
+      },
+    }
+    const data = {
+      cityId: params.cityId,
+      sportCategory: params.sportCategory,
+      name: params.name,
+      address: params.address,
+      coordinate: params.coordinate,
+      minimumDuration: parseInt(params.minimumDuration),
+      pricePerHours: parseInt(params.pricePerHours)
+    }
+    const postData = JSON.stringify(data)
+    return this.$axios
+      .$post('https://api.naufalbahri.com/api/v1/venue', postData, axiosOption)
+      .catch((error) => {
+        if (error.response.status === 401) {
+          // const errMsg = error.response.data.message
+          //   ? error.response.data.message
+          //   : 'Invalid login credentials.'
+          const errMsg = 'Username atau kata sandi salah'
+          const alertMsg = {
+            msg: errMsg,
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+        } else {
+          // const errMsg = 'Unknown error please contact admin'
+          const errMsg =
+            'Terjadi kesalahan. Silahkan hubungi administrator kami'
+          const alertMsg = {
+            msg: errMsg,
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/')
+        }
+      })
+  }
 }

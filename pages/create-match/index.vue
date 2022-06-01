@@ -75,6 +75,20 @@
       <div class="fields">
         <span class="title">Lokasi Main</span>
         <vue-autosuggest
+          ref="autocity"
+          v-model="inputKota"
+          :suggestions="cities"
+          :input-props="cityProps"
+          :section-configs="cityConfigs"
+          :render-suggestion="citySuggestion"
+          :get-suggestion-value="getSuggestionCity"
+          class="autofill mb-16"
+          clearable
+          required
+          @input="Searchcity"
+        >
+        </vue-autosuggest>
+        <vue-autosuggest
           ref="autocomplete"
           v-model="query"
           :suggestions="suggestions"
@@ -85,7 +99,7 @@
           class="autofill mb-16"
           clearable
           required
-          @input="Dosearch"
+          @input="Dosearch()"
         >
         </vue-autosuggest>
         <div v-if="showBtnAdd" class="mb-10">
@@ -96,7 +110,11 @@
         <v-card v-if="selected" outlined class="detail-venue">
           <div class="maps-area" style="width: 100%; height: 220px">
             <span> Detail lapangan </span>
-            <l-map style="height: 200px" :zoom="zoom" :center="center">
+            <l-map
+              style="height: 200px; z-index: 0"
+              :zoom="zoom"
+              :center="center"
+            >
               <l-tile-layer :url="url"></l-tile-layer>
               <l-marker ref="marker" :lat-lng="markerLatLng">
                 <l-popup ref="popup">{{ selected.cityName }}</l-popup>
@@ -140,23 +158,32 @@
             <v-card-text>
               <v-form
                 ref="form"
-                v-model="valid"
+                v-model="validVenue"
                 lazy-validation
-                @keyup.native.enter="valid && submitAddVenue($event)"
+                @keyup.native.enter="validVenue && submitAddVenue($event)"
               >
-                <div class="fields">
+                <div class="fields-add-venue">
+                  <div class="mb-10">
+                    <span class="title">Kategori Olahraga</span>
+                    <v-chip-group
+                      v-model="inputCategory"
+                      active-class="primary--text"
+                    >
+                      <v-chip
+                        v-for="data in filterCategory"
+                        :key="data"
+                        :value="data"
+                        @input="checkMinPlayer(data)"
+                        >{{ data }}</v-chip
+                      >
+                    </v-chip-group>
+                  </div>
                   <v-text-field
                     v-model="inputLapangan"
                     outlined
                     placeholder="Nama lapangan"
                     required
                   ></v-text-field>
-                  <!-- <v-text-field
-                    v-model="inputKota"
-                    outlined
-                    placeholder="Kota"
-                    required
-                  ></v-text-field> -->
                   <vue-autosuggest
                     ref="autocity"
                     v-model="inputKota"
@@ -188,6 +215,7 @@
                   <v-text-field
                     v-model="inputSewa"
                     outlined
+                    label="Harga sewa per jam"
                     placeholder="Harga sewa per jam"
                     required
                     @keypress="checkValue($event)"
@@ -195,27 +223,13 @@
                   <v-text-field
                     v-model="inputDurasi"
                     outlined
+                    label="Minimum durasi sewa"
                     placeholder="Minimum durasi sewa"
                     required
                     @keypress="checkValue($event)"
                   ></v-text-field>
-                  <div class="mb-10">
-                    <span class="title">Kategori Olahraga</span>
-                    <v-chip-group
-                      v-model="inputCategory"
-                      active-class="primary--text"
-                    >
-                      <v-chip
-                        v-for="data in filterCategory"
-                        :key="data"
-                        :value="data"
-                        @input="checkMinPlayer(data)"
-                        >{{ data }}</v-chip
-                      >
-                    </v-chip-group>
-                  </div>
                   <v-alert outlined text type="warning" icon="mdi-alert-circle">
-                    <span
+                    <span class="notif"
                       >Harga sewa /jam dan minimum durasi sewa jangan salah isi
                       ya!</span
                     >
@@ -224,7 +238,7 @@
                     class="create-btn"
                     depressed
                     color="primary"
-                    :disabled="!valid"
+                    :disabled="!validVenue"
                     @click="submitAddVenue"
                   >
                     <span> Simpan</span>
@@ -290,6 +304,7 @@
                   v-model="time"
                   outlined
                   required
+                  label="Waktu mulai"
                   placeholder="Waktu mulai"
                   append-icon="mdi-clock-outline"
                   readonly
@@ -326,6 +341,7 @@
                   v-model="time2"
                   outlined
                   required
+                  label="Waktu selesai"
                   placeholder="Waktu selesai"
                   append-icon="mdi-clock-outline"
                   readonly
@@ -400,21 +416,22 @@ export default {
       itemsCity: [],
       key: 1,
       isDisable: false,
-      time: "00:00",
-      time2: "00:00",
+      time: '00:00',
+      time2: '00:00',
       startTime: false,
-      endTime: '',
+      endTime: false,
       minPlayer: 0,
       maxPlayer: 0,
       inputName: '',
       inputLapangan: '',
       inputKota: '',
       inputAlamat: '',
-      inputDurasi: '',
-      inputSewa: '',
+      inputDurasi: 0,
+      inputSewa: 0,
       isCityId: 0,
       totalPay: 0,
-      valid: true,
+      valid: false,
+      validVenue: false,
       modal_tgl_awal: false,
       tgl_awal: '',
       gender: '',
@@ -447,7 +464,7 @@ export default {
           label: 'Venue Lapangan',
           onSelected: (selected) => {
             this.selected = selected.item
-            this.query = selected.item.venueName
+            this.query = selected.item.venueName + ', ' + selected.item.cityName
           },
         },
       },
@@ -462,6 +479,7 @@ export default {
         },
       },
       center: [-6.529217, 106.766574],
+      // center: [ this.latitude, this.longitude],
       zoom: 12,
       mapTypeId: 'terrain',
       markerLatLng: [-6.529217, 106.766574],
@@ -472,6 +490,8 @@ export default {
       sport: '',
       location: {},
       useHoursOnly: true,
+      tempCityName: '',
+      temp: '',
     }
   },
   computed: {
@@ -479,6 +499,9 @@ export default {
       isLoading: (state) => state.match.isLoading,
       ListVenue: (state) => state.match.listVenue,
       timeDur: (state) => state.match.timeDur,
+      latitude: (state) => state.match.lat,
+      longitude: (state) => state.match.lng,
+      address: (state) => state.match.address,
     }),
     filteredOptions() {
       return [
@@ -500,6 +523,7 @@ export default {
       getCity: 'match/getListCity',
       searchVenue: 'match/getListVenue',
       createMatch: 'match/createMatch',
+      createVenue: 'match/createVenue',
     }),
     ...mapMutations({
       setState: 'match/setState',
@@ -509,6 +533,8 @@ export default {
     },
     closeDialog() {
       this.showdialogadd = false
+      this.inputKota = ''
+      this.isCityId = 0
     },
     back() {
       this.$store.$router.push('/')
@@ -526,9 +552,45 @@ export default {
       return cities.item.name
     },
     async submitAddVenue() {
-      this.showdialogadd = false
-      this.query = this.inputLapangan
-      await this.Dosearch()
+      // this.showdialogadd = false
+      if (this.latitude !== 0 && this.latitude !== 0) {
+        // this.inputAlamat = this.address
+        const lat = this.latitude.toString()
+        const lot = this.longitude.toString()
+        const temp = lat + ', ' + lot
+        lat.concat(lot)
+        const bearer = this.$store.state.user.accKey
+        const params = {
+          cityId: this.isCityId,
+          sportCategory: this.sport,
+          name: this.inputLapangan,
+          address: this.inputAlamat,
+          coordinate: temp,
+          minimumDuration: this.inputDurasi,
+          pricePerHours: this.inputSewa,
+        }
+        console.warn('cek params', params)
+        this.Dosearch()
+        await this.createVenue({
+          params,
+          bearer,
+        })
+          .then(() => {
+            // this.$store.$router.push('/')
+            this.showdialogadd = false
+            this.Dosearch(this.query)
+          })
+          .catch((error) => {
+            if (error.response.status === 401) {
+              const alertMsg = {
+                msg: 'Sesi telah berakhir, merefresh halaman',
+              }
+              this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+            }
+            return false
+          })
+      }
+      // this.Dosearch()
     },
     async submitCreateMatch() {
       this.setState({ isLoading: true })
@@ -576,7 +638,8 @@ export default {
     },
     // eslint-disable-next-line vue/no-dupe-keys
     totalPayment(price) {
-      const calculated = parseInt(this.endTime) - parseInt(this.startTime)
+      console.warn(parseInt(this.time2));
+      const calculated = parseInt(this.time2) - parseInt(this.time)
       const result = calculated * price
       return result
     },
@@ -600,62 +663,11 @@ export default {
           break
       }
     },
-    async Dosearch() {
+    async Dosearch(val) {
       this.setState({ isLoading: true })
-      if (this.query.length === 3 && this.isCityId === 0) {
+      if (this.query.length === 3 && this.isCityId !== 0) {
         const bearer = this.$store.state.user.accKey
-        const keyword = this.query
-        const cityID = 24
-        const sport = this.sport
-        const resultsearch = await this.searchVenue({
-          keyword,
-          cityID,
-          bearer,
-          sport,
-        }).catch((error) => {
-          if (error.response.status === 401) {
-            const alertMsg = {
-              msg: 'Sesi telah berakhir, merefresh halaman',
-            }
-            this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-          }
-          return false
-        })
-        // eslint-disable-next-line no-prototype-builtins
-        if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
-          await this.$store
-            .dispatch('match/setListVenue', resultsearch)
-            .finally(this.setState({ isLoading: false }))
-          this.timeout = setTimeout(() => {
-            // this.suggestions = []
-            // this.selected = null
-            // const venue = this.filterResults(
-            //   resultsearch.data,
-            //   this.query,
-            //   'venueName'
-            // )
-            // venue.length && this.suggestions.push({ data: venue })
-            Promise.all([resultsearch]).then((values) => {
-              this.suggestions = []
-              this.selected = null
-              const venue = this.filterResults(
-                resultsearch.data,
-                this.query,
-                'venueName'
-              )
-              venue.length && this.suggestions.push({ data: venue })
-              // const venue = this.filterResults(values.data, this.query, "title");
-              // venue.length &&
-              //   this.suggestions.push({ name: "venue", data: venue });
-            })
-            // this.suggestions = this.listVenue
-          }, 25)
-          this.setState({ isSearch: true })
-        }
-        this.showBtnAdd = true
-      } else if (this.isCityId !== 0) {
-        const bearer = this.$store.state.user.accKey
-        const keyword = this.query
+        const keyword = val === 'undefined' ? val : this.query
         const cityID = this.isCityId
         const sport = this.sport
         const resultsearch = await this.searchVenue({
@@ -678,14 +690,6 @@ export default {
             .dispatch('match/setListVenue', resultsearch)
             .finally(this.setState({ isLoading: false }))
           this.timeout = setTimeout(() => {
-            // this.suggestions = []
-            // this.selected = null
-            // const venue = this.filterResults(
-            //   resultsearch.data,
-            //   this.query,
-            //   'venueName'
-            // )
-            // venue.length && this.suggestions.push({ data: venue })
             Promise.all([resultsearch]).then((values) => {
               this.suggestions = []
               this.selected = null
@@ -695,20 +699,17 @@ export default {
                 'venueName'
               )
               venue.length && this.suggestions.push({ data: venue })
-              // const venue = this.filterResults(values.data, this.query, "title");
-              // venue.length &&
-              //   this.suggestions.push({ name: "venue", data: venue });
             })
             // this.suggestions = this.listVenue
-          }, 25)
+          }, 250)
           this.setState({ isSearch: true })
         }
         this.showBtnAdd = true
-      }
+      } 
     },
     async Searchcity() {
       this.setState({ isLoading: true })
-      if (this.inputKota.length >= 4) {
+      if (this.inputKota.length === 3) {
         const keyword = this.inputKota
         const result = await this.getCity({ keyword }).catch((error) => {
           if (error.response.status === 401) {
@@ -734,9 +735,6 @@ export default {
                 'name'
               )
               city.length && this.cities.push({ data: city })
-              // const venue = this.filterResults(values.data, this.query, "title");
-              // venue.length &&
-              //   this.suggestions.push({ name: "venue", data: venue });
             })
             // if (this.selectedCity !== null) {
             //   // this.isCityId = this.selectedCity.id
@@ -745,10 +743,8 @@ export default {
             // this.suggestions = this.listVenue
           }, 25)
           this.setState({ isSearch: true })
-        }
-        if (this.selectedCity !== null) {
+        } else if (this.selectedCity !== null) {
           this.isCityId = this.selectedCity.id
-          console.warn(this.isCityId)
         }
       }
     },
@@ -765,10 +761,14 @@ export default {
       )
     },
     getSuggestionValue(suggestion) {
-      return suggestion.venueName
+      this.tempCityName = suggestion.item.cityName
+      return suggestion.venueName && this.tempCityName
     },
     getSuggestionCity(cities) {
-      return cities.name
+      // const temp = cities.id
+      this.isCityId = cities.item.id
+      console.warn('iddd', this.isCityId)
+      return cities.name && this.isCityId
     },
     numberFormat(number, decimals, decPoint, thousandSep) {
       return typeof _numberFormat !== 'undefined'
@@ -787,19 +787,19 @@ export default {
     selectingHourIfUseHoursOnly(time) {
       if (this.useHoursOnly) {
         this.$nextTick(() => {
-          this.$refs.picker.selectingHour = true;
+          this.$refs.picker.selectingHour = true
           this.$refs.menu.save(time)
-        });
+        })
       }
     },
-    selectingEndTime(time) {
+    selectingEndTime(time2) {
       if (this.useHoursOnly) {
         this.$nextTick(() => {
-          this.$refs.picker2.selectingHour = true;
-          this.$refs.menu2.save(time)
-        });
+          this.$refs.picker2.selectingHour = true
+          this.$refs.menu2.save(time2)
+        })
       }
-    }
+    },
   },
 }
 </script>
@@ -815,6 +815,7 @@ export default {
   overflow: scroll;
   margin: auto;
   border-radius: 16px 16px 0px 0px;
+  z-index: 10;
 }
 .hr-divider {
   margin: 10px 0;
@@ -899,7 +900,6 @@ small {
   font-family: Poppins;
   padding-left: 20px;
   padding-right: 20px;
-  /* padding-bottom: 20px; */
 }
 .row-player1 {
   margin-left: 12px;
@@ -921,6 +921,7 @@ small {
 .create-btn {
   width: 100% !important;
 }
+.fields-add-venue,
 .v-list,
 .v-picker {
   font-family: Poppins !important;
@@ -936,80 +937,7 @@ small {
 .v-btn {
   text-transform: capitalize !important;
 }
-</style>
-<style>
-.main {
-  background: lightgray !important;
-  padding: 0px 0px !important;
-  /* height: 100vh !; */
-}
-#autosuggest__input {
-  outline: none;
-  outline: #616161;
-  position: relative;
-  display: block !important;
-  border: 1px solid #616161 !important;
-  border-radius: 3px;
-  padding: 10px;
-  width: 100%;
-  box-sizing: border-box;
-  height: 56px !important;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-}
-
-#autosuggest__input.autosuggest__input-open {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-.autosuggest__results-container {
-  position: relative;
-  width: 100%;
-}
-
-.autosuggest__results {
-  font-weight: 300;
-  margin: 0;
-  position: absolute;
-  z-index: 5;
-  width: 100%;
-  border: 1px solid #e0e0e0;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  background: white;
-  padding: 0px 20px 0px 20px;
-  max-height: 200px;
-  overflow-y: scroll !important;
-}
-
-.autosuggest__results ul {
-  list-style: none;
-  padding-left: 0;
-  margin: 5px;
-}
-
-.autosuggest__results .autosuggest__results-item {
-  cursor: pointer;
-  padding: 15px !important;
-}
-
-#autosuggest ul:nth-child(1) > .autosuggest__results_title {
-  border-top: none;
-}
-
-.autosuggest__results .autosuggest__results-before {
-  color: gray;
-  font-size: 12px;
-  margin-left: 0;
-  padding: 15px 13px 5px;
-  border-top: 1px solid lightgray;
-}
-
-.autosuggest__results .autosuggest__results-item:active,
-.autosuggest__results .autosuggest__results-item:hover,
-.autosuggest__results .autosuggest__results-item:focus,
-.autosuggest__results
-  .autosuggest__results-item.autosuggest__results-item--highlighted {
-  background-color: #f6f6f6;
+.notif {
+  color: #424242;
 }
 </style>

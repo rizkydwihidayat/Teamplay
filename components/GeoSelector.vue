@@ -1,12 +1,13 @@
 <template>
   <l-map
     ref="map"
+    v-resize="onResize"
     :zoom="zoom"
     :center="[
       position.lat || userLocation.lat || defaultLocation.lat,
       position.lng || userLocation.lng || defaultLocation.lng,
     ]"
-    style="height: 300px; width: 100%"
+    style="height: 300px; width: 100%; z-index: 0"
     @click="onMapClick"
   >
     <l-tile-layer
@@ -28,6 +29,7 @@
   </l-map>
 </template>
 <script>
+import { mapMutations } from 'vuex'
 import { LMap, LMarker, LTileLayer, LTooltip } from 'vue2-leaflet'
 import { OpenStreetMapProvider } from 'leaflet-geosearch'
 import VGeosearch from 'vue2-leaflet-geosearch'
@@ -64,6 +66,8 @@ export default {
         provider: new OpenStreetMapProvider(),
         showMarker: false,
         autoClose: true,
+        style: 'bar',
+        notFoundMessage: 'Maaf, alamat yang kamu cari tidak ditemukan.',
       },
       userLocation: {},
       icon: icon({
@@ -115,6 +119,12 @@ export default {
     this.$refs.map.mapObject.on('geosearch/showlocation', this.onSearch)
   },
   methods: {
+    ...mapMutations({
+      setState: 'match/setState',
+    }),
+    onResize() {
+      this.$refs.map.mapObject._onResize();
+    },
     async getAddress() {
       this.loading = true
       let address = 'Unresolved address'
@@ -136,6 +146,9 @@ export default {
     onMapClick(value) {
       // place the marker on the clicked spot
       this.position = value.latlng
+      this.setState({ lat: value.latlng.lat })
+      this.setState({ lng: value.latlng.lng })
+      this.setState({ address: this.address })
     },
     onSearch(value) {
       const loc = value.location

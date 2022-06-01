@@ -28,6 +28,8 @@ export default {
   css: [
     '~/assets/style/teamplay.css',
     '~/assets/style/app.scss',
+    '~/node_modules/leaflet/dist/leaflet.css',
+    '~/node_modules/leaflet-geosearch/dist/geosearch.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
