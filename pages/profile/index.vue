@@ -196,7 +196,8 @@ export default {
       oldPass: false,
       showpass: false,
       passInput: '',
-      validPass: true
+      validPass: true,
+      nameUser: '',
     }
   },
   computed: {
@@ -204,7 +205,7 @@ export default {
       userPoint: (state) => state.user.userPoint,
       userEmail: (state) => state.user.userEmail,
       userPhone: (state) => state.user.userPhone,
-      namaUser: (state) => state.user.nameGoogleAcc,
+      // namaUser: (state) => state.user.nameGoogleAcc,
       isLoginWithGoogle: (state) => state.user.isLoginWithGoogle,
       isLoading: (state) => state.user.isLoading,
     }),
@@ -212,6 +213,8 @@ export default {
   async mounted() {
     await this.getProfile()
     this.checkPoint(this.userPoint)
+    this.initialName = localStorage.getItem('nameGoogleAcc')
+
   },
   methods: {
     ...mapActions({
@@ -221,15 +224,16 @@ export default {
       this.$store.$router.push('/')
     },
     async getProfile(store = this.$store) {
-      const bearer = this.$store.state.user.accKey
-      const userID = this.$store.state.user.userID
+      const bearer = localStorage.getItem('accKey')
+      const userID = localStorage.getItem('userID')
       await store.dispatch('user/getUserProfile', { bearer, userID })
-      this.initialName = this.namaUser
-        .split(' ')
-        .map((x) => x[0].toUpperCase())
-        .join('')
+      // this.initialName = this.namaUser
+        // .split(' ')
+        // .map((x) => x[0].toUpperCase())
+        // .join('')
     },
     goSignOut() {
+      localStorage.clear();
       this.$store.$router.push('/login')
     },
     changePass() {
@@ -249,8 +253,8 @@ export default {
     },
     submitChangePass() {
       if (this.$refs.formPass.validate()) {
-        const bearer = this.$store.state.user.accKey
-        const userID = this.$store.state.user.userID
+        const bearer = localStorage.getItem('accKey')
+        const userID = localStorage.getItem('userID')
         const params = {
           password: this.passInput,
         }

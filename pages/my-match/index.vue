@@ -94,8 +94,8 @@ export default {
   },
   methods: {
     async getMatch(store = this.$store) {
-      const bearer = this.$store.state.user.accKey
-      const userID = this.$store.state.user.userID
+      const bearer = localStorage.getItem('accKey')
+      const userID = localStorage.getItem('userID')
       const listData = await store.dispatch('user/getUserMatchHistory', {bearer, userID})
       await store.dispatch('user/setListUserMatch', listData)
     },

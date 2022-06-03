@@ -103,7 +103,8 @@ export const actions = {
       .then((result) => {
         commit('setState', { isLoginWithGoogle: true })
         commit('setState', {
-          nameGoogleAcc: result.data.name,
+          // nameGoogleAcc: result.data.name,
+          nameGoogleAcc: localStorage.getItem('nameGoogleAcc')
         })
         commit('setAuthToken', {
           accKey: result.token,
@@ -114,7 +115,11 @@ export const actions = {
         commit('setState', {
           isVerified: result.data.isVerified,
         })
-        localStorage.setItem('accKey', result.token)
+        // localStorage.setItem('accKey', result.token)
+        localStorage.accKey= result.token
+        localStorage.nameGoogleAcc= result.data.name
+        localStorage.userID= result.data.id
+        localStorage.isVerified= result.data.isVerified
       })
       .catch((error) => {
         const errMsg = error.message
@@ -198,6 +203,7 @@ export const actions = {
           userPoint: result.data.totalPoin,
         })
         commit('setState', { isLoading: false })
+        localStorage.phone= result.data.phoneNumber
       }))
       .catch((error) => {
         // handle error
@@ -280,7 +286,7 @@ export const actions = {
         commit('setState', { isLoading: false })
         const alertMsg = {
           msg: 'Password berhasil diperbarui.',
-          color: 'primary',
+          color: '#43A047',
         }
         dispatch('ui/showAlert', alertMsg, { root: true })
         this.$router.push('/profile')

@@ -5,6 +5,9 @@
   overflow-x: hidden;
   height: 100vh;
 }
+span {
+  font-family: Poppins;
+}
 .align-right {
     text-align: right;
 }
@@ -107,4 +110,7 @@
 .autosuggest__results
   .autosuggest__results-item.autosuggest__results-item--highlighted {
   background-color: #f6f6f6;
+}
+.cursor-pointer {
+  cursor: pointer;
 }
