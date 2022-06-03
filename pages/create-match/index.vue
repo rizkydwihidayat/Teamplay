@@ -518,6 +518,10 @@ export default {
       this.dateFormatted = this.formatDate(this.date)
     },
   },
+  mounted() {
+    this.center = [ this.latitude, this.longitude]
+    this.markerLatLng = [ this.latitude, this.longitude]
+  },
   methods: {
     ...mapActions({
       getCity: 'match/getListCity',
@@ -559,7 +563,7 @@ export default {
         const lot = this.longitude.toString()
         const temp = lat + ', ' + lot
         lat.concat(lot)
-        const bearer = this.$store.state.user.accKey
+        const bearer = localStorage.getItem('accKey')
         const params = {
           cityId: this.isCityId,
           sportCategory: this.sport,
@@ -569,39 +573,44 @@ export default {
           minimumDuration: this.inputDurasi,
           pricePerHours: this.inputSewa,
         }
-        console.warn('cek params', params)
         this.Dosearch()
         await this.createVenue({
           params,
           bearer,
         })
-          .then(() => {
-            // this.$store.$router.push('/')
+          .then((result) => {
+            const alertMsg = {
+              msg: result.response.data.message,
+              color: '#43A047'
+            }
+            this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
             this.showdialogadd = false
             this.Dosearch(this.query)
+            this.center = [ this.latitude, this.longitude]
+            this.markerLatLng = [ this.latitude, this.longitude]
           })
           .catch((error) => {
             if (error.response.status === 401) {
               const alertMsg = {
                 msg: 'Sesi telah berakhir, merefresh halaman',
+                color: 'secondary'
               }
               this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
             }
             return false
           })
       }
-      // this.Dosearch()
     },
     async submitCreateMatch() {
       this.setState({ isLoading: true })
-      const bearer = this.$store.state.user.accKey
+      const bearer = localStorage.getItem('accKey')
       const params = {
         venueId: this.selected.id,
         gameName: this.inputName,
         playerCategory: this.gender,
         playDate: this.tgl_awal,
-        startTime: this.startTime,
-        endTime: this.endTime,
+        startTime: this.time,
+        endTime: this.time2,
         minPlayer: this.minPlayer,
         maxPlayer: parseInt(this.maxPlayer),
       }
@@ -609,13 +618,21 @@ export default {
         params,
         bearer,
       })
-        .then(() => {
-          this.$store.$router.push('/')
+        .then((result) => {
+          if (result !== 'undefined') {
+            const alertMsg = {
+              msg: result.response.data.message,
+              color: '#43A047'
+            }
+            this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+            this.$store.$router.push('/')
+          }
         })
         .catch((error) => {
           if (error.response.status === 401) {
             const alertMsg = {
-              msg: 'Sesi telah berakhir, merefresh halaman',
+              msg: error.response.data.message,
+              color: 'secondary'
             }
             this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
           }
@@ -638,7 +655,6 @@ export default {
     },
     // eslint-disable-next-line vue/no-dupe-keys
     totalPayment(price) {
-      console.warn(parseInt(this.time2));
       const calculated = parseInt(this.time2) - parseInt(this.time)
       const result = calculated * price
       return result
@@ -666,7 +682,7 @@ export default {
     async Dosearch(val) {
       this.setState({ isLoading: true })
       if (this.query.length === 3 && this.isCityId !== 0) {
-        const bearer = this.$store.state.user.accKey
+        const bearer = localStorage.getItem('accKey')
         const keyword = val === 'undefined' ? val : this.query
         const cityID = this.isCityId
         const sport = this.sport
@@ -699,9 +715,11 @@ export default {
                 'venueName'
               )
               venue.length && this.suggestions.push({ data: venue })
+              this.center = [ this.latitude, this.longitude]
+              this.markerLatLng = [ this.latitude, this.longitude]
             })
             // this.suggestions = this.listVenue
-          }, 250)
+          }, 2500)
           this.setState({ isSearch: true })
         }
         this.showBtnAdd = true
@@ -736,10 +754,6 @@ export default {
               )
               city.length && this.cities.push({ data: city })
             })
-            // if (this.selectedCity !== null) {
-            //   // this.isCityId = this.selectedCity.id
-            //   console.warn(this.selectedCity.id);
-            // }
             // this.suggestions = this.listVenue
           }, 25)
           this.setState({ isSearch: true })

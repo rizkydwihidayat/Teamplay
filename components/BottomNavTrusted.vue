@@ -257,13 +257,14 @@ export default {
     },
   },
   mounted() {
-    const token = this.$store.state.user.accKey
-    const verified = this.$store.state.user.isVerified
-    if (token === "") {
+    const token = localStorage.getItem('accKey')
+    const verified = localStorage.getItem('isVerified')
+    console.warn(token, verified);
+    if (token === null) {
       this.isNotLogin = true
-    } else if (token !== "" && verified === false) {
+    } else if (token !== null && verified === 'false') {
       this.isDefault = true
-    } else if (verified) {
+    } else if (verified === 'true') {
       this.isTrusted = true
     }
   }

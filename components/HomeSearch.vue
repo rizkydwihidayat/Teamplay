@@ -1,7 +1,7 @@
 <template>
   <div class="container-top">
     <div class="top-element">
-      <h2 class="welcome mt-5">Halo, {{ namaUser }}!</h2>
+      <h2 class="welcome mt-5">Halo, {{ nameUser }}!</h2>
       <p>
         Selamat datang di Teamplay! <br />
         Anti ribet atur janji buat olahraga bareng.
@@ -25,13 +25,17 @@ export default {
   data() {
     return {
       fieldCity: '',
+      nameUser: ''
     }
   },
   computed: {
     ...mapState({
-      namaUser: (state) => state.user.nameGoogleAcc,
+      // namaUser: (state) => state.user.nameGoogleAcc,
       filterCity: (state) => state.match.filterCity,
     }),
+  },
+  mounted() {
+    this.nameUser = localStorage.getItem('nameGoogleAcc')
   },
   methods: {
     ...mapMutations({

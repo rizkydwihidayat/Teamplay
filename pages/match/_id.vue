@@ -105,7 +105,7 @@
           <div class="player-ava mr-1"><span>AM</span></div>
           <div class="player-number">
             <p class="desc-subdued count mb-0">
-              ({{ matchdetail.player.length }}/{{ minplayer }})
+              <!-- ({{ matchdetail.player.length }}/{{ minplayer }}) -->
             </p>
             <p class="desc-subdued left mb-0">{{ sisaPlayer }} pemain lagi</p>
           </div>
@@ -159,7 +159,7 @@
       <div class="maps-area" style="width: 100%; height: 220px">
         <l-map style="height: 200px; z-index: 0" :zoom="zoom" :center="center">
           <l-tile-layer :url="url"></l-tile-layer>
-          <l-marker ref="marker" :lat-lng="markerLatLng">
+          <l-marker ref="marker" :icon="icon" :lat-lng="markerLatLng">
             <l-tooltip :options="{ permanent: true, interactive: true }">
               <small>{{ matchdetail.city }}</small>
             </l-tooltip>
@@ -197,20 +197,23 @@
             />
           </v-row>
           <p class="desc-subdued mb-3">Bergabung Juni 2022</p>
-          <p class="desc-blue pb-4">Hubungi Host</p>
+          <p class="desc-blue pb-4 cursor-pointer" @click="chatHost">Hubungi Host</p>
         </div>
       </v-row>
     </div>
 
     <!-- CTA -->
     <div class="btn-join-match pa-4">
-      <v-btn block depressed rounded class="btn-primary">Join Match</v-btn>
+      <v-btn block depressed rounded class="btn-primary" @click="goJoinMatch"
+        >Ikut Main</v-btn
+      >
     </div>
   </div>
 </template>
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import { LMap, LTileLayer, LMarker, LTooltip } from 'vue2-leaflet'
+import { icon } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 export default {
   name: 'MatchDetailPage',
@@ -228,10 +231,15 @@ export default {
       matchDetail: [],
       center: [-6.529217, 106.766574],
       zoom: 12,
-      mapTypeId: 'terrain',
       markerLatLng: [-6.529217, 106.766574],
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       years: new Date().getFullYear(),
+      tempParams: null,
+      icon: icon({
+        iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+        iconUrl: require('leaflet/dist/images/marker-icon.png'),
+        shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+      }),
     }
   },
   //   layout: 'bottom_nav',
@@ -256,20 +264,65 @@ export default {
   computed: {
     ...mapState({
       matchdetail: (state) => state.match.matchdetail,
+      latitude: (state) => state.match.lat,
+      longitude: (state) => state.match.lng,
     }),
   },
   async mounted() {
     await this.getMatchDetail()
+    const url = new URL(window.location.href)
+    this.tempParams = url.searchParams.get('invitedFrom')
     // await this.getCoordinate()
     // this.$nextTick(() => {
     //   this.$refs.marker.mapObject.openPopup()
     // })
     await this.checkMinPlayer()
-    await this.checkCurrentPlayer()
+    this.center = [parseFloat(this.matchdetail.coordinate[0]), parseFloat(this.matchdetail.coordinate[1])]
+    this.markerLatLng = [parseFloat(this.matchdetail.coordinate[0]), parseFloat(this.matchdetail.coordinate[1])]
+    // await this.checkCurrentPlayer()
   },
   methods: {
+    ...mapActions({
+      joinMatch: 'match/joinMatch',
+    }),
     back() {
       this.$store.$router.push('/')
+    },
+    async goJoinMatch() {
+      const id = this.$route.params.id
+      const bearer = localStorage.getItem('accKey')
+      // const invite = this.$store.state.user.userID
+      // if (userID !)
+      const params = {
+        matchId: id,
+        invitedFrom: this.tempParams,
+      }
+      if (bearer === null) {
+        const alertMsg = {
+          msg: 'Silahkan login terlebih dahulu',
+          color: 'secondary',
+        }
+        this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+        this.$store.$router.push('/login')
+      } else {
+        await this.joinMatch({ params, bearer })
+          .then((result) => {
+            if (result !== 'undefined') {
+              this.$store.$router.push(`/success-page/${id}`)
+            }
+          })
+          .catch((error) => {
+            if (error.response.status === 401) {
+              const alertMsg = {
+                msg: 'Sesi telah berakhir, merefresh halaman',
+                color: 'secondary',
+              }
+              this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+            }
+            return false
+          })
+        // this.$store.$router.push(`/success-page/${id}`)
+      }
     },
     getCoordinate() {
       const temp = []
@@ -317,6 +370,10 @@ export default {
       const result = this.years - val
       return result
     },
+    chatHost() {
+      const phone = localStorage.getItem('phone')
+      window.location.href = `https://wa.me/${phone}`
+    }
   },
 }
 </script>
@@ -510,5 +567,6 @@ h2.match-title {
 .maps-area >>> .vue-map {
   position: none;
   height: 200px;
+  margin: 12px;
 }
 </style>

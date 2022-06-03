@@ -16,7 +16,7 @@ export const state = () => ({
   timeDur: '',
   lat: 0,
   lng: 0,
-  address: ''
+  address: '',
 })
 
 export const mutations = {
@@ -46,42 +46,41 @@ export const mutations = {
     state.matchdetail = store
   },
   setListMatch(state, list) {
-    if(list.data) {
+    if (list.data) {
       state.listMatch =
-      list.data.length > 0 && list.data[0] !== null
-        ? // eslint-disable-next-line array-callback-return
-          list.data.map((value, key) => {
-            return {
-              id: value.match.id,
-              gamename: value.match.gameName,
-              category: value.match.sportCategory,
-              gender: value.match.playerCategory,
-              date: value.match.playDate,
-              time: value.match.timePlay,
-              place: value.venue.venueName,
-              status: value.match.status,
-            }
-          }, {})
-        : []
+        list.data.length > 0 && list.data[0] !== null
+          ? // eslint-disable-next-line array-callback-return
+            list.data.map((value, key) => {
+              return {
+                id: value.match.id,
+                gamename: value.match.gameName,
+                category: value.match.sportCategory,
+                gender: value.match.playerCategory,
+                date: value.match.playDate,
+                time: value.match.timePlay,
+                place: value.venue.venueName,
+                status: value.match.status,
+              }
+            }, {})
+          : []
     } else {
       state.listMatch =
-      list.length > 0 && list[0] !== null
-        ? // eslint-disable-next-line array-callback-return
-          list.map((value, key) => {
-            return {
-              id: value.match.id,
-              gamename: value.match.gameName,
-              category: value.match.sportCategory,
-              gender: value.match.playerCategory,
-              date: value.match.playDate,
-              time: value.match.timePlay,
-              place: value.venue.venueName,
-              status: value.match.status,
-            }
-          }, {})
-        : []
+        list.length > 0 && list[0] !== null
+          ? // eslint-disable-next-line array-callback-return
+            list.map((value, key) => {
+              return {
+                id: value.match.id,
+                gamename: value.match.gameName,
+                category: value.match.sportCategory,
+                gender: value.match.playerCategory,
+                date: value.match.playDate,
+                time: value.match.timePlay,
+                place: value.venue.venueName,
+                status: value.match.status,
+              }
+            }, {})
+          : []
     }
-    
   },
   setListCity(state, list) {
     state.listCity =
@@ -221,7 +220,10 @@ export const actions = {
       })
   },
 
-  getListVenue({ context, commit, dispatch }, { keyword, cityID, bearer, sport }) {
+  getListVenue(
+    { context, commit, dispatch },
+    { keyword, cityID, bearer, sport }
+  ) {
     const axiosOption = {
       headers: {
         xToken: bearer,
@@ -310,7 +312,7 @@ export const actions = {
       address: params.address,
       coordinate: params.coordinate,
       minimumDuration: parseInt(params.minimumDuration),
-      pricePerHours: parseInt(params.pricePerHours)
+      pricePerHours: parseInt(params.pricePerHours),
     }
     const postData = JSON.stringify(data)
     return this.$axios
@@ -338,5 +340,45 @@ export const actions = {
           this.$router.push('/')
         }
       })
-  }
+  },
+
+  joinMatch({ context, commit, dispatch }, { params, bearer }) {
+    this.$axios.setHeader('xToken', `${bearer}`, ['post'])
+    return this.$axios
+      .$post(
+        `https://api.naufalbahri.com/api/v1/match/${params.matchId}/join?invitedFrom=${params.invitedFrom}`
+      )
+      .then((result) => {
+        if (result.message !== '') {
+          const errMsg = result.message
+          const alertMsg = {
+            msg: errMsg,
+            color: '#43A047',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          // this.$router.push('/')
+        }
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          const errMsg = error.response.data.message
+          const alertMsg = {
+            msg: errMsg,
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/')
+        } else {
+          // const errMsg = 'Unknown error please contact admin'
+          const errMsg =
+            'Terjadi kesalahan. Silahkan hubungi administrator kami'
+          const alertMsg = {
+            msg: errMsg,
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/')
+        }
+      })
+  },
 }
