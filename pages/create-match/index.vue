@@ -781,7 +781,6 @@ export default {
     getSuggestionCity(cities) {
       // const temp = cities.id
       this.isCityId = cities.item.id
-      console.warn('iddd', this.isCityId)
       return cities.name && this.isCityId
     },
     numberFormat(number, decimals, decPoint, thousandSep) {
