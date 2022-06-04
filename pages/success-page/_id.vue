@@ -83,7 +83,12 @@
         </v-row>
       </v-card>
 
-      <v-btn block depressed rounded class="btn-primary mb-3" @click="inviteFriend"
+      <v-btn
+        block
+        depressed
+        rounded
+        class="btn-primary mb-3"
+        @click="inviteFriend"
         >Undang Teman</v-btn
       >
       <v-btn block rounded text class="btn-naked" @click="goToHome"
@@ -118,8 +123,25 @@ export default {
     inviteFriend() {
       const usrId = this.$store.state.user.userID
       const url = new URL(window.location.href) + `?invitedFrom=${usrId}`
-      console.warn(url, usrId);
-    }
+      // url.select()
+      const copied = navigator.clipboard.writeText(url)
+      try {
+        // const copied = document.execCommand('copy')
+        const alertMsg = {
+          msg: copied
+            ? 'Link pertandingan berhasil dicopy'
+            : 'Gagal copy Link pertandingan',
+          color: '#43A047',
+        }
+        this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+      } catch (err) {
+        const alertMsg = {
+          msg: 'Oops, unable to copy',
+          color: 'secondary',
+        }
+        this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+      }
+    },
   },
 }
 </script>
@@ -322,4 +344,3 @@ p.small {
   font-family: Poppins;
 }
 </style>
-

@@ -259,7 +259,6 @@ export default {
   mounted() {
     const token = localStorage.getItem('accKey')
     const verified = localStorage.getItem('isVerified')
-    console.warn(token, verified);
     if (token === null) {
       this.isNotLogin = true
     } else if (token !== null && verified === 'false') {
