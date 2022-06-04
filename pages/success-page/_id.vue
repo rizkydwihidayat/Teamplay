@@ -121,7 +121,7 @@ export default {
       this.$store.$router.push('/')
     },
     inviteFriend() {
-      const usrId = this.$store.state.user.userID
+      const usrId = localStorage.getItem('userID')
       const url = new URL(window.location.href) + `?invitedFrom=${usrId}`
       // url.select()
       const copied = navigator.clipboard.writeText(url)
