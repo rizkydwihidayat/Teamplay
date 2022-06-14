@@ -27,6 +27,9 @@ span {
 .mg-20 {
   margin: 20px;
 }
+.mr-20 {
+  margin-right: 20px;
+}
 .txt-black {
   color: #424242;
   font-family: Poppins;

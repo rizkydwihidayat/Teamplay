@@ -11,7 +11,7 @@
           />
         </v-btn>
         <v-layout row wrap class="">
-          <v-flex xs2 s2 class="avatar">
+          <v-flex xs2 s2 class="avatar mr-20">
             <span>{{ initialName }}</span>
           </v-flex>
           <v-flex xs7 s7 class="profile-name">
@@ -27,8 +27,19 @@
               <img width="12" height="12" src="~/assets/svg/alert.svg" alt="<"
             /></span>
             <div class="progress">
-              <div class="progress-bar">{{userPoint}}</div>
+              <div class="progress-bar"><small class="txt-black">{{userPoint}}</small></div>
             </div>
+            <v-layout row wrap>
+              <v-flex xs4 s4>
+                <p v-if="userPoint >= 0" class="txt-point">0</p>
+              </v-flex>
+              <v-flex xs4 s4>
+                <p v-if="userPoint >= 50">50</p>
+              </v-flex>
+              <v-flex xs4 s4>
+                <p v-if="userPoint === 100">100</p>
+              </v-flex>
+            </v-layout>
             <br />
           </v-flex>
         </v-layout>
@@ -59,11 +70,13 @@
       </v-layout>
       <hr class="hr-divider" />
       <v-layout row wrap class="info-pribadi">
-        <v-flex xs6 s6>
-          <span>No. Handphone</span
-          ><span class="text-right">{{ userPhone }}</span>
+        <v-flex xs5 s5>
+          <span>No. Handphone</span>
         </v-flex>
-        <v-flex xs6 s6 class="btn-detail">
+        <v-flex xs5 s5 class="detail-info">
+          <span class="text-right">{{ phoneUser }}</span>
+        </v-flex>
+        <v-flex xs2 s2 class="btn-detail">
           <img
             width="24"
             height="24"
@@ -74,11 +87,13 @@
       </v-layout>
       <hr class="hr-divider" />
       <v-layout row wrap class="info-pribadi">
-        <v-flex xs6 s6>
-          <span>Email</span> <span class="text-right">{{ userEmail }}</span>
-          <span class="text-right">{{ userPhone }}</span>
+        <v-flex xs3 s3>
+          <span>Email</span>
         </v-flex>
-        <v-flex xs6 s6 class="btn-detail">
+        <v-flex xs7 s7 class="detail-info">
+          <span class="text-right">{{ emailUser }}</span>
+        </v-flex>
+        <v-flex xs2 s2 class="btn-detail">
           <img
             width="24"
             height="24"
@@ -88,7 +103,13 @@
         </v-flex>
       </v-layout>
       <hr class="hr-divider" />
-      <v-layout v-if="!isLoginWithGoogle" row wrap class="info-pribadi" @click="changePass">
+      <v-layout
+        v-if="!isLoginWithGoogle"
+        row
+        wrap
+        class="info-pribadi"
+        @click="changePass"
+      >
         <v-flex xs6 s6>
           <span>Ubah Password</span>
         </v-flex>
@@ -198,23 +219,23 @@ export default {
       passInput: '',
       validPass: true,
       nameUser: '',
+      userPoint: 0,
+      namaUser: '',
+      emailUser: '',
+      phoneUser: ''
     }
   },
   computed: {
     ...mapState({
-      userPoint: (state) => state.user.userPoint,
+      // userPoint: (state) => state.user.userPoint,
       userEmail: (state) => state.user.userEmail,
       userPhone: (state) => state.user.userPhone,
-      // namaUser: (state) => state.user.nameGoogleAcc,
       isLoginWithGoogle: (state) => state.user.isLoginWithGoogle,
       isLoading: (state) => state.user.isLoading,
     }),
   },
   async mounted() {
     await this.getProfile()
-    this.checkPoint(this.userPoint)
-    this.initialName = localStorage.getItem('nameGoogleAcc')
-
   },
   methods: {
     ...mapActions({
@@ -227,10 +248,20 @@ export default {
       const bearer = localStorage.getItem('accKey')
       const userID = localStorage.getItem('userID')
       await store.dispatch('user/getUserProfile', { bearer, userID })
-      // this.initialName = this.namaUser
-        // .split(' ')
-        // .map((x) => x[0].toUpperCase())
-        // .join('')
+      this.initialName = localStorage.getItem('nameGoogleAcc')
+        .split(' ')
+        .map((x) => x[0].toUpperCase())
+        .join('')
+      this.userPoint = parseInt(localStorage.getItem('point'))
+      this.namaUser = localStorage.getItem('nameGoogleAcc')
+      this.emailUser = localStorage.getItem('userEmail')
+      this.checkPoint(this.userPoint)
+      const phone = localStorage.getItem('phone')
+      if (phone === 'null') {
+        this.phoneUser = '-'
+      } else {
+        this.phoneUser = phone
+      }
     },
     goSignOut() {
       localStorage.clear();
@@ -243,9 +274,9 @@ export default {
       this.showdialogchangepass = false
     },
     checkPoint(point) {
-      if (point >= 0 && point < 100) {
+      if (point >= 0 && point <= 100) {
         const bar = document.getElementsByClassName('progress-bar')[0]
-        const width = 20 + '%'
+        const width = point + '%'
         bar.style.width = width
       } else if (point === 100) {
         this.showBtnTrusted = true
@@ -287,6 +318,10 @@ export default {
   right: 0%; */
   text-align: center;
   /* margin: 0px 20px; */
+}
+.detail-info {
+  /* margin-right: 35px; */
+  text-align: right;
 }
 .title-filter {
   font-family: Poppins;
@@ -368,7 +403,8 @@ h3 {
   border: 0;
   background: #e3e3e3;
 }
-span, p {
+span,
+p {
   font-family: Poppins !important;
   text-transform: capitalize;
 }
@@ -398,6 +434,7 @@ span, p {
 .text-right {
   text-align: right !important;
   color: #9e9e9e;
+  text-transform: lowercase;
 }
 .progress {
   margin: 0 auto;
@@ -430,10 +467,17 @@ span, p {
   -o-transition-property: width, background-color;
   transition-property: width, background-color;
 }
+/* .progress-bar small {
+  display: inline-block;
+} */
 .align-center {
   text-align: center;
   margin-top: 20px;
   margin-bottom: 20px;
+}
+small {
+  font-size: 10px;
+  font-weight: 600;
 }
 @media (max-width: 375px) {
   .avatar {
@@ -459,5 +503,8 @@ span, p {
   height: 1px;
   border: 0;
   background: #e3e3e3;
+}
+.txt-point {
+  margin: 20px 0px 20px 5px;
 }
 </style>

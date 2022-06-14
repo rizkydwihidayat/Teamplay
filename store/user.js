@@ -192,18 +192,10 @@ export const actions = {
         `https://api.naufalbahri.com/api/v1/users/${userID}/inquiry`, axiosOption
       )
       .then((result => {
-        const phone = result.data.phoneNumber !== null ? result.data.phoneNumber : '-'
-        commit('setState', {
-          userEmail: result.data.email,
-        })
-        commit('setState', {
-          userPhone: phone,
-        })
-        commit('setState', {
-          userPoint: result.data.totalPoin,
-        })
         commit('setState', { isLoading: false })
-        localStorage.phone= result.data.phoneNumber
+        localStorage.phone = result.data.phoneNumber
+        localStorage.point = result.data.totalPoin
+        localStorage.userEmail = result.data.email
       }))
       .catch((error) => {
         // handle error
