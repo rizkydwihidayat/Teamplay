@@ -27,7 +27,7 @@
               <img width="12" height="12" src="~/assets/svg/alert.svg" alt="<"
             /></span>
             <div class="progress">
-              <div class="progress-bar"><small class="txt-black">{{userPoint}}</small></div>
+              <div class="progress-bar" data-label="%"><small class="txt-black">{{userPoint}}</small></div>
             </div>
             <v-layout row wrap>
               <v-flex xs4 s4>
@@ -466,10 +466,11 @@ p {
   -moz-transition-property: width, background-color;
   -o-transition-property: width, background-color;
   transition-property: width, background-color;
+  position: relative;
 }
-/* .progress-bar small {
+.progress-bar small {
   display: inline-block;
-} */
+}
 .align-center {
   text-align: center;
   margin-top: 20px;
