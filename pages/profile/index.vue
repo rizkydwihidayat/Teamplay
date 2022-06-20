@@ -27,7 +27,9 @@
               <img width="12" height="12" src="~/assets/svg/alert.svg" alt="<"
             /></span>
             <div class="progress">
-              <div class="progress-bar" data-label="%"><small class="txt-black">{{userPoint}}</small></div>
+              <div class="progress-bar" data-label="%">
+                <!-- <small class="txt-black">{{userPoint}}</small> -->
+              </div>
             </div>
             <v-layout row wrap>
               <v-flex xs4 s4>
@@ -102,7 +104,7 @@
           />
         </v-flex>
       </v-layout>
-      <hr class="hr-divider" />
+      <!-- <hr class="hr-divider" /> -->
       <v-layout
         v-if="!isLoginWithGoogle"
         row

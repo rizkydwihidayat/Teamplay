@@ -267,9 +267,14 @@ export default {
     },
   },
   async mounted() {
-    this.fieldCity = this.filterCity
-    await this.getMatch(this.catFilter)
-    await this.checkCategory()
+    if (this.filterCity === '') {
+      this.fieldCity = 'Semua Kota'
+      await this.getMatch(this.catFilter)
+    } else {
+      this.fieldCity = this.filterCity
+      await this.getMatch(this.catFilter)
+      await this.checkCategory()
+    }
   },
   methods: {
     ...mapMutations({
