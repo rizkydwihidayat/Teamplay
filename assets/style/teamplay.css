@@ -24,6 +24,9 @@ span {
   padding-top: 12px;
   padding-bottom: 20px;
 }
+.pb-12 {
+  padding-bottom: 12px;
+}
 .mg-20 {
   margin: 20px;
 }
