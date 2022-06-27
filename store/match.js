@@ -1,5 +1,6 @@
 export const state = () => ({
   listMatch: [],
+  matchToday: [],
   listPlayer: [],
   listCity: [],
   listVenue: [],
@@ -82,6 +83,20 @@ export const mutations = {
           : []
     }
   },
+  setMatchToday(state, list) {
+    console.warn(list);
+    state.matchToday =
+      list.data.length > 0 && list.data[0] !== null
+        ? // eslint-disable-next-line array-callback-return
+          list.data.map((value, key) => {
+            return {
+              gamename: value.match.match.gameName,
+              place: value.match.venue.venueName,
+              time: value.match.match.timePlay,
+            }
+          }, {})
+        : []
+  },
   setListCity(state, list) {
     state.listCity =
       list.data.length > 0 && list.data[0] !== null
@@ -130,6 +145,9 @@ export const actions = {
   setMatchDetail({ commit }, storeData) {
     commit('setMatchDetail', storeData)
   },
+  setMatchToday({ commit }, matchToday) {
+    commit('setMatchToday', matchToday)
+  },
   getListMatch({ state, commit, dispatch }, { params }) {
     const param = {
       limit: state.limit,
@@ -167,6 +185,38 @@ export const actions = {
           commit('setState', { isLoading: false })
         }
 
+        return false
+      })
+  },
+
+  getMatchHistory({ context, commit, dispatch }, { bearer, userID }) {
+    const axiosOption = {
+      headers: {
+        xToken: bearer,
+      },
+    }
+    return this.$axios
+      .$get(
+        `https://api.naufalbahri.com/api/v1/users/${userID}/match-history`,
+        axiosOption
+      )
+      .catch((error) => {
+        // handle error
+        if (error.response.status === 403) {
+          const alertMsg = {
+            msg: error.response.data.message,
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/login')
+          //   dispatch('user/refreshAuth', null, { root: true })
+        } else {
+          const alertMsg = {
+            msg: error.response.data.message,
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+        }
         return false
       })
   },
@@ -255,7 +305,7 @@ export const actions = {
       })
   },
 
-  createMatch({ context, commit, dispatch }, { params, bearer }) {
+  createMatch({ dispatch }, { params, bearer }) {
     const axiosOption = {
       headers: {
         xToken: bearer,

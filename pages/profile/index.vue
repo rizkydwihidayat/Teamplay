@@ -22,16 +22,34 @@
             </v-chip>
             <v-chip v-else color="#eeeeee33" small>Trusted Member </v-chip>
             <br />
-            <span class="point"
+            <span v-if="isTrustedMember === false" class="point"
               >Poinku
               <img width="12" height="12" src="~/assets/svg/alert.svg" alt="<"
             /></span>
-            <div class="progress">
+            <span v-els class="point">Match buatanmu</span>
+            <div v-if="isTrustedMember === false" class="progress">
               <div class="progress-bar" data-label="%">
                 <!-- <small class="txt-black">{{userPoint}}</small> -->
               </div>
             </div>
-            <v-layout row wrap>
+            <v-layout v-else row wrap>
+              <v-flex xs6 s6
+                ><h2 class="mg-16">{{ matchToday.length }}</h2></v-flex
+              >
+              <v-flex xs6 s6 class="align-right p-12-20">
+                <v-btn
+                  fab
+                  to="/create-match"
+                  aria-expanded="false"
+                  aria-label="Add"
+                  small
+                  flat
+                >
+                  <IcPlus />
+                </v-btn>
+              </v-flex>
+            </v-layout>
+            <v-layout v-if="isTrustedMember === false" row wrap>
               <v-flex xs4 s4>
                 <p v-if="userPoint >= 0" class="txt-point">0</p>
               </v-flex>
@@ -206,6 +224,7 @@
 import { mapState, mapActions } from 'vuex'
 const components = {
   IcSeen: () => import('~/components/svg/IcSeen'),
+  IcPlus: () => import('~/components/svg/IcPlus'),
 }
 export default {
   name: 'ProfilePage',
@@ -224,7 +243,8 @@ export default {
       userPoint: 0,
       namaUser: '',
       emailUser: '',
-      phoneUser: ''
+      phoneUser: '',
+      totalmatch: 0,
     }
   },
   computed: {
@@ -234,10 +254,16 @@ export default {
       userPhone: (state) => state.user.userPhone,
       isLoginWithGoogle: (state) => state.user.isLoginWithGoogle,
       isLoading: (state) => state.user.isLoading,
+      matchToday: (state) => state.match.matchToday,
     }),
   },
   async mounted() {
     await this.getProfile()
+    await this.getMatchToday()
+    const verified = localStorage.getItem('isVerified')
+    if (verified === 'true') {
+      this.isTrustedMember = true
+    }
   },
   methods: {
     ...mapActions({
@@ -250,7 +276,8 @@ export default {
       const bearer = localStorage.getItem('accKey')
       const userID = localStorage.getItem('userID')
       await store.dispatch('user/getUserProfile', { bearer, userID })
-      this.initialName = localStorage.getItem('nameGoogleAcc')
+      this.initialName = localStorage
+        .getItem('nameGoogleAcc')
         .split(' ')
         .map((x) => x[0].toUpperCase())
         .join('')
@@ -265,8 +292,17 @@ export default {
         this.phoneUser = phone
       }
     },
+    async getMatchToday(store = this.$store) {
+      const bearer = localStorage.getItem('accKey')
+      const userID = localStorage.getItem('userID')
+      const listData = await store.dispatch('match/getMatchHistory', {
+        bearer,
+        userID,
+      })
+      await store.dispatch('match/setMatchToday', listData)
+    },
     goSignOut() {
-      localStorage.clear();
+      localStorage.clear()
       this.$store.$router.push('/login')
     },
     changePass() {
@@ -291,9 +327,9 @@ export default {
         const params = {
           password: this.passInput,
         }
-        this.changePassword({params, bearer, userID})
+        this.changePassword({ params, bearer, userID })
           .then((resp) => {
-            console.warn(resp);
+            console.warn(resp)
             if (this.isLoginWithGoogle) {
               this.$router.push('/')
             }
@@ -302,7 +338,7 @@ export default {
             console.log(error)
           })
       }
-    }
+    },
   },
 }
 </script>

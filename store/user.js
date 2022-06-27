@@ -267,9 +267,7 @@ export const actions = {
     const data = {
       password: params.password,
     }
-    console.warn(data);
     const postData = JSON.stringify(data)
-    console.warn('pust', postData);
     return this.$axios
       .$put(
         `https://api.naufalbahri.com/api/v1/users/${userID}/password`, postData, axiosOption

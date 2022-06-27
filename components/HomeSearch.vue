@@ -8,7 +8,7 @@
       </p>
       <br />
       <v-text-field
-        v-if="!hideSearch"
+        v-if="!isMatchToday"
         v-model="fieldCity"
         solo
         append-icon="mdi-magnify"
@@ -16,14 +16,14 @@
         class="search"
         @change="searchByCity"
       ></v-text-field>
-      <v-card v-if="matchPIC" outlined class="match-card">
+      <v-card v-if="isMatchToday" outlined>
         <v-layout row wrap>
           <v-flex xs6 s6 class="pl-16 p-12-20">
-            <h3>gamename</h3>
+            <h3>{matchToday.gamename}</h3>
           </v-flex>
           <v-flex xs6 s6 class="align-right label">
             <v-chip small color="rgba(239, 50, 50, 1)" class="capsule mr-2"
-              >Play today!</v-chip
+              >Play now!</v-chip
             >
           </v-flex>
         </v-layout>
@@ -31,7 +31,7 @@
           <v-layout row wrap class="pl-16">
             <v-flex xs6 s6 class="tgl">
               <img src="~/assets/img/Vector.png" width="16" />
-              <span class="txt-list">lokasi</span>
+              <span class="txt-list">{matchToday.place}</span>
             </v-flex>
             <v-flex xs6 s6 class="btn-detail"> </v-flex>
           </v-layout>
@@ -40,13 +40,21 @@
           <v-layout row wrap class="pl-16">
             <v-flex xs6 s6 class="tgl">
               <img src="~/assets/img/calendar-2.png" width="18" />
-              <span class="txt-list">tanggal</span>
+              <span class="txt-list">Hari ini, {matchToday.time}</span>
             </v-flex>
-            <v-flex xs6 s6 class="btn-detail"> </v-flex>
+            <v-flex v-if="!matchPIC" xs6 s6 class="btn-detail"
+              ><img
+                width="24"
+                height="24"
+                src="~/assets/svg/ic-back-cevron.svg"
+                alt="<"
+              />
+            </v-flex>
           </v-layout>
         </div>
         <div class="pl-20">
           <v-btn
+            v-if="matchPIC"
             class="create-btn"
             depressed
             color="primary"
@@ -66,48 +74,12 @@
           </v-btn>
         </div>
       </v-card>
-      <v-card v-if="matchUser" outlined>
-        <v-layout row wrap>
-          <v-flex xs6 s6 class="pl-16 p-12-20">
-            <h3>gamename</h3>
-          </v-flex>
-          <v-flex xs6 s6 class="align-right label">
-            <v-chip small color="rgba(239, 50, 50, 1)" class="capsule mr-2"
-              >Play now!</v-chip
-            >
-          </v-flex>
-        </v-layout>
-        <div class="pl-20 center">
-          <v-layout row wrap class="pl-16">
-            <v-flex xs6 s6 class="tgl">
-              <img src="~/assets/img/Vector.png" width="16" />
-              <span class="txt-list">lokasi</span>
-            </v-flex>
-            <v-flex xs6 s6 class="btn-detail"> </v-flex>
-          </v-layout>
-        </div>
-        <div class="pl-16 center">
-          <v-layout row wrap class="pl-16">
-            <v-flex xs6 s6 class="tgl">
-              <img src="~/assets/img/calendar-2.png" width="18" />
-              <span class="txt-list">tanggal</span>
-            </v-flex>
-            <v-flex xs6 s6 class="btn-detail"
-              ><img
-                width="24"
-                height="24"
-                src="~/assets/svg/ic-back-cevron.svg"
-                alt="<"
-              />
-            </v-flex>
-          </v-layout>
-        </div>
-      </v-card>
     </div>
   </div>
 </template>
 <script>
 import { mapState, mapMutations } from 'vuex'
+import moment from 'moment'
 export default {
   name: 'TopHome',
   data() {
@@ -116,25 +88,26 @@ export default {
       nameUser: '',
       matchPIC: false,
       matchUser: false,
-      hideSearch: false,
+      currentDate: new Date().toISOString().substr(0, 10),
+      isMatchToday: false
     }
   },
   computed: {
     ...mapState({
       // namaUser: (state) => state.user.nameGoogleAcc,
       filterCity: (state) => state.match.filterCity,
+      matchToday: (state) => state.match.matchToday,
     }),
   },
-  mounted() {
+  async mounted() {
     this.nameUser = localStorage.getItem('nameGoogleAcc')
     const verified = localStorage.getItem('isVerified')
     if (verified === 'true') {
       this.matchPIC = true
-      this.hideSearch = true
     } else {
       this.matchUser = true
-      this.hideSearch = true
     }
+    await this.getMatchToday()
   },
   methods: {
     ...mapMutations({
@@ -143,6 +116,29 @@ export default {
     searchByCity() {
       this.setState({ filterCity: this.fieldCity })
       this.$store.$router.push('/search')
+    },
+    BDTime() {
+      moment.locale('id')
+      const result = moment().format('dddd' + ', ' + 'll')
+      return result
+    },
+    async getMatchToday(store = this.$store) {
+      const bearer = localStorage.getItem('accKey')
+      const userID = localStorage.getItem('userID')
+      const listData = await store.dispatch('match/getMatchHistory', {
+        bearer,
+        userID,
+      })
+      // eslint-disable-next-line array-callback-return
+      listData.data.filter(async (item) => {
+        const date = this.BDTime()
+        const currentTime = moment().hour().toString()
+        const matchTime = item.match.match.timePlay.slice(0, 2)
+        if (date === item.match.match.playDate && currentTime === matchTime) {
+          this.isMatchToday = true
+          await store.dispatch('match/setMatchToday', listData)
+        }
+      })
     },
   },
 }
