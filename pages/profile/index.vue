@@ -258,8 +258,8 @@ export default {
     }),
   },
   async mounted() {
-    await this.getProfile()
     await this.getMatchToday()
+    await this.getProfile()
     const verified = localStorage.getItem('isVerified')
     if (verified === 'true') {
       this.isTrustedMember = true

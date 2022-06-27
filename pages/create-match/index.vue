@@ -492,6 +492,7 @@ export default {
       useHoursOnly: true,
       tempCityName: '',
       temp: '',
+      disableBtn: true,
     }
   },
   computed: {
@@ -519,8 +520,8 @@ export default {
     },
   },
   mounted() {
-    this.center = [ this.latitude, this.longitude]
-    this.markerLatLng = [ this.latitude, this.longitude]
+    this.center = [this.latitude, this.longitude]
+    this.markerLatLng = [this.latitude, this.longitude]
   },
   methods: {
     ...mapActions({
@@ -581,19 +582,19 @@ export default {
           .then((result) => {
             const alertMsg = {
               msg: result.response.data.message,
-              color: '#43A047'
+              color: '#43A047',
             }
             this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
             this.showdialogadd = false
             this.Dosearch(this.query)
-            this.center = [ this.latitude, this.longitude]
-            this.markerLatLng = [ this.latitude, this.longitude]
+            this.center = [this.latitude, this.longitude]
+            this.markerLatLng = [this.latitude, this.longitude]
           })
           .catch((error) => {
             if (error.response.status === 401) {
               const alertMsg = {
                 msg: 'Sesi telah berakhir, merefresh halaman',
-                color: 'secondary'
+                color: 'secondary',
               }
               this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
             }
@@ -602,48 +603,51 @@ export default {
       }
     },
     async submitCreateMatch() {
-      this.setState({ isLoading: true })
-      const bearer = localStorage.getItem('accKey')
-      const params = {
-        venueId: this.selected.id,
-        gameName: this.inputName,
-        playerCategory: this.gender,
-        playDate: this.tgl_awal,
-        startTime: this.time,
-        endTime: this.time2,
-        minPlayer: this.minPlayer,
-        maxPlayer: parseInt(this.maxPlayer),
-      }
-      const resultsearch = await this.createMatch({
-        params,
-        bearer,
-      })
-        .then((result) => {
-          if (result !== 'undefined') {
-            const alertMsg = {
-              msg: result.response.data.message,
-              color: '#43A047'
-            }
-            this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-            this.$store.$router.push('/')
-          }
+      if (this.$refs.form.validate()) {
+        this.disableBtn = false
+        this.setState({ isLoading: true })
+        const bearer = localStorage.getItem('accKey')
+        const params = {
+          venueId: this.selected.id,
+          gameName: this.inputName,
+          playerCategory: this.gender,
+          playDate: this.tgl_awal,
+          startTime: this.time,
+          endTime: this.time2,
+          minPlayer: this.minPlayer,
+          maxPlayer: parseInt(this.maxPlayer),
+        }
+        const resultsearch = await this.createMatch({
+          params,
+          bearer,
         })
-        .catch((error) => {
-          if (error.response.status === 401) {
-            const alertMsg = {
-              msg: error.response.data.message,
-              color: 'secondary'
+          .then((result) => {
+            if (result !== 'undefined') {
+              const alertMsg = {
+                msg: result.response.data.message,
+                color: '#43A047',
+              }
+              this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+              this.$store.$router.push('/')
             }
-            this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-          }
-          return false
-        })
+          })
+          .catch((error) => {
+            if (error.response.status === 401) {
+              const alertMsg = {
+                msg: error.response.data.message,
+                color: 'secondary',
+              }
+              this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+            }
+            return false
+          })
 
-      // eslint-disable-next-line no-prototype-builtins
-      if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
-        await this.$store
-          .dispatch('match/setListMatch', resultsearch)
-          .finally(this.setState({ isLoading: false }))
+        // eslint-disable-next-line no-prototype-builtins
+        if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
+          await this.$store
+            .dispatch('match/setListMatch', resultsearch)
+            .finally(this.setState({ isLoading: false }))
+        }
       }
     },
     checkEndTime(e) {
@@ -715,15 +719,15 @@ export default {
                 'venueName'
               )
               venue.length && this.suggestions.push({ data: venue })
-              this.center = [ this.latitude, this.longitude]
-              this.markerLatLng = [ this.latitude, this.longitude]
+              this.center = [this.latitude, this.longitude]
+              this.markerLatLng = [this.latitude, this.longitude]
             })
             // this.suggestions = this.listVenue
           }, 2500)
           this.setState({ isSearch: true })
         }
         this.showBtnAdd = true
-      } 
+      }
     },
     async Searchcity() {
       this.setState({ isLoading: true })
