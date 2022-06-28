@@ -7,6 +7,8 @@
 }
 span {
   font-family: Poppins;
+}
+.txt-capitalize {
   text-transform: capitalize;
 }
 .align-right {

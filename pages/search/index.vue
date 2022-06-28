@@ -16,7 +16,7 @@
                 </v-btn>
               </v-flex>
               <v-flex xs10 s10>
-                <v-text-field v-model="fieldCity" outlined dense class="field-city" @change="getByCity"></v-text-field>
+                <v-text-field v-model="fieldCity" outlined dense class="field-city" placeholder="Semua Kota" @change="getByCity"></v-text-field>
                 <p class="date">
                   {{ dateFormat(currentDate) }} - {{ dateFormat(lastday) }}
                 </p>
@@ -268,7 +268,7 @@ export default {
   },
   async mounted() {
     if (this.filterCity === '') {
-      this.fieldCity = 'Semua Kota'
+      this.fieldCity = ''
       await this.getMatch(this.catFilter)
     } else {
       this.fieldCity = this.filterCity

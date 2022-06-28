@@ -86,6 +86,11 @@
         </div>
       </v-row>
     </div>
+    <div v-if="isJoin" class="pa-4">
+        <v-alert outlined text type="success" class="alert" color="#43A047">
+          <span class="notif">Kamu sudah join di match ini.</span>
+        </v-alert>
+      </div>
 
     <!-- section pemain -->
     <div class="divider"></div>
@@ -105,7 +110,7 @@
           <div class="player-ava mr-1"><span>AM</span></div>
           <div class="player-number">
             <p class="desc-subdued count mb-0">
-              <!-- ({{ matchdetail.player.length }}/{{ minplayer }}) -->
+              ({{ matchdetail.player.length }}/{{ minplayer }})
             </p>
             <p class="desc-subdued left mb-0">{{ sisaPlayer }} pemain lagi</p>
           </div>
@@ -204,7 +209,7 @@
 
     <!-- CTA -->
     <div class="btn-join-match pa-4">
-      <v-btn block depressed rounded class="btn-primary" @click="goJoinMatch"
+      <v-btn block depressed rounded class="btn-primary" :disabled="isJoin" @click="goJoinMatch"
         >Ikut Main</v-btn
       >
     </div>
@@ -241,6 +246,7 @@ export default {
         iconUrl: require('leaflet/dist/images/marker-icon.png'),
         shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
       }),
+      isJoin: false
     }
   },
   //   layout: 'bottom_nav',
@@ -269,18 +275,19 @@ export default {
       longitude: (state) => state.match.lng,
     }),
   },
+  // eslint-disable-next-line vue/order-in-components
+  async fetch() {
+    await this.getCoordinate()
+    await this.checkIfJoinMatch()
+    this.center = [parseFloat(this.matchdetail.coordinate[0]), parseFloat(this.matchdetail.coordinate[1])]
+    this.markerLatLng = [parseFloat(this.matchdetail.coordinate[0]), parseFloat(this.matchdetail.coordinate[1])]
+    await this.checkCurrentPlayer()
+  },
   async mounted() {
     await this.getMatchDetail()
     const url = new URL(window.location.href)
     this.tempParams = url.searchParams.get('invitedFrom')
-    // await this.getCoordinate()
-    // this.$nextTick(() => {
-    //   this.$refs.marker.mapObject.openPopup()
-    // })
     await this.checkMinPlayer()
-    this.center = [parseFloat(this.matchdetail.coordinate[0]), parseFloat(this.matchdetail.coordinate[1])]
-    this.markerLatLng = [parseFloat(this.matchdetail.coordinate[0]), parseFloat(this.matchdetail.coordinate[1])]
-    // await this.checkCurrentPlayer()
   },
   methods: {
     ...mapActions({
@@ -290,6 +297,17 @@ export default {
       return typeof _numberFormat !== 'undefined'
         ? _numberFormat(number, decimals, decPoint, thousandSep)
         : (number, decimals, decPoint, thousandSep)
+    },
+    checkIfJoinMatch() {
+      const username = localStorage.getItem('nameGoogleAcc')
+      // const listplayer = this.matchdetail.player
+      this.matchdetail.player.forEach((item) => {
+        if (username === item.name) {
+          this.isJoin = true
+        } else {
+          this.isJoin = false
+        }
+      })
     },
     back() {
       this.$store.$router.push('/')

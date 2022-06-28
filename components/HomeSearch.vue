@@ -8,7 +8,7 @@
       </p>
       <br />
       <v-text-field
-        v-if="!isMatchToday"
+        v-if="isMatchToday === false"
         v-model="fieldCity"
         solo
         append-icon="mdi-magnify"
@@ -16,7 +16,7 @@
         class="search"
         @change="searchByCity"
       ></v-text-field>
-      <v-card v-if="isMatchToday" outlined>
+      <v-card v-if="isMatchToday === true" outlined>
         <v-layout row wrap>
           <v-flex xs6 s6 class="pl-16 p-12-20">
             <h3>{{matchToday[0].gamename}}</h3>
@@ -37,12 +37,12 @@
           </v-layout>
         </div>
         <div class="pl-16 center">
-          <v-layout row wrap class="pl-16">
+          <v-layout row wrap class="pl-16 cursor-pointer">
             <v-flex xs6 s6 class="tgl">
               <img src="~/assets/img/calendar-2.png" width="18" />
               <span class="txt-list">Hari ini, {{matchToday[0].time}}</span>
             </v-flex>
-            <v-flex v-if="!matchPIC" xs6 s6 class="btn-detail"
+            <v-flex v-if="!matchPIC" xs6 s6 class="btn-detail" @click="goToMatch(matchToday[0].id)"
               ><img
                 width="24"
                 height="24"
@@ -132,16 +132,20 @@ export default {
         const currentTime = moment().hour().toString()
         // const matchTime = item.match.match.timePlay.slice(0, 2)
         const matchEnd = item.match.match.timePlay.slice(7, 13)
-        if (date === item.match.match.playDate) {
+        if (date === item.match.match.playDate || Number(currentTime) < Number(matchEnd)) {
           this.isMatchToday = true
           await store.dispatch('match/setMatchToday', listData)
         } else if (currentTime === matchEnd) {
           this.btnEndTime = true
+          this.isMatchToday = false
         }
       })
     },
     goToAbsen(id) {
       this.$router.push(`/absen/${id}`)
+    },
+    goToMatch(id) {
+      this.$router.push(`/match/${id}`)
     }
   },
 }

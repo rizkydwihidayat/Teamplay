@@ -213,7 +213,6 @@ export default {
         }
         this.loginWithGoogle(params)
           .then((resp) => {
-            console.warn(resp);
             if (this.isLoginWithGoogle) {
               this.$router.push('/')
             }

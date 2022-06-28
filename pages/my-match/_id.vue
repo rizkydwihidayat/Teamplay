@@ -2,7 +2,7 @@
   <div id="pageMatchDetail" class="compWrapper g-transition page">
     <!-- section header -->
     <div class="container-header pb-4 pt-4 mb-1">
-      <v-row class="container-topbar ml-3 mr-3 mt-6 mb-10">
+      <v-row class="container-topbar ml-3 mr-3 mt-4 mb-10">
         <v-btn icon :ripple="false" class="btnBack" @click="back">
           <img
             width="32"
@@ -20,23 +20,39 @@
           />
         </v-btn>
       </v-row>
-      <h2 class="match-title ml-4 mr-4">Disini Saya Senang</h2>
-      <v-row class="match-location mr-4 ml-4 mb-4 mt-2">
-        <div class="icon-wrapper mr-2">
-          <img
-            width="20"
-            height="20"
-            src="~/assets/svg/ic-location-white.svg"
-            alt="location"
-          />
-        </div>
-        <p>Dimana2</p>
+      <h2 class="match-title ml-4 mr-4">
+        {{ matchdetail.gameName }} {{matchdetail.absen}}
+      </h2>
+      <v-row class="match-location mr-4 ml-4 mt-2 mb-0">
+        <v-chip v-if="matchdetail.absen === true" small color="#2962FF" class="capsule mr-2">Bergabung</v-chip>
+        <v-chip small color="rgba(255, 255, 255, 0.2)" class="capsule mr-2">{{
+          matchdetail.sportCategory
+        }}</v-chip>
+        <v-chip small color="rgba(255, 255, 255, 0.2)" class="capsule mr-2">{{
+          matchdetail.playerCategory
+        }}</v-chip>
       </v-row>
+      <v-layout row wrap class="match-location mr-4 ml-4 mb-2 mt-2">
+        <v-flex xs1 s1
+          ><div class="icon-wrapper mr-2">
+            <img
+              width="20"
+              height="20"
+              src="~/assets/svg/ic-location-white.svg"
+              alt="location"
+            /></div
+        ></v-flex>
+        <v-flex xs9 s
+          ><p>
+            {{ matchdetail.venueName }}
+          </p></v-flex
+        >
+      </v-layout>
     </div>
 
     <!-- section detail match -->
-    <div class="section-detail-match ma-4 pb-2">
-      <v-row class="waktu-main mt-0 ml-0 mr-0 mb-4">
+    <div class="section-detail-match">
+      <v-row class="waktu-main ma-4">
         <div class="icon-wrapper mr-3">
           <img
             width="20"
@@ -47,13 +63,14 @@
         </div>
         <div class="description-wrapper">
           <p class="desc-subdued mb-1">Waktu Main</p>
-          <p class="desc-primary mb-1">Sabtu, 1 Januari 2022</p>
+          <p class="desc-primary mb-1">{{ matchdetail.playDate }}</p>
           <p class="desc-primary mb-0">
-            18.00 - 20.00 <span class="desc-subdued">(2 jam)</span>
+            {{ matchdetail.time }}
+            <span class="desc-subdued">({{ matchdetail.duration }} jam)</span>
           </p>
         </div>
       </v-row>
-      <v-row class="biaya ma-0 mt-0 ml-0 mr-0 mb-4 pt-2 pb-2">
+      <v-row class="biaya ma-4 pt-2 pb-2">
         <div class="icon-wrapper mr-3">
           <img
             width="20"
@@ -65,30 +82,28 @@
         <div class="description-wrapper">
           <p class="desc-subdued mb-1">Biaya</p>
           <p class="desc-primary mb-0">
-            <span class="desc-bold">Rp30.000</span> / pemain
+            <span class="desc-bold"
+              >Rp{{ numberFormat(matchdetail.price, 0, ',', '.') }}</span
+            >
+            / pemain
           </p>
         </div>
       </v-row>
-      <v-btn block depressed rounded class="btn-primary">Undang Teman</v-btn>
     </div>
-
-    <!-- section location -->
-    <div class="divider"></div>
-    <div class="section-location ma-4">
-      <v-row class="section-title ml-0 mr-0 mt-0 mb-2">
-        <h3>Lokasi Lapangan</h3>
-      </v-row>
-      <p class="desc-primary small">
-        Graha Elnusa Lantai 16, Jl. TB Simatupang Kav. 1 B, RT.10/RW.3
-      </p>
-      <!-- maps -->
-      <div
-        class="mb-6"
-        style="height: 164px; width: 100%; border-radius: 8px; background: grey"
-      ></div>
-      <v-btn block depressed rounded class="btn-secondary mb-6"
-        >Lihat petunjuk jalan</v-btn
+    <div class="pa-4">
+      <v-btn
+        block
+        depressed
+        rounded
+        class="btn-primary mb-3"
+        @click="inviteFriend"
+        >Undang Teman</v-btn
       >
+      <v-alert outlined text type="warning" icon="mdi-alert-circle">
+        <span class="notif"
+          >Harga sewa /jam dan minimum durasi sewa jangan salah isi ya!</span
+        >
+      </v-alert>
     </div>
 
     <!-- section pemain -->
@@ -96,7 +111,9 @@
     <div class="section-pemain">
       <v-row class="section-title ma-4">
         <h3>Pemain</h3>
-        <p class="desc-blue mb-0">Lihat semua</p>
+        <p class="desc-blue mb-0 btn-listplayer" @click="openListPlayer">
+          Lihat semua
+        </p>
       </v-row>
       <div class="player-mini-list description-wrapper ma-4 pb-2">
         <p class="desc-subdued mb-4">Rata-rata usia 25 tahun</p>
@@ -106,11 +123,77 @@
           <div class="player-ava mr-1"><span>AM</span></div>
           <div class="player-ava mr-1"><span>AM</span></div>
           <div class="player-number">
-            <p class="desc-subdued count mb-0">(17/20)</p>
-            <p class="desc-subdued left mb-0">3 pemain lagi</p>
+            <p class="desc-subdued count mb-0">
+              ({{ matchdetail.player.length }}/{{ minplayer }})
+            </p>
+            <p class="desc-subdued left mb-0">{{ sisaPlayer }} pemain lagi</p>
           </div>
         </v-row>
       </div>
+      <v-dialog
+        v-model="showdialog"
+        transition="dialog-bottom-transition wrap-400"
+      >
+        <v-card class="modalShare">
+          <v-card-title class="headerModal mt-2">
+            <v-layout row wrap>
+              <v-flex xs2 s2 class="close-modal">
+                <div class="align-right" @click="closeDialog">X</div>
+              </v-flex>
+              <v-flex xs6 s6>
+                <span class="title-filter">Pemain</span>
+              </v-flex>
+            </v-layout>
+          </v-card-title>
+          <hr class="hr-divider" />
+          <v-card-text class="list-player">
+            <p v-if="matchdetail.player.length === 0">
+              Belum ada yang bergabung
+            </p>
+            <div
+              v-for="(item, idx) in matchdetail.player"
+              :key="idx"
+              class="players"
+            >
+              <span
+                >{{ item.name }} ({{ convertAge(item.age) }})
+                {{ item.gender.charAt(0) }}</span
+              >
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+    </div>
+
+    <!-- section location -->
+    <div class="divider"></div>
+    <div class="section-location ma-4">
+      <v-row class="section-title ml-0 mr-0 mt-0 mb-2">
+        <h3>Lokasi Lapangan</h3>
+      </v-row>
+      <p class="desc-primary small">
+        {{ matchdetail.address }}
+      </p>
+      <!-- maps -->
+      <div class="maps-area" style="width: 100%; height: 220px">
+        <l-map style="height: 200px; z-index: 0" :zoom="zoom" :center="center">
+          <l-tile-layer :url="url"></l-tile-layer>
+          <l-marker ref="marker" :icon="icon" :lat-lng="markerLatLng">
+            <l-tooltip :options="{ permanent: true, interactive: true }">
+              <small>{{ matchdetail.city }}</small>
+            </l-tooltip>
+          </l-marker>
+        </l-map>
+      </div>
+      <v-btn
+        block
+        depressed
+        rounded
+        small
+        class="btn-secondary mb-6"
+        @click="goToMaps"
+        >Lihat petunjuk jalan</v-btn
+      >
     </div>
 
     <!-- section host -->
@@ -122,7 +205,7 @@
         <div class="description-wrapper">
           <v-row style="align-item: center" class="ma-0">
             <p class="desc-bold mb-0 mr-2" style="align-item: center">
-              Faishal Arif
+              {{ matchdetail.name }}
             </p>
             <img
               width="20"
@@ -133,56 +216,311 @@
             />
           </v-row>
           <p class="desc-subdued mb-3">Bergabung Juni 2022</p>
-          <p class="desc-blue pb-4">Hubungi Host</p>
+          <p class="desc-blue pb-4 cursor-pointer" @click="chatHost">
+            Hubungi Host
+          </p>
         </div>
       </v-row>
     </div>
 
     <!-- CTA -->
     <div class="btn-join-match pa-4">
-      <v-btn block depressed rounded class="btn-primary">Join Match</v-btn>
+      <v-btn
+        v-if="isTrusted"
+        block
+        depressed
+        rounded
+        class="btn-primary"
+        :disabled="isJoin"
+        @click="goJoinMatch"
+        >Batalkan Pertandingan</v-btn
+      >
+      <v-btn
+        v-else
+        block
+        depressed
+        rounded
+        class="btn-primary"
+        :disabled="isJoin"
+        @click="goJoinMatch"
+        >Ikut Main</v-btn
+      >
     </div>
   </div>
 </template>
 <script>
+import { mapState, mapActions } from 'vuex'
+import { LMap, LTileLayer, LMarker, LTooltip } from 'vue2-leaflet'
+import { icon } from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+import { _numberFormat } from '~/utils'
 export default {
-  name: 'HistoryMatchDetailPage',
-  //   components: {
-  //     HomeSearch: () =>
-  //       import('../components/HomeSearch.vue' /* webpackChunkName: "HomeSellerInfo" */),
-  //     HomeCategory: () =>
-  //       import('../components/HomeCategory.vue' /* webpackChunkName: "HomeSellerInfo" */),
-  //   },
+  name: 'MatchDetailPage',
+  components: {
+    LMap,
+    LTileLayer,
+    LMarker,
+    LTooltip,
+  },
+  data() {
+    return {
+      minplayer: 0,
+      sisaPlayer: 0,
+      showdialog: false,
+      matchDetail: [],
+      center: [-6.529217, 106.766574],
+      zoom: 12,
+      markerLatLng: [-6.529217, 106.766574],
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      years: new Date().getFullYear(),
+      tempParams: null,
+      icon: icon({
+        iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+        iconUrl: require('leaflet/dist/images/marker-icon.png'),
+        shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+      }),
+      isJoin: false,
+      isTrusted: false,
+      isDefault: false
+    }
+  },
   //   layout: 'bottom_nav',
   head() {
     return {
-      title: 'History Match Detail',
+      title: 'Match Detail',
       meta: [
         // hid is used as unique identifier. Do not use `vmid` for it as it will not work
         {
-          hid: 'history_match_detail_default',
+          hid: 'match_detail_default',
           name: 'description',
-          content: 'History Match Detail',
+          content: 'Match Detail',
         },
         {
-          hid: 'history_match_detail_default_keywords',
+          hid: 'match_detail_default_keywords',
           name: 'keywords',
-          content: 'history, match, match-detail',
+          content: 'match, match-detail',
         },
       ],
     }
   },
-  mounted() {
-    console.warn(this.$route)
+  computed: {
+    ...mapState({
+      matchdetail: (state) => state.match.matchdetail,
+      latitude: (state) => state.match.lat,
+      longitude: (state) => state.match.lng,
+    }),
+  },
+  // eslint-disable-next-line vue/order-in-components
+  async fetch() {
+    await this.getCoordinate()
+    await this.checkIfJoinMatch()
+    this.center = [
+      parseFloat(this.matchdetail.coordinate[0]),
+      parseFloat(this.matchdetail.coordinate[1]),
+    ]
+    this.markerLatLng = [
+      parseFloat(this.matchdetail.coordinate[0]),
+      parseFloat(this.matchdetail.coordinate[1]),
+    ]
+    await this.checkCurrentPlayer()
+  },
+  async mounted() {
+    await this.getMatchDetail()
+    const url = new URL(window.location.href)
+    this.tempParams = url.searchParams.get('invitedFrom')
+    // this.$nextTick(() => {
+    //   this.$refs.marker.mapObject.openPopup()
+    // })
+    await this.checkMinPlayer()
+    const token = localStorage.getItem('accKey')
+    const verified = localStorage.getItem('isVerified')
+    if (token === null) {
+      this.isNotLogin = true
+    } else if (token !== null && verified === 'false') {
+      this.isDefault = true
+    } else if (verified === 'true') {
+      this.isTrusted = true
+    }
   },
   methods: {
+    ...mapActions({
+      joinMatch: 'match/joinMatch',
+    }),
+    numberFormat(number, decimals, decPoint, thousandSep) {
+      return typeof _numberFormat !== 'undefined'
+        ? _numberFormat(number, decimals, decPoint, thousandSep)
+        : (number, decimals, decPoint, thousandSep)
+    },
+    checkIfJoinMatch() {
+      const username = localStorage.getItem('nameGoogleAcc')
+      const listplayer = this.matchdetail.player
+      listplayer.forEach((item) => {
+        if (username === item.name) {
+          this.isJoin = true
+          const alertMsg = {
+            msg: 'Kamu sudah join di match ini.',
+            color: '#43A047',
+          }
+          this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+        } else {
+          this.isJoin = false
+        }
+      })
+    },
     back() {
       this.$store.$router.push('/')
+    },
+    async goJoinMatch() {
+      const id = this.$route.params.id
+      const bearer = localStorage.getItem('accKey')
+      // const invite = this.$store.state.user.userID
+      // if (userID !)
+      const params = {
+        matchId: id,
+        invitedFrom: this.tempParams,
+      }
+      if (bearer === null) {
+        const alertMsg = {
+          msg: 'Silahkan login terlebih dahulu',
+          color: 'secondary',
+        }
+        this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+        this.$store.$router.push('/login')
+      } else {
+        await this.joinMatch({ params, bearer })
+          .then((result) => {
+            if (result !== 'undefined') {
+              this.$store.$router.push(`/success-page/${id}`)
+            }
+          })
+          .catch((error) => {
+            if (error.response.status === 401) {
+              const alertMsg = {
+                msg: 'Sesi telah berakhir, merefresh halaman',
+                color: 'secondary',
+              }
+              this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+            }
+            return false
+          })
+        // this.$store.$router.push(`/success-page/${id}`)
+      }
+    },
+    getCoordinate() {
+      const temp = []
+      temp.push(this.matchdetail.coordinate)
+    },
+    async getMatchDetail(store = this.$store) {
+      //   this.matchDetail = []
+      const id = this.$route.params.id
+      const match = await store.dispatch('match/getMatchId', { id })
+      await store.dispatch('match/setMatchDetail', match)
+      //   return this.matchDetail.push(match)
+    },
+    goToMaps() {
+      window.location.href = `https://maps.google.com?q=${this.center[0]},${this.center[1]}`
+    },
+    checkMinPlayer() {
+      const category = this.matchdetail.sportCategory
+      switch (category) {
+        case 'Futsal':
+          this.minplayer = 15
+          break
+        case 'Basket':
+          this.minplayer = 15
+          break
+        case 'Mini Soccer':
+          this.minplayer = 18
+          break
+        case 'Sepak Bola':
+          this.minplayer = 25
+          break
+      }
+    },
+    checkCurrentPlayer() {
+      const result = this.matchdetail.player.length - this.minplayer
+      this.sisaPlayer = result
+      return this.sisaPlayer
+    },
+    closeDialog() {
+      this.showdialog = false
+    },
+    openListPlayer() {
+      this.showdialog = true
+    },
+    convertAge(val) {
+      const result = this.years - val
+      return result
+    },
+    chatHost() {
+      const phone = localStorage.getItem('phone')
+      window.location.href = `https://wa.me/${phone}`
+    },
+    inviteFriend() {
+      const usrId = localStorage.getItem('userID')
+      const url = new URL(window.location.href) + `?invitedFrom=${usrId}`
+      // url.select()
+      const copied = navigator.clipboard.writeText(url)
+      try {
+        // const copied = document.execCommand('copy')
+        const alertMsg = {
+          msg: copied
+            ? 'Link pertandingan berhasil dicopy'
+            : 'Gagal copy Link pertandingan',
+          color: '#43A047',
+        }
+        this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+      } catch (err) {
+        const alertMsg = {
+          msg: 'Oops, unable to copy',
+          color: 'secondary',
+        }
+        this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+      }
     },
   },
 }
 </script>
 <style scoped>
+.list-player p {
+  text-align: center !important;
+  margin: 35px 12px;
+}
+.players {
+  margin: 12px 0px;
+  padding-bottom: 10px;
+  border-bottom: lightgray solid 1px;
+}
+.btn-listplayer {
+  cursor: pointer;
+}
+.modalShare {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 480px;
+  height: 438px;
+  overflow: scroll;
+  margin: auto;
+  border-radius: 16px 16px 0px 0px;
+  font-family: Poppins;
+}
+.close-modal {
+  font-family: Poppins;
+  font-weight: 500;
+  color: gray;
+  cursor: pointer;
+  padding-right: 30px;
+  padding-left: 0px;
+}
+.hr-divider {
+  margin: 10px 0;
+  height: 1px;
+  border: 0;
+  background: #e3e3e3;
+}
 .container-header {
   background-image: url('~@/assets/img/futsal-bg.png');
   background-size: cover;
@@ -191,13 +529,20 @@ export default {
   justify-content: space-between;
 }
 .btnBack {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.2);
 }
 h2.match-title {
   font-size: 24px;
   font-weight: 600;
   font-family: Poppins;
   text-align: left;
+  color: white;
+}
+.capsule {
+  font-size: 12px;
+  font-weight: 400;
+  font-family: Poppins;
+  text-transform: capitalize !important;
   color: white;
 }
 .match-location {
@@ -211,7 +556,7 @@ h2.match-title {
   padding: 6px;
 }
 .match-location .icon-wrapper {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.2);
 }
 .match-location >>> p {
   font-weight: 300;
@@ -317,9 +662,15 @@ h2.match-title {
   z-index: 5;
   clear: both;
   position: fixed;
-  width: 100%;
+  /* width: 100%; */
+  max-width: 480px !important;
   margin: auto;
   left: 0;
   right: 0;
+}
+.maps-area >>> .vue-map {
+  position: none;
+  height: 200px;
+  margin: 12px;
 }
 </style>

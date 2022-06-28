@@ -100,7 +100,7 @@
           block
           depressed
           rounded
-          class="btn-primary"
+          class="btn-primary txt-capitalize"
           @click="openAbsen"
           >Absen Pemain</v-btn
         >
@@ -109,7 +109,7 @@
           block
           depressed
           rounded
-          class="btn-primary create-btn"
+          class="btn-primary create-btn txt-capitalize"
           @click="endMatchNow"
         >
           <span> Selesaikan Pertandingan</span>

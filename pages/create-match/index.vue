@@ -622,9 +622,9 @@ export default {
           bearer,
         })
           .then((result) => {
-            if (result !== 'undefined') {
+            if (result.length > 0) {
               const alertMsg = {
-                msg: result.response.data.message,
+                msg: result.data.message,
                 color: '#43A047',
               }
               this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
@@ -632,6 +632,7 @@ export default {
             }
           })
           .catch((error) => {
+            console.warn(error);
             if (error.response.status === 401) {
               const alertMsg = {
                 msg: error.response.data.message,
@@ -641,7 +642,7 @@ export default {
             }
             return false
           })
-
+        console.warn(resultsearch);
         // eslint-disable-next-line no-prototype-builtins
         if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
           await this.$store

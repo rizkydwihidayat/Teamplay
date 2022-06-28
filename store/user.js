@@ -23,27 +23,29 @@ export const mutations = {
     const keys = Object.keys(params)
     keys.forEach((key) => (state[key] = params[key]))
   },
-  setListUserMatch(list) {
-    state.listUserMatch = list.data
-    // state.listUserMatch = list.data.length > 0 && list.data[0] !== null
-    //   // eslint-disable-next-line array-callback-return
-    //   ? list.data.map((value, key) => {
-    //       return {
-    //           gamename: value.match.gameName,
-    //           category: value.match.sportCategory,
-    //           gender: value.match.playerCategory,
-    //           date: value.match.playDate,
-    //           time: value.match.timePlay,
-    //           place: value.venue.venueName,
-    //           status: value.match.status
-    //       }
-    //   }, {})
-    //   : []
+  setListUserMatch(state, list) {
+    state.listUserMatch = list.data.length > 0 && list.data[0] !== null
+      // eslint-disable-next-line array-callback-return
+      ? list.data.map((value, key) => {
+          return {
+              gamename: value.match.gameName,
+              category: value.match.sportCategory,
+              gender: value.match.playerCategory,
+              date: value.match.playDate,
+              time: value.match.timePlay,
+              place: value.venue.venueName,
+              status: value.match.status
+          }
+      }, {})
+      : []
   }
 }
 export const actions = {
   setAuthToken({ commit }, params) {
     commit('setAuthToken', params)
+  },
+  setListUserMatch({ commit }, list) {
+    commit('setListUserMatch', list)
   },
   postLogin({ dispatch, commit, state }, { email, password }) {
     this.$axios.setHeader(

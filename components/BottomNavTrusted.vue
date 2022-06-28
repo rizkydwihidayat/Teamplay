@@ -29,7 +29,7 @@
       <span class="text-nav">Match</span>
       <img
         v-if="routeName === 'my-match'"
-        src="~/assets/svg/match.svg"
+        src="~/assets/svg/my-match.svg"
         alt="H"
         width="21"
         class="btmNavImg"
@@ -119,7 +119,7 @@
       <span class="text-nav">Match</span>
       <img
         v-if="
-          routeName === 'match'
+          routeName === 'my-match'
         "
         src="~/assets/svg/match.svg"
         alt="H"

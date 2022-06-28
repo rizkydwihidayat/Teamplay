@@ -26,7 +26,7 @@
               >Poinku
               <img width="12" height="12" src="~/assets/svg/alert.svg" alt="<"
             /></span>
-            <span v-els class="point">Match buatanmu</span>
+            <span v-else class="point">Match buatanmu</span>
             <div v-if="isTrustedMember === false" class="progress">
               <div class="progress-bar" data-label="%">
                 <!-- <small class="txt-black">{{userPoint}}</small> -->

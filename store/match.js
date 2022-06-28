@@ -93,7 +93,12 @@ export const mutations = {
               gamename: value.match.match.gameName,
               place: value.match.venue.venueName,
               time: value.match.match.timePlay,
-              id: value.match.match.id
+              date: value.match.match.playDate,
+              id: value.match.match.id,
+              absen: value.isAbsent,
+              joined: value.isJoined,
+              totalPayer: value.match.numberOfPlayers,
+              status: value.match.match.status
             }
           }, {})
         : []

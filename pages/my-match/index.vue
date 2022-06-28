@@ -1,7 +1,9 @@
 <template>
   <v-main class="main">
     <TopBarNav />
-    <div id="pageMatch" class="compWrapper g-transition match">
+    <br />
+    <br />
+    <div id="pageMatch" class="compWrapper g-transition match page">
       <div class="filter-match">
         <v-chip-group v-model="inputCategory" active-class="primary--text">
           <v-chip v-for="data in filterCategory" :key="data" :value="data">{{
@@ -11,18 +13,18 @@
       </div>
       <div v-if="listAllMatch.length !== 0" class="card">
         <div v-for="(item, idx) in listAllMatch" :key="idx" class="list-card">
-          <v-card outlined>
+          <v-card outlined @click="goToDetailMatch(item.id)">
             <v-layout row wrap>
               <v-flex xs8 class="card-section-1"
                 ><h3>{{ item.gamename }}</h3>
                 <br />
                 <div class="center">
                   <img src="~/assets/img/Vector.png" width="16" />
-                  <span class="txt-list">Nayla Futsal, Kota Jakarta Barat</span>
+                  <span class="txt-list">{{ item.place }}</span>
                 </div>
                 <div class="center">
                   <img src="~/assets/img/calendar-2.png" width="18" />
-                  <span class="txt-list">Sabtu, 19 Februari 2022</span>
+                  <span class="txt-list">{{ item.date }}</span>
                 </div>
                 <br />
                 <v-layout row wrap>
@@ -50,8 +52,9 @@
                 </v-layout>
               </v-flex>
               <v-flex xs4 class="card-section-2"
-                ><v-chip :color="getColor(item.status)" small>
-                  <span>{{ item.status }}</span>
+                ><v-chip :color="getColor(item.status, item.joined)" small>
+                  <span v-if="item.status === 'Open'" class="txt-black">{{ item.status }}</span>
+                  <span v-else>{{ item.status }}</span>
                 </v-chip></v-flex
               >
             </v-layout>
@@ -86,7 +89,7 @@ export default {
   },
   computed: {
     ...mapState({
-      listAllMatch: (state) => state.user.listUserMatch,
+      listAllMatch: (state) => state.match.matchToday,
     }),
   },
   async mounted() {
@@ -96,10 +99,14 @@ export default {
     async getMatch(store = this.$store) {
       const bearer = localStorage.getItem('accKey')
       const userID = localStorage.getItem('userID')
-      const listData = await store.dispatch('user/getUserMatchHistory', {bearer, userID})
-      await store.dispatch('user/setListUserMatch', listData)
+      const listData = await store.dispatch('match/getMatchHistory', {
+        bearer,
+        userID,
+      })
+      await store.dispatch('match/setMatchToday', listData)
     },
     getColor(status) {
+      console.warn(status);
       switch (status) {
         case 'Selesai':
           return 'grey'
@@ -108,6 +115,9 @@ export default {
         default:
           return ''
       }
+    },
+    goToDetailMatch(id) {
+      this.$router.push(`/my-match/${id}`)
     },
   },
 }
@@ -119,10 +129,10 @@ export default {
   width: 100%;
 }
 .match {
-  padding-top: 10px;
-  padding-bottom: 20px;
+  padding-top: 60px;
+  padding-bottom: 50px;
   background: white;
-  text-align: center;
+  /* text-align: center; */
   height: 100vh;
 }
 .list-card {
