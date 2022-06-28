@@ -7,6 +7,7 @@
 }
 span {
   font-family: Poppins;
+  text-transform: capitalize;
 }
 .align-right {
     text-align: right;
@@ -26,6 +27,9 @@ span {
 }
 .pb-12 {
   padding-bottom: 12px;
+}
+.pr-20 {
+  padding-right: 20px;
 }
 .mg-20 {
   margin: 20px;
@@ -122,4 +126,21 @@ span {
 }
 .cursor-pointer {
   cursor: pointer;
+}
+.btn-primary {
+  background-color: rgba(41, 121, 255, 1) !important;
+  color: white !important;
+  text-transform: none;
+  font-weight: 500;
+  font-family: Poppins;
+}
+.v-dialog, h4 {
+  font-family: Poppins;
+}
+.font-blue {
+  color: rgba(41, 121, 255, 1);
+}
+.font-bold {
+  font-weight: 600;
+  font-family: Poppins;
 }

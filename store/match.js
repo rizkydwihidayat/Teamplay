@@ -42,6 +42,7 @@ export const mutations = {
       created: resp.data.organizer.hasCreated,
       phone: resp.data.organizer.phoneNumber,
       player: resp.data.players,
+      price: resp.data.match.price
     }
 
     state.matchdetail = store
@@ -84,7 +85,6 @@ export const mutations = {
     }
   },
   setMatchToday(state, list) {
-    console.warn(list);
     state.matchToday =
       list.data.length > 0 && list.data[0] !== null
         ? // eslint-disable-next-line array-callback-return
@@ -93,6 +93,7 @@ export const mutations = {
               gamename: value.match.match.gameName,
               place: value.match.venue.venueName,
               time: value.match.match.timePlay,
+              id: value.match.match.id
             }
           }, {})
         : []

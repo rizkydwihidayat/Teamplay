@@ -81,7 +81,7 @@
         <div class="description-wrapper">
           <p class="desc-subdued mb-1">Biaya</p>
           <p class="desc-primary mb-0">
-            <span class="desc-bold">Rp30.000</span> / pemain
+            <span class="desc-bold">Rp{{numberFormat(matchdetail.price, 0, ',', '.')}}</span> / pemain
           </p>
         </div>
       </v-row>
@@ -127,7 +127,7 @@
             </v-layout>
           </v-card-title>
           <hr class="hr-divider" />
-          <!-- <v-card-text class="list-player">
+          <v-card-text class="list-player">
             <p v-if="matchdetail.player.length === 0">
               Belum ada yang bergabung
             </p>
@@ -141,7 +141,7 @@
                 {{ item.gender.charAt(0) }}</span
               >
             </div>
-          </v-card-text> -->
+          </v-card-text>
         </v-card>
       </v-dialog>
     </div>
@@ -215,6 +215,7 @@ import { mapState, mapActions } from 'vuex'
 import { LMap, LTileLayer, LMarker, LTooltip } from 'vue2-leaflet'
 import { icon } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { _numberFormat } from '~/utils'
 export default {
   name: 'MatchDetailPage',
   components: {
@@ -285,6 +286,11 @@ export default {
     ...mapActions({
       joinMatch: 'match/joinMatch',
     }),
+    numberFormat(number, decimals, decPoint, thousandSep) {
+      return typeof _numberFormat !== 'undefined'
+        ? _numberFormat(number, decimals, decPoint, thousandSep)
+        : (number, decimals, decPoint, thousandSep)
+    },
     back() {
       this.$store.$router.push('/')
     },

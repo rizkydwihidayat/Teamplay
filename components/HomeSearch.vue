@@ -19,7 +19,7 @@
       <v-card v-if="isMatchToday" outlined>
         <v-layout row wrap>
           <v-flex xs6 s6 class="pl-16 p-12-20">
-            <h3>{matchToday.gamename}</h3>
+            <h3>{{matchToday[0].gamename}}</h3>
           </v-flex>
           <v-flex xs6 s6 class="align-right label">
             <v-chip small color="rgba(239, 50, 50, 1)" class="capsule mr-2"
@@ -31,7 +31,7 @@
           <v-layout row wrap class="pl-16">
             <v-flex xs6 s6 class="tgl">
               <img src="~/assets/img/Vector.png" width="16" />
-              <span class="txt-list">{matchToday.place}</span>
+              <span class="txt-list">{{matchToday[0].place}}</span>
             </v-flex>
             <v-flex xs6 s6 class="btn-detail"> </v-flex>
           </v-layout>
@@ -40,7 +40,7 @@
           <v-layout row wrap class="pl-16">
             <v-flex xs6 s6 class="tgl">
               <img src="~/assets/img/calendar-2.png" width="18" />
-              <span class="txt-list">Hari ini, {matchToday.time}</span>
+              <span class="txt-list">Hari ini, {{matchToday[0].time}}</span>
             </v-flex>
             <v-flex v-if="!matchPIC" xs6 s6 class="btn-detail"
               ><img
@@ -52,22 +52,18 @@
             </v-flex>
           </v-layout>
         </div>
-        <div class="pl-20">
+        <div class="pl-20 pr-20">
           <v-btn
             v-if="matchPIC"
-            class="create-btn"
-            depressed
-            color="primary"
-            :disabled="!valid"
-            @click="submitCreateMatch"
+            block depressed rounded class="btn-primary create-btn"
+            @click="goToAbsen(matchToday[0].id)"
           >
             <span> Absen Pemain</span>
           </v-btn>
+          <br />
           <v-btn
-            class="create-btn"
-            depressed
-            color="primary"
-            :disabled="!valid"
+            v-if="btnEndTime"
+            block depressed rounded class="btn-primary create-btn"
             @click="submitCreateMatch"
           >
             <span> Selesaikan Pertandingan</span>
@@ -89,7 +85,8 @@ export default {
       matchPIC: false,
       matchUser: false,
       currentDate: new Date().toISOString().substr(0, 10),
-      isMatchToday: false
+      isMatchToday: false,
+      btnEndTime: false
     }
   },
   computed: {
@@ -133,13 +130,19 @@ export default {
       listData.data.filter(async (item) => {
         const date = this.BDTime()
         const currentTime = moment().hour().toString()
-        const matchTime = item.match.match.timePlay.slice(0, 2)
-        if (date === item.match.match.playDate && currentTime === matchTime) {
+        // const matchTime = item.match.match.timePlay.slice(0, 2)
+        const matchEnd = item.match.match.timePlay.slice(7, 13)
+        if (date === item.match.match.playDate) {
           this.isMatchToday = true
           await store.dispatch('match/setMatchToday', listData)
+        } else if (currentTime === matchEnd) {
+          this.btnEndTime = true
         }
       })
     },
+    goToAbsen(id) {
+      this.$router.push(`/absen/${id}`)
+    }
   },
 }
 </script>
