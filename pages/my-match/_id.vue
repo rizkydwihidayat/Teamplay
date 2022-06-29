@@ -431,23 +431,6 @@ export default {
       const matchid = this.$route.params.id
       const bearer = localStorage.getItem('accKey')
       await this.exitMatch({ matchid, bearer})
-      // .then((result) => {
-      //       if (result.message) {
-      //         const alertMsg = {
-      //         msg: result.response.message,
-      //         color: '#43A047',
-      //       }
-      //       this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-      //         this.$store.$router.push('/')
-      //       }
-      //     })
-      //     .catch((error) => {
-      //       const alertMsg = {
-      //         msg: error.message,
-      //         color: '#43A047',
-      //       }
-      //       this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-      //     })
     },
     getCoordinate() {
       const temp = []
