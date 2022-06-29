@@ -124,7 +124,7 @@
       </v-layout>
       <!-- <hr class="hr-divider" /> -->
       <v-layout
-        v-if="!isLoginWithGoogle"
+        v-if="!isTrustedMember"
         row
         wrap
         class="info-pribadi"

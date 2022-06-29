@@ -166,7 +166,7 @@
           <div class="player-ava mr-1"><span>AM</span></div>
           <div class="player-number">
             <p class="desc-subdued count mb-0">
-              <!-- ({{ matchdetail.player.length }}/{{ minplayer }}) -->
+              ({{ listPlayer.length }}/{{ minplayer }})
             </p>
             <p class="desc-subdued left mb-0">{{ sisaPlayer }} pemain lagi</p>
           </div>
@@ -189,18 +189,18 @@
           </v-card-title>
           <hr class="hr-divider" />
           <v-card-text class="list-player">
-            <p v-if="matchdetail.player.length === 0">
+            <p v-if="listPlayer.length === 0">
               Belum ada yang bergabung
             </p>
             <div
-              v-for="(item, idx) in matchdetail.player"
+              v-for="(item, idx) in listPlayer"
               v-else
               :key="idx"
               class="players"
             >
               <span
-                >{{ item.name }} ({{ convertAge(item.age) }})
-                {{ item.gender.charAt(0) }}</span
+                >{{ item[0].name }} ({{ convertAge(item[0].age) }})
+                {{ item[0].gender.charAt(0) }}</span
               >
             </div>
           </v-card-text>
@@ -209,24 +209,42 @@
     </div>
 
     <!-- dialog konfirm end match -->
-    <v-dialog v-model="dialogEndMatch" persistent max-width="290">
-      <v-card>
-        <v-card-title class="text-h5">
-          <h4>Konfirmasi</h4>
-        </v-card-title>
-        <v-card-text
-          >Anda yakin ingin menyelesaikan pertandingan sekarang?
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn class="font-blue" text @click="dialogEndMatch = false">
-            <span>Tidak</span>
-          </v-btn>
-          <v-btn color="blue darken-1" text @click="dialogEndMatch = false">
-            <span>Ya</span>
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+    <v-dialog v-model="dialogEndMatch" transition="dialog-bottom-transition wrap-400">
+      <v-card class="modalShare">
+          <v-card-title class="headerModal mt-2">
+            <v-layout row wrap>
+              <v-flex xs2 s2 class="close-modal">
+                <div class="align-right" @click="dialogEndMatch = false">X</div>
+              </v-flex>
+              <v-flex xs6 s6>
+                <span class="title-filter font-bold">Selesaikan pertandingan</span>
+              </v-flex>
+            </v-layout>
+          </v-card-title>
+          <hr class="hr-divider" />
+          <v-card-text class="list-player">
+            <div class="top">
+              <div class="ic-1">
+                <div class="ic-2">
+                  <div class="ic-3"></div>
+                </div>
+              </div>
+            </div>
+            <span>Pastikan semua pemain yang datang sudah diabsen ya!</span>
+          </v-card-text>
+          <div class="pa-4">
+            <v-btn
+              v-if="btnEndMatch"
+              block
+              depressed
+              rounded
+              class="btn-primary create-btn txt-capitalize"
+              @click="endMatchNow"
+            >
+              <span> Selesaikan Pertandingan</span>
+            </v-btn>
+          </div>
+        </v-card>
     </v-dialog>
 
     <!-- dialog absen player -->
@@ -260,7 +278,7 @@
         </v-card-title>
         <hr class="hr-divider" />
         <v-card-text>
-          <p v-if="matchdetail.player.length === 0">Belum ada yang bergabung</p>
+          <p v-if="listPlayer.length === 0">Belum ada yang bergabung</p>
           <div v-else>
             <h2 class="mr-4">
               {{ matchdetail.gameName }}
@@ -317,14 +335,14 @@
             <hr class="hr-divider" />
             <v-checkbox
               v-model="isCheckAll"
-              :label="'Hadir semua' + ' (' + matchdetail.player.length + ')'"
+              :label="'Hadir semua' + ' (' + listPlayer.length + ')'"
               class="font-bold"
               @click="checkAll"
             >
             </v-checkbox>
             <hr class="hr-divider" />
             <div
-              v-for="(item, idx) in matchdetail.player"
+              v-for="(item, idx) in listPlayer"
               :key="item[idx]"
               class="players"
             >
@@ -345,6 +363,17 @@
                   {{ item.gender.charAt(0) }}</span
                 >
               </v-checkbox>
+            </div>
+            <div class="pa-4">
+              <v-btn
+                block
+                depressed
+                rounded
+                class="btn-primary create-btn txt-capitalize"
+                @click="endMatchNow"
+              >
+                <span> Simpan Absensi Pemain</span>
+              </v-btn>
             </div>
           </div>
         </v-card-text>
@@ -442,6 +471,7 @@ export default {
       matchdetail: (state) => state.match.matchdetail,
       latitude: (state) => state.match.lat,
       longitude: (state) => state.match.lng,
+      listPlayer: (state) => state.match.listPlayer
     }),
   },
   async mounted() {
@@ -482,15 +512,15 @@ export default {
       const checked = !this.isCheckAll
       this.playerAbsen = []
       if (checked) {
-        for (const key in this.matchdetail.player) {
-          this.playerAbsen.push(this.matchdetail.player[key])
+        for (const key in this.listPlayer) {
+          this.playerAbsen.push(this.listPlayer[key])
         }
       } else {
         this.isCheckAll = false
       }
     },
     updateCheckall() {
-      if (this.playerAbsen.length === this.matchdetail.player.length) {
+      if (this.playerAbsen.length === this.listPlayer.length) {
         this.isCheckAll = true
       } else {
         this.isCheckAll = false
@@ -572,7 +602,7 @@ export default {
       }
     },
     checkCurrentPlayer() {
-      const result = this.matchdetail.player.length - this.minplayer
+      const result = this.listPlayer.length - this.minplayer
       this.sisaPlayer = result
       return this.sisaPlayer
     },
@@ -801,5 +831,26 @@ h2.match-title {
   position: none;
   height: 200px;
   margin: 12px;
+}
+.top {
+  height: 325px;
+  width: 100%;
+  background-image: url('~@/assets/img/bg-success-pg.png');
+}
+.ic-1 {
+  padding-top: 20px !important;
+  height: 300px;
+  background-position: center;
+  background-image: url('~@/assets/svg/ornament.svg');
+}
+.ic-2 {
+  height: 275px;
+  background-position: center;
+  background-image: url('~@/assets/svg/ellipse.svg');
+}
+.ic-3 {
+  height: 275px;
+  background-position: center;
+  background-image: url('~@/assets/img/verify.png');
 }
 </style>

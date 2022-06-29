@@ -106,7 +106,6 @@ export default {
       await store.dispatch('match/setMatchToday', listData)
     },
     getColor(status) {
-      console.warn(status);
       switch (status) {
         case 'Selesai':
           return 'grey'
@@ -124,7 +123,7 @@ export default {
 </script>
 <style scoped>
 .card {
-  margin-top: 100px;
+  margin-top: 60px;
   margin-bottom: 20px;
   width: 100%;
 }

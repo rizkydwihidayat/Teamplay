@@ -132,11 +132,13 @@ export default {
         const currentTime = moment().hour().toString()
         // const matchTime = item.match.match.timePlay.slice(0, 2)
         const matchEnd = item.match.match.timePlay.slice(7, 13)
-        if (date === item.match.match.playDate || Number(currentTime) < Number(matchEnd)) {
+        if (date === item.match.match.playDate) {
           this.isMatchToday = true
           await store.dispatch('match/setMatchToday', listData)
         } else if (currentTime === matchEnd) {
           this.btnEndTime = true
+          this.isMatchToday = false
+        } else if (Number(currentTime) > Number(matchEnd)) {
           this.isMatchToday = false
         }
       })

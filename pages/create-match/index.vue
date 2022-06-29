@@ -273,7 +273,14 @@
               @click="tgl_awal = currentDate"
             ></v-text-field>
           </template>
-          <v-date-picker v-model="tgl_awal" full-width scrollable no-title>
+          <v-date-picker
+            v-model="tgl_awal"
+            :allowed-dates="allowedDates"
+            :min="currentDate"
+            full-width
+            scrollable
+            no-title
+          >
             <v-spacer></v-spacer>
             <v-btn depressed color="secondary" @click="modal_tgl_awal = false"
               >Cancel</v-btn
@@ -615,24 +622,24 @@ export default {
           startTime: this.time,
           endTime: this.time2,
           minPlayer: this.minPlayer,
-          maxPlayer: parseInt(this.maxPlayer),
+          maxPlayer: Number(this.maxPlayer),
         }
         const resultsearch = await this.createMatch({
           params,
           bearer,
         })
           .then((result) => {
-            if (result.length > 0) {
-              const alertMsg = {
-                msg: result.data.message,
-                color: '#43A047',
-              }
-              this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-              this.$store.$router.push('/')
+            if (result.data) {
+            const alertMsg = {
+              msg: result.message,
+              color: '#43A047',
+            }
+            this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+            this.$store.$router.push('/')
             }
           })
           .catch((error) => {
-            console.warn(error);
+            console.warn(error)
             if (error.response.status === 401) {
               const alertMsg = {
                 msg: error.response.data.message,
@@ -642,7 +649,7 @@ export default {
             }
             return false
           })
-        console.warn(resultsearch);
+        console.warn(resultsearch)
         // eslint-disable-next-line no-prototype-builtins
         if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
           await this.$store
@@ -818,6 +825,7 @@ export default {
         })
       }
     },
+    allowedDates: (val) => val,
   },
 }
 </script>

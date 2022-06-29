@@ -24,7 +24,7 @@
         {{ matchdetail.gameName }} {{matchdetail.absen}}
       </h2>
       <v-row class="match-location mr-4 ml-4 mt-2 mb-0">
-        <v-chip v-if="matchdetail.absen === true" small color="#2962FF" class="capsule mr-2">Bergabung</v-chip>
+        <v-chip small :color="statusColor" class="capsule mr-2">{{ statusmatch }}</v-chip>
         <v-chip small color="rgba(255, 255, 255, 0.2)" class="capsule mr-2">{{
           matchdetail.sportCategory
         }}</v-chip>
@@ -124,7 +124,7 @@
           <div class="player-ava mr-1"><span>AM</span></div>
           <div class="player-number">
             <p class="desc-subdued count mb-0">
-              ({{ matchdetail.player.length }}/{{ minplayer }})
+              ({{ listPlayer.length }}/{{ minplayer }})
             </p>
             <p class="desc-subdued left mb-0">{{ sisaPlayer }} pemain lagi</p>
           </div>
@@ -147,18 +147,19 @@
           </v-card-title>
           <hr class="hr-divider" />
           <v-card-text class="list-player">
-            <p v-if="matchdetail.player.length === 0">
+            <p v-if="listPlayer.length === 0">
               Belum ada yang bergabung
             </p>
             <div
-              v-for="(item, idx) in matchdetail.player"
+              v-for="(item, idx) in listPlayer"
               :key="idx"
               class="players"
             >
-              <span
+              <!-- <span
                 >{{ item.name }} ({{ convertAge(item.age) }})
-                {{ item.gender.charAt(0) }}</span
-              >
+                {{ item.gender.charAt(0) }}
+                </span
+              > -->
             </div>
           </v-card-text>
         </v-card>
@@ -232,7 +233,7 @@
         rounded
         class="btn-primary"
         :disabled="isJoin"
-        @click="goJoinMatch"
+        @click="goExitMatch"
         >Batalkan Pertandingan</v-btn
       >
       <v-btn
@@ -281,7 +282,9 @@ export default {
       }),
       isJoin: false,
       isTrusted: false,
-      isDefault: false
+      isDefault: false,
+      statusmatch: '',
+      statusColor: ''
     }
   },
   //   layout: 'bottom_nav',
@@ -308,12 +311,13 @@ export default {
       matchdetail: (state) => state.match.matchdetail,
       latitude: (state) => state.match.lat,
       longitude: (state) => state.match.lng,
+      listPlayer: (state) => state.match.listPlayer
     }),
   },
   // eslint-disable-next-line vue/order-in-components
   async fetch() {
     await this.getCoordinate()
-    await this.checkIfJoinMatch()
+    // await this.checkIfJoinMatch()
     this.center = [
       parseFloat(this.matchdetail.coordinate[0]),
       parseFloat(this.matchdetail.coordinate[1]),
@@ -341,34 +345,51 @@ export default {
     } else if (verified === 'true') {
       this.isTrusted = true
     }
+    // await this.checkCurrentPlayer()
+    await this.checkIfJoinMatch()
   },
   methods: {
     ...mapActions({
       joinMatch: 'match/joinMatch',
+      exitMatch: 'match/exitMatch'
     }),
+    // checkStatus() {
+    //   const today
+    // },
     numberFormat(number, decimals, decPoint, thousandSep) {
       return typeof _numberFormat !== 'undefined'
         ? _numberFormat(number, decimals, decPoint, thousandSep)
         : (number, decimals, decPoint, thousandSep)
     },
     checkIfJoinMatch() {
-      const username = localStorage.getItem('nameGoogleAcc')
-      const listplayer = this.matchdetail.player
-      listplayer.forEach((item) => {
-        if (username === item.name) {
-          this.isJoin = true
-          const alertMsg = {
-            msg: 'Kamu sudah join di match ini.',
-            color: '#43A047',
-          }
-          this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-        } else {
-          this.isJoin = false
-        }
-      })
+      // const username = localStorage.getItem('nameGoogleAcc')
+      // const listplayer = this.listPlayer
+      // listplayer.forEach((item) => {
+      //   if (username === item[0].name) {
+      //     this.isJoin = true
+      //     const alertMsg = {
+      //       msg: 'Kamu sudah join di match ini.',
+      //       color: '#43A047',
+      //     }
+      //     this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+      //   } else {
+      //     this.isJoin = false
+      //   }
+      // })
+      // const status = this.matchdetail.status
+      // switch (status) {
+      //   case 'Open':
+      //     this.isJoin = false
+      //     break;
+      //   case 'Canceled':
+      //     this.isJoin = false
+      //     break;
+      //   default:
+      //     break;
+      // }
     },
     back() {
-      this.$store.$router.push('/')
+      this.$store.$router.push('/my-match')
     },
     async goJoinMatch() {
       const id = this.$route.params.id
@@ -406,6 +427,28 @@ export default {
         // this.$store.$router.push(`/success-page/${id}`)
       }
     },
+    async goExitMatch() {
+      const matchid = this.$route.params.id
+      const bearer = localStorage.getItem('accKey')
+      await this.exitMatch({ matchid, bearer})
+      // .then((result) => {
+      //       if (result.message) {
+      //         const alertMsg = {
+      //         msg: result.response.message,
+      //         color: '#43A047',
+      //       }
+      //       this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+      //         this.$store.$router.push('/')
+      //       }
+      //     })
+      //     .catch((error) => {
+      //       const alertMsg = {
+      //         msg: error.message,
+      //         color: '#43A047',
+      //       }
+      //       this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+      //     })
+    },
     getCoordinate() {
       const temp = []
       temp.push(this.matchdetail.coordinate)
@@ -438,7 +481,7 @@ export default {
       }
     },
     checkCurrentPlayer() {
-      const result = this.matchdetail.player.length - this.minplayer
+      const result = this.listPlayer.length - this.minplayer
       this.sisaPlayer = result
       return this.sisaPlayer
     },

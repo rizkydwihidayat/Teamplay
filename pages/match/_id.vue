@@ -110,7 +110,7 @@
           <div class="player-ava mr-1"><span>AM</span></div>
           <div class="player-number">
             <p class="desc-subdued count mb-0">
-              ({{ matchdetail.player.length }}/{{ minplayer }})
+              ({{ listPlayer.length }}/{{ minplayer }})
             </p>
             <p class="desc-subdued left mb-0">{{ sisaPlayer }} pemain lagi</p>
           </div>
@@ -133,17 +133,17 @@
           </v-card-title>
           <hr class="hr-divider" />
           <v-card-text class="list-player">
-            <p v-if="matchdetail.player.length === 0">
+            <p v-if="listPlayer.length === 0">
               Belum ada yang bergabung
             </p>
             <div
-              v-for="(item, idx) in matchdetail.player"
+              v-for="(item, idx) in listPlayer"
               :key="idx"
               class="players"
             >
               <span
-                >{{ item.name }} ({{ convertAge(item.age) }})
-                {{ item.gender.charAt(0) }}</span
+                >{{ item[0].name }} ({{ convertAge(item[0].age) }})
+                {{ item[0].gender.charAt(0) }}</span
               >
             </div>
           </v-card-text>
@@ -273,6 +273,7 @@ export default {
       matchdetail: (state) => state.match.matchdetail,
       latitude: (state) => state.match.lat,
       longitude: (state) => state.match.lng,
+      listPlayer: (state) => state.match.listPlayer
     }),
   },
   // eslint-disable-next-line vue/order-in-components
@@ -281,13 +282,14 @@ export default {
     await this.checkIfJoinMatch()
     this.center = [parseFloat(this.matchdetail.coordinate[0]), parseFloat(this.matchdetail.coordinate[1])]
     this.markerLatLng = [parseFloat(this.matchdetail.coordinate[0]), parseFloat(this.matchdetail.coordinate[1])]
-    await this.checkCurrentPlayer()
+    // await this.checkCurrentPlayer()
   },
   async mounted() {
     await this.getMatchDetail()
     const url = new URL(window.location.href)
     this.tempParams = url.searchParams.get('invitedFrom')
     await this.checkMinPlayer()
+    await this.checkCurrentPlayer()
   },
   methods: {
     ...mapActions({
@@ -299,15 +301,26 @@ export default {
         : (number, decimals, decPoint, thousandSep)
     },
     checkIfJoinMatch() {
-      const username = localStorage.getItem('nameGoogleAcc')
-      // const listplayer = this.matchdetail.player
-      this.matchdetail.player.forEach((item) => {
-        if (username === item.name) {
-          this.isJoin = true
-        } else {
+      const status = this.matchdetail.status
+      switch (status) {
+        case 'Open':
           this.isJoin = false
-        }
-      })
+          break;
+        case 'Canceled':
+          this.isJoin = false
+          break;
+        default:
+          break;
+      }
+      // const username = localStorage.getItem('nameGoogleAcc')
+      // const listplayer = this.matchdetail.player
+      // this.matchdetail.player.forEach((item) => {
+      //   if (username === item.name) {
+      //     this.isJoin = true
+      //   } else {
+      //     this.isJoin = false
+      //   }
+      // })
     },
     back() {
       this.$store.$router.push('/')
@@ -380,7 +393,7 @@ export default {
       }
     },
     checkCurrentPlayer() {
-      const result = this.matchdetail.player.length - this.minplayer
+      const result = this.listPlayer.length - this.minplayer
       this.sisaPlayer = result
       return this.sisaPlayer
     },
