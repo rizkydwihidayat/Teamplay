@@ -23,27 +23,29 @@ export const mutations = {
     const keys = Object.keys(params)
     keys.forEach((key) => (state[key] = params[key]))
   },
-  setListUserMatch(list) {
-    state.listUserMatch = list.data
-    // state.listUserMatch = list.data.length > 0 && list.data[0] !== null
-    //   // eslint-disable-next-line array-callback-return
-    //   ? list.data.map((value, key) => {
-    //       return {
-    //           gamename: value.match.gameName,
-    //           category: value.match.sportCategory,
-    //           gender: value.match.playerCategory,
-    //           date: value.match.playDate,
-    //           time: value.match.timePlay,
-    //           place: value.venue.venueName,
-    //           status: value.match.status
-    //       }
-    //   }, {})
-    //   : []
+  setListUserMatch(state, list) {
+    state.listUserMatch = list.data.length > 0 && list.data[0] !== null
+      // eslint-disable-next-line array-callback-return
+      ? list.data.map((value, key) => {
+          return {
+              gamename: value.match.gameName,
+              category: value.match.sportCategory,
+              gender: value.match.playerCategory,
+              date: value.match.playDate,
+              time: value.match.timePlay,
+              place: value.venue.venueName,
+              status: value.match.status
+          }
+      }, {})
+      : []
   }
 }
 export const actions = {
   setAuthToken({ commit }, params) {
     commit('setAuthToken', params)
+  },
+  setListUserMatch({ commit }, list) {
+    commit('setListUserMatch', list)
   },
   postLogin({ dispatch, commit, state }, { email, password }) {
     this.$axios.setHeader(
@@ -192,18 +194,10 @@ export const actions = {
         `https://api.naufalbahri.com/api/v1/users/${userID}/inquiry`, axiosOption
       )
       .then((result => {
-        const phone = result.data.phoneNumber !== null ? result.data.phoneNumber : '-'
-        commit('setState', {
-          userEmail: result.data.email,
-        })
-        commit('setState', {
-          userPhone: phone,
-        })
-        commit('setState', {
-          userPoint: result.data.totalPoin,
-        })
         commit('setState', { isLoading: false })
-        localStorage.phone= result.data.phoneNumber
+        localStorage.phone = result.data.phoneNumber
+        localStorage.point = result.data.totalPoin
+        localStorage.userEmail = result.data.email
       }))
       .catch((error) => {
         // handle error
@@ -275,9 +269,7 @@ export const actions = {
     const data = {
       password: params.password,
     }
-    console.warn(data);
     const postData = JSON.stringify(data)
-    console.warn('pust', postData);
     return this.$axios
       .$put(
         `https://api.naufalbahri.com/api/v1/users/${userID}/password`, postData, axiosOption

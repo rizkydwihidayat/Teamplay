@@ -81,7 +81,6 @@
 </template>
 
 <script>
-// console.warn('.$route.path', this.$nuxt.$route.path)
 // const envProd = process.env.NODE_ENV === 'production'
 export default {
   data() {

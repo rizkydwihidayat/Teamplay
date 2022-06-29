@@ -21,10 +21,9 @@
         </v-btn>
       </v-row>
       <h2 class="match-title ml-4 mr-4">
-        {{ matchdetail.gameName }} {{matchdetail.absen}}
+        {{ matchdetail.gameName }}
       </h2>
       <v-row class="match-location mr-4 ml-4 mt-2 mb-0">
-        <v-chip small :color="statusColor" class="capsule mr-2">{{ statusmatch }}</v-chip>
         <v-chip small color="rgba(255, 255, 255, 0.2)" class="capsule mr-2">{{
           matchdetail.sportCategory
         }}</v-chip>
@@ -42,7 +41,7 @@
               alt="location"
             /></div
         ></v-flex>
-        <v-flex xs9 s
+        <v-flex xs9 s9
           ><p>
             {{ matchdetail.venueName }}
           </p></v-flex
@@ -57,7 +56,7 @@
           <img
             width="20"
             height="20"
-            src="~/assets/svg/ic-calendar-blue.svg"
+            src="~/assets/img/calendar-2.png"
             alt="match date"
           />
         </div>
@@ -75,7 +74,7 @@
           <img
             width="20"
             height="20"
-            src="~/assets/svg/ic-calendar-blue.svg"
+            src="~/assets/img/money-3.png"
             alt="match date"
           />
         </div>
@@ -89,21 +88,64 @@
           </p>
         </div>
       </v-row>
+      <div>
+        <v-alert outlined text type="info" class="alert" color="#42A5F5">
+          <span class="notif">Jangan lupa absen pemain yang datang ya!</span>
+        </v-alert>
+      </div>
+      <!-- CTA -->
+      <div class="pa-4">
+        <v-btn
+          v-if="!btnEndMatch"
+          block
+          depressed
+          rounded
+          class="btn-primary txt-capitalize"
+          @click="openAbsen"
+          >Absen Pemain</v-btn
+        >
+        <v-btn
+          v-if="btnEndMatch"
+          block
+          depressed
+          rounded
+          class="btn-primary create-btn txt-capitalize"
+          @click="endMatchNow"
+        >
+          <span> Selesaikan Pertandingan</span>
+        </v-btn>
+      </div>
     </div>
-    <div class="pa-4">
+
+    <!-- section location -->
+    <div class="divider"></div>
+    <div class="section-location ma-4">
+      <v-row class="section-title ml-0 mr-0 mt-0 mb-2">
+        <h3>Lokasi Lapangan</h3>
+      </v-row>
+      <p class="desc-primary small">
+        {{ matchdetail.address }}
+      </p>
+      <!-- maps -->
+      <div class="maps-area" style="width: 100%; height: 220px">
+        <l-map style="height: 200px; z-index: 0" :zoom="zoom" :center="center">
+          <l-tile-layer :url="url"></l-tile-layer>
+          <l-marker ref="marker" :icon="icon" :lat-lng="markerLatLng">
+            <l-tooltip :options="{ permanent: true, interactive: true }">
+              <small>{{ matchdetail.city }}</small>
+            </l-tooltip>
+          </l-marker>
+        </l-map>
+      </div>
       <v-btn
         block
         depressed
         rounded
-        class="btn-primary mb-3"
-        @click="inviteFriend"
-        >Undang Teman</v-btn
+        small
+        class="btn-secondary mb-6"
+        @click="goToMaps"
+        >Lihat petunjuk jalan</v-btn
       >
-      <v-alert outlined text type="warning" icon="mdi-alert-circle">
-        <span class="notif"
-          >Harga sewa /jam dan minimum durasi sewa jangan salah isi ya!</span
-        >
-      </v-alert>
     </div>
 
     <!-- section pemain -->
@@ -138,7 +180,7 @@
           <v-card-title class="headerModal mt-2">
             <v-layout row wrap>
               <v-flex xs2 s2 class="close-modal">
-                <div class="align-right" @click="closeDialog">X</div>
+                <div class="align-right" @click="showdialog = false">X</div>
               </v-flex>
               <v-flex xs6 s6>
                 <span class="title-filter">Pemain</span>
@@ -152,50 +194,191 @@
             </p>
             <div
               v-for="(item, idx) in listPlayer"
+              v-else
               :key="idx"
               class="players"
             >
-              <!-- <span
-                >{{ item.name }} ({{ convertAge(item.age) }})
-                {{ item.gender.charAt(0) }}
-                </span
-              > -->
+              <span
+                >{{ item[0].name }} ({{ convertAge(item[0].age) }})
+                {{ item[0].gender.charAt(0) }}</span
+              >
             </div>
           </v-card-text>
         </v-card>
       </v-dialog>
     </div>
 
-    <!-- section location -->
-    <div class="divider"></div>
-    <div class="section-location ma-4">
-      <v-row class="section-title ml-0 mr-0 mt-0 mb-2">
-        <h3>Lokasi Lapangan</h3>
-      </v-row>
-      <p class="desc-primary small">
-        {{ matchdetail.address }}
-      </p>
-      <!-- maps -->
-      <div class="maps-area" style="width: 100%; height: 220px">
-        <l-map style="height: 200px; z-index: 0" :zoom="zoom" :center="center">
-          <l-tile-layer :url="url"></l-tile-layer>
-          <l-marker ref="marker" :icon="icon" :lat-lng="markerLatLng">
-            <l-tooltip :options="{ permanent: true, interactive: true }">
-              <small>{{ matchdetail.city }}</small>
-            </l-tooltip>
-          </l-marker>
-        </l-map>
-      </div>
-      <v-btn
-        block
-        depressed
-        rounded
-        small
-        class="btn-secondary mb-6"
-        @click="goToMaps"
-        >Lihat petunjuk jalan</v-btn
-      >
-    </div>
+    <!-- dialog konfirm end match -->
+    <v-dialog v-model="dialogEndMatch" transition="dialog-bottom-transition wrap-400">
+      <v-card class="modalShare">
+          <v-card-title class="headerModal mt-2">
+            <v-layout row wrap>
+              <v-flex xs2 s2 class="close-modal">
+                <div class="align-right" @click="dialogEndMatch = false">X</div>
+              </v-flex>
+              <v-flex xs6 s6>
+                <span class="title-filter font-bold">Selesaikan pertandingan</span>
+              </v-flex>
+            </v-layout>
+          </v-card-title>
+          <hr class="hr-divider" />
+          <v-card-text class="list-player">
+            <div class="top">
+              <div class="ic-1">
+                <div class="ic-2">
+                  <div class="ic-3"></div>
+                </div>
+              </div>
+            </div>
+            <span>Pastikan semua pemain yang datang sudah diabsen ya!</span>
+          </v-card-text>
+          <div class="pa-4">
+            <v-btn
+              v-if="btnEndMatch"
+              block
+              depressed
+              rounded
+              class="btn-primary create-btn txt-capitalize"
+              @click="endMatchNow"
+            >
+              <span> Selesaikan Pertandingan</span>
+            </v-btn>
+          </div>
+        </v-card>
+    </v-dialog>
+
+    <!-- dialog absen player -->
+    <v-dialog
+      v-model="dialogAbsen"
+      transition="dialog-bottom-transition wrap-400"
+    >
+      <v-card class="modalShare">
+        <v-card-title class="headerModal mt-2">
+          <v-layout row wrap>
+            <v-flex xs2 s2 class="close-modal">
+              <!-- <div class="align-right" @click="dialogAbsen = false">X</div> -->
+              <v-btn
+                icon
+                :ripple="false"
+                class="btnBack"
+                @click="dialogAbsen = false"
+              >
+                <img
+                  width="32"
+                  height="32"
+                  src="~/assets/svg/ic-back-cevron.svg"
+                  alt="back"
+                />
+              </v-btn>
+            </v-flex>
+            <v-flex xs6 s6>
+              <span class="title-filter">Absen pemain</span>
+            </v-flex>
+          </v-layout>
+        </v-card-title>
+        <hr class="hr-divider" />
+        <v-card-text>
+          <p v-if="listPlayer.length === 0">Belum ada yang bergabung</p>
+          <div v-else>
+            <h2 class="mr-4">
+              {{ matchdetail.gameName }}
+            </h2>
+            <br />
+            <v-layout row wrap class="mb-1">
+              <v-flex xs1 s1 class="ml-3">
+                <div class="icon-wrapper mr-3">
+                  <img
+                    width="20"
+                    height="20"
+                    src="~/assets/img/calendar-2.png"
+                    alt="match date"
+                  />
+                </div>
+              </v-flex>
+              <v-flex xs9 s9>
+                <div class="description-wrapper">
+                  <p class="desc-primary mb-1 font-bold">
+                    {{ matchdetail.playDate }}
+                  </p>
+                  <p class="desc-subdued mb-0">
+                    {{ matchdetail.time }}
+                    <span class="desc-subdued"
+                      >({{ matchdetail.duration }} jam)</span
+                    >
+                  </p>
+                </div>
+              </v-flex>
+            </v-layout>
+            <v-layout row wrap>
+              <v-flex xs1 s1 class="ml-3">
+                <div class="icon-wrapper mr-3">
+                  <img
+                    width="20"
+                    height="20"
+                    src="~/assets/img/Vector.png"
+                    alt="location"
+                  />
+                </div>
+              </v-flex>
+              <v-flex xs9 s9>
+                <div class="description-wrapper">
+                  <p class="desc-primary mb-1 font-bold">
+                    {{ matchdetail.venueName }}
+                  </p>
+                  <p class="desc-subdued mb-0">
+                    {{ matchdetail.address }}
+                  </p>
+                </div>
+              </v-flex>
+            </v-layout>
+            <br />
+            <hr class="hr-divider" />
+            <v-checkbox
+              v-model="isCheckAll"
+              :label="'Hadir semua' + ' (' + listPlayer.length + ')'"
+              class="font-bold"
+              @click="checkAll"
+            >
+            </v-checkbox>
+            <hr class="hr-divider" />
+            <div
+              v-for="(item, idx) in listPlayer"
+              :key="item[idx]"
+              class="players"
+            >
+              <v-checkbox
+                v-model="playerAbsen"
+                :value="item"
+                :label="
+                  item.name +
+                  ' (' +
+                  convertAge(item.age) +
+                  ') ' +
+                  item.gender.charAt(0)
+                "
+                @change="updateCheckall"
+              >
+                <span
+                  >{{ item.name }} ({{ convertAge(item.age) }})
+                  {{ item.gender.charAt(0) }}</span
+                >
+              </v-checkbox>
+            </div>
+            <div class="pa-4">
+              <v-btn
+                block
+                depressed
+                rounded
+                class="btn-primary create-btn txt-capitalize"
+                @click="endMatchNow"
+              >
+                <span> Simpan Absensi Pemain</span>
+              </v-btn>
+            </div>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
 
     <!-- section host -->
     <div class="divider"></div>
@@ -223,30 +406,6 @@
         </div>
       </v-row>
     </div>
-
-    <!-- CTA -->
-    <div class="btn-join-match pa-4">
-      <v-btn
-        v-if="isTrusted"
-        block
-        depressed
-        rounded
-        class="btn-primary"
-        :disabled="isJoin"
-        @click="goExitMatch"
-        >Batalkan Pertandingan</v-btn
-      >
-      <v-btn
-        v-else
-        block
-        depressed
-        rounded
-        class="btn-primary"
-        :disabled="isJoin"
-        @click="goJoinMatch"
-        >Ikut Main</v-btn
-      >
-    </div>
   </div>
 </template>
 <script>
@@ -254,9 +413,11 @@ import { mapState, mapActions } from 'vuex'
 import { LMap, LTileLayer, LMarker, LTooltip } from 'vue2-leaflet'
 import { icon } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import moment from 'moment'
 import { _numberFormat } from '~/utils'
+
 export default {
-  name: 'MatchDetailPage',
+  name: 'MatchAbsen',
   components: {
     LMap,
     LTileLayer,
@@ -268,7 +429,8 @@ export default {
       minplayer: 0,
       sisaPlayer: 0,
       showdialog: false,
-      matchDetail: [],
+      playerAbsen: [],
+      isCheckAll: false,
       center: [-6.529217, 106.766574],
       zoom: 12,
       markerLatLng: [-6.529217, 106.766574],
@@ -280,28 +442,26 @@ export default {
         iconUrl: require('leaflet/dist/images/marker-icon.png'),
         shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
       }),
-      isJoin: false,
-      isTrusted: false,
-      isDefault: false,
-      statusmatch: '',
-      statusColor: ''
+      btnEndMatch: false,
+      dialogEndMatch: false,
+      dialogAbsen: false,
     }
   },
   //   layout: 'bottom_nav',
   head() {
     return {
-      title: 'Match Detail',
+      title: 'Match Absen',
       meta: [
         // hid is used as unique identifier. Do not use `vmid` for it as it will not work
         {
-          hid: 'match_detail_default',
+          hid: 'match_absen_default',
           name: 'description',
-          content: 'Match Detail',
+          content: 'Match Absen',
         },
         {
-          hid: 'match_detail_default_keywords',
+          hid: 'match_absen_default_keywords',
           name: 'keywords',
-          content: 'match, match-detail',
+          content: 'match, match-absen',
         },
       ],
     }
@@ -314,10 +474,15 @@ export default {
       listPlayer: (state) => state.match.listPlayer
     }),
   },
-  // eslint-disable-next-line vue/order-in-components
-  async fetch() {
-    await this.getCoordinate()
-    // await this.checkIfJoinMatch()
+  async mounted() {
+    await this.getMatchDetail()
+    // const url = new URL(window.location.href)
+    // this.tempParams = url.searchParams.get('invitedFrom')
+    // await this.getCoordinate()
+    // this.$nextTick(() => {
+    //   this.$refs.marker.mapObject.openPopup()
+    // })
+    await this.checkMinPlayer()
     this.center = [
       parseFloat(this.matchdetail.coordinate[0]),
       parseFloat(this.matchdetail.coordinate[1]),
@@ -328,68 +493,41 @@ export default {
     ]
     await this.checkCurrentPlayer()
   },
-  async mounted() {
-    await this.getMatchDetail()
-    const url = new URL(window.location.href)
-    this.tempParams = url.searchParams.get('invitedFrom')
-    // this.$nextTick(() => {
-    //   this.$refs.marker.mapObject.openPopup()
-    // })
-    await this.checkMinPlayer()
-    const token = localStorage.getItem('accKey')
-    const verified = localStorage.getItem('isVerified')
-    if (token === null) {
-      this.isNotLogin = true
-    } else if (token !== null && verified === 'false') {
-      this.isDefault = true
-    } else if (verified === 'true') {
-      this.isTrusted = true
-    }
-    // await this.checkCurrentPlayer()
-    await this.checkIfJoinMatch()
-  },
   methods: {
     ...mapActions({
       joinMatch: 'match/joinMatch',
-      exitMatch: 'match/exitMatch'
     }),
-    // checkStatus() {
-    //   const today
-    // },
+    BDTime() {
+      moment.locale('id')
+      const result = moment().format('dddd' + ', ' + 'll')
+      return result
+    },
     numberFormat(number, decimals, decPoint, thousandSep) {
       return typeof _numberFormat !== 'undefined'
         ? _numberFormat(number, decimals, decPoint, thousandSep)
         : (number, decimals, decPoint, thousandSep)
     },
-    checkIfJoinMatch() {
-      // const username = localStorage.getItem('nameGoogleAcc')
-      // const listplayer = this.listPlayer
-      // listplayer.forEach((item) => {
-      //   if (username === item[0].name) {
-      //     this.isJoin = true
-      //     const alertMsg = {
-      //       msg: 'Kamu sudah join di match ini.',
-      //       color: '#43A047',
-      //     }
-      //     this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-      //   } else {
-      //     this.isJoin = false
-      //   }
-      // })
-      // const status = this.matchdetail.status
-      // switch (status) {
-      //   case 'Open':
-      //     this.isJoin = false
-      //     break;
-      //   case 'Canceled':
-      //     this.isJoin = false
-      //     break;
-      //   default:
-      //     break;
-      // }
+    checkAll() {
+      this.isCheckAll = !this.isCheckAll
+      const checked = !this.isCheckAll
+      this.playerAbsen = []
+      if (checked) {
+        for (const key in this.listPlayer) {
+          this.playerAbsen.push(this.listPlayer[key])
+        }
+      } else {
+        this.isCheckAll = false
+      }
+    },
+    updateCheckall() {
+      if (this.playerAbsen.length === this.listPlayer.length) {
+        this.isCheckAll = true
+      } else {
+        this.isCheckAll = false
+      }
     },
     back() {
-      this.$store.$router.push('/my-match')
+      this.$store.$router.push('/')
     },
     async goJoinMatch() {
       const id = this.$route.params.id
@@ -427,11 +565,6 @@ export default {
         // this.$store.$router.push(`/success-page/${id}`)
       }
     },
-    async goExitMatch() {
-      const matchid = this.$route.params.id
-      const bearer = localStorage.getItem('accKey')
-      await this.exitMatch({ matchid, bearer})
-    },
     getCoordinate() {
       const temp = []
       temp.push(this.matchdetail.coordinate)
@@ -442,6 +575,11 @@ export default {
       const match = await store.dispatch('match/getMatchId', { id })
       await store.dispatch('match/setMatchDetail', match)
       //   return this.matchDetail.push(match)
+      const matchEnd = this.matchdetail.time.slice(7, 13)
+      const currentTime = moment().hour().toString()
+      if (currentTime === matchEnd) {
+        this.btnEndMatch = true
+      }
     },
     goToMaps() {
       window.location.href = `https://maps.google.com?q=${this.center[0]},${this.center[1]}`
@@ -468,46 +606,41 @@ export default {
       this.sisaPlayer = result
       return this.sisaPlayer
     },
-    closeDialog() {
-      this.showdialog = false
-    },
     openListPlayer() {
       this.showdialog = true
     },
+    openAbsen() {
+      this.dialogAbsen = true
+    },
     convertAge(val) {
-      const result = this.years - val
-      return result
+      if (val < this.years) {
+        const result = val
+        return result
+      } else {
+        const result = this.years - val
+        return result
+      }
     },
     chatHost() {
       const phone = localStorage.getItem('phone')
       window.location.href = `https://wa.me/${phone}`
     },
-    inviteFriend() {
-      const usrId = localStorage.getItem('userID')
-      const url = new URL(window.location.href) + `?invitedFrom=${usrId}`
-      // url.select()
-      const copied = navigator.clipboard.writeText(url)
-      try {
-        // const copied = document.execCommand('copy')
-        const alertMsg = {
-          msg: copied
-            ? 'Link pertandingan berhasil dicopy'
-            : 'Gagal copy Link pertandingan',
-          color: '#43A047',
-        }
-        this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-      } catch (err) {
-        const alertMsg = {
-          msg: 'Oops, unable to copy',
-          color: 'secondary',
-        }
-        this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-      }
+    endMatchNow() {
+      this.dialogEndMatch = true
     },
   },
 }
 </script>
 <style scoped>
+.notif {
+  color: #424242;
+  text-align: justify;
+}
+.alert {
+  justify-items: center;
+  margin-left: 40px;
+  margin-right: 40px;
+}
 .list-player p {
   text-align: center !important;
   margin: 35px 12px;
@@ -527,7 +660,7 @@ export default {
   left: 0;
   right: 0;
   max-width: 480px;
-  height: 438px;
+  height: 650px;
   overflow: scroll;
   margin: auto;
   border-radius: 16px 16px 0px 0px;
@@ -698,5 +831,26 @@ h2.match-title {
   position: none;
   height: 200px;
   margin: 12px;
+}
+.top {
+  height: 325px;
+  width: 100%;
+  background-image: url('~@/assets/img/bg-success-pg.png');
+}
+.ic-1 {
+  padding-top: 20px !important;
+  height: 300px;
+  background-position: center;
+  background-image: url('~@/assets/svg/ornament.svg');
+}
+.ic-2 {
+  height: 275px;
+  background-position: center;
+  background-image: url('~@/assets/svg/ellipse.svg');
+}
+.ic-3 {
+  height: 275px;
+  background-position: center;
+  background-image: url('~@/assets/img/verify.png');
 }
 </style>

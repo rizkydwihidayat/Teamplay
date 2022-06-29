@@ -1,5 +1,6 @@
 export const state = () => ({
   listMatch: [],
+  matchToday: [],
   listPlayer: [],
   listCity: [],
   listVenue: [],
@@ -41,9 +42,11 @@ export const mutations = {
       created: resp.data.organizer.hasCreated,
       phone: resp.data.organizer.phoneNumber,
       player: resp.data.players,
+      price: resp.data.match.price
     }
-
+    state.listPlayer.push(resp.data.players) 
     state.matchdetail = store
+    console.warn(resp.data.players);
   },
   setListMatch(state, list) {
     if (list.data) {
@@ -81,6 +84,25 @@ export const mutations = {
             }, {})
           : []
     }
+  },
+  setMatchToday(state, list) {
+    state.matchToday =
+      list.data.length > 0 && list.data[0] !== null
+        ? // eslint-disable-next-line array-callback-return
+          list.data.map((value, key) => {
+            return {
+              gamename: value.match.match.gameName,
+              place: value.match.venue.venueName,
+              time: value.match.match.timePlay,
+              date: value.match.match.playDate,
+              id: value.match.match.id,
+              absen: value.isAbsent,
+              joined: value.isJoined,
+              totalPayer: value.match.numberOfPlayers,
+              status: value.match.match.status
+            }
+          }, {})
+        : []
   },
   setListCity(state, list) {
     state.listCity =
@@ -130,16 +152,23 @@ export const actions = {
   setMatchDetail({ commit }, storeData) {
     commit('setMatchDetail', storeData)
   },
+  setMatchToday({ commit }, matchToday) {
+    commit('setMatchToday', matchToday)
+  },
   getListMatch({ state, commit, dispatch }, { params }) {
     const param = {
-      limit: state.limit,
+      limit: params.limit,
       offset: state.offset,
       q: params.city,
       from: params.startDate,
       to: params.endDate,
       timeCategory: params.time,
     }
-
+    if (params.limit === 5) {
+      param.limit = 5
+    } else {
+      param.limit = state.limit
+    }
     return this.$axios
       .$get(
         `https://api.naufalbahri.com/api/v1/match?limit=${param.limit}&offset=${param.offset}&q=${param.q}&from=${param.from}&to=${param.to}&timeCategory=${param.timeCategory}`
@@ -167,6 +196,38 @@ export const actions = {
           commit('setState', { isLoading: false })
         }
 
+        return false
+      })
+  },
+
+  getMatchHistory({ context, commit, dispatch }, { bearer, userID }) {
+    const axiosOption = {
+      headers: {
+        xToken: bearer,
+      },
+    }
+    return this.$axios
+      .$get(
+        `https://api.naufalbahri.com/api/v1/users/${userID}/match-history`,
+        axiosOption
+      )
+      .catch((error) => {
+        // handle error
+        if (error.response.status === 403) {
+          const alertMsg = {
+            msg: error.response.data.message,
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/login')
+          //   dispatch('user/refreshAuth', null, { root: true })
+        } else {
+          const alertMsg = {
+            msg: error.response.data.message,
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+        }
         return false
       })
   },
@@ -255,7 +316,7 @@ export const actions = {
       })
   },
 
-  createMatch({ context, commit, dispatch }, { params, bearer }) {
+  createMatch({ dispatch }, { params, bearer }) {
     const axiosOption = {
       headers: {
         xToken: bearer,
@@ -271,9 +332,9 @@ export const actions = {
       minPlayer: params.minPlayer,
       maxPlayer: params.maxPlayer,
     }
-    const postData = JSON.stringify(data)
+    // const postData = JSON.stringify(data)
     return this.$axios
-      .$post('https://api.naufalbahri.com/api/v1/match', postData, axiosOption)
+      .$post('https://api.naufalbahri.com/api/v1/match', data, axiosOption)
       .catch((error) => {
         if (error.response.status === 401) {
           // const errMsg = error.response.data.message
@@ -314,9 +375,9 @@ export const actions = {
       minimumDuration: parseInt(params.minimumDuration),
       pricePerHours: parseInt(params.pricePerHours),
     }
-    const postData = JSON.stringify(data)
+    // const postData = JSON.stringify(data)
     return this.$axios
-      .$post('https://api.naufalbahri.com/api/v1/venue', postData, axiosOption)
+      .$post('https://api.naufalbahri.com/api/v1/venue', data, axiosOption)
       .catch((error) => {
         if (error.response.status === 401) {
           // const errMsg = error.response.data.message
@@ -381,4 +442,45 @@ export const actions = {
         }
       })
   },
+
+  exitMatch({ dispatch }, { matchid, bearer }) {
+    this.$axios.setHeader('xToken', `${bearer}`, ['post'])
+    return this.$axios
+      .$post(
+        `https://api.naufalbahri.com/api/v1/match/${matchid}/exit`
+      )
+      .then((result) => {
+        console.warn(result.message);
+        if (result.message) {
+          const errMsg = result.message
+          const alertMsg = {
+            msg: errMsg,
+            color: '#43A047',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/')
+        }
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          const errMsg = error.response.data.message
+          const alertMsg = {
+            msg: errMsg,
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/')
+        } else {
+          // const errMsg = 'Unknown error please contact admin'
+          const errMsg =
+            'Terjadi kesalahan. Silahkan hubungi administrator kami'
+          const alertMsg = {
+            msg: errMsg,
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/')
+        }
+      })
+  }
 }

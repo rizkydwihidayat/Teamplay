@@ -125,6 +125,7 @@ export default {
         startDate: this.currentDate,
         endDate: week.toISOString().substr(0, 10),
         time: '',
+        limit: 5
       }
       const listData = await store.dispatch('match/getListMatch', { params })
       await store.dispatch('match/setListMatch', listData)

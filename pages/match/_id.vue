@@ -81,11 +81,16 @@
         <div class="description-wrapper">
           <p class="desc-subdued mb-1">Biaya</p>
           <p class="desc-primary mb-0">
-            <span class="desc-bold">Rp30.000</span> / pemain
+            <span class="desc-bold">Rp{{numberFormat(matchdetail.price, 0, ',', '.')}}</span> / pemain
           </p>
         </div>
       </v-row>
     </div>
+    <div v-if="isJoin" class="pa-4">
+        <v-alert outlined text type="success" class="alert" color="#43A047">
+          <span class="notif">Kamu sudah join di match ini.</span>
+        </v-alert>
+      </div>
 
     <!-- section pemain -->
     <div class="divider"></div>
@@ -105,7 +110,7 @@
           <div class="player-ava mr-1"><span>AM</span></div>
           <div class="player-number">
             <p class="desc-subdued count mb-0">
-              <!-- ({{ matchdetail.player.length }}/{{ minplayer }}) -->
+              ({{ listPlayer.length }}/{{ minplayer }})
             </p>
             <p class="desc-subdued left mb-0">{{ sisaPlayer }} pemain lagi</p>
           </div>
@@ -127,21 +132,21 @@
             </v-layout>
           </v-card-title>
           <hr class="hr-divider" />
-          <!-- <v-card-text class="list-player">
-            <p v-if="matchdetail.player.length === 0">
+          <v-card-text class="list-player">
+            <p v-if="listPlayer.length === 0">
               Belum ada yang bergabung
             </p>
             <div
-              v-for="(item, idx) in matchdetail.player"
+              v-for="(item, idx) in listPlayer"
               :key="idx"
               class="players"
             >
               <span
-                >{{ item.name }} ({{ convertAge(item.age) }})
-                {{ item.gender.charAt(0) }}</span
+                >{{ item[0].name }} ({{ convertAge(item[0].age) }})
+                {{ item[0].gender.charAt(0) }}</span
               >
             </div>
-          </v-card-text> -->
+          </v-card-text>
         </v-card>
       </v-dialog>
     </div>
@@ -204,7 +209,7 @@
 
     <!-- CTA -->
     <div class="btn-join-match pa-4">
-      <v-btn block depressed rounded class="btn-primary" @click="goJoinMatch"
+      <v-btn block depressed rounded class="btn-primary" :disabled="isJoin" @click="goJoinMatch"
         >Ikut Main</v-btn
       >
     </div>
@@ -215,6 +220,7 @@ import { mapState, mapActions } from 'vuex'
 import { LMap, LTileLayer, LMarker, LTooltip } from 'vue2-leaflet'
 import { icon } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { _numberFormat } from '~/utils'
 export default {
   name: 'MatchDetailPage',
   components: {
@@ -240,6 +246,7 @@ export default {
         iconUrl: require('leaflet/dist/images/marker-icon.png'),
         shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
       }),
+      isJoin: false
     }
   },
   //   layout: 'bottom_nav',
@@ -266,25 +273,55 @@ export default {
       matchdetail: (state) => state.match.matchdetail,
       latitude: (state) => state.match.lat,
       longitude: (state) => state.match.lng,
+      listPlayer: (state) => state.match.listPlayer
     }),
+  },
+  // eslint-disable-next-line vue/order-in-components
+  async fetch() {
+    await this.getCoordinate()
+    await this.checkIfJoinMatch()
+    this.center = [parseFloat(this.matchdetail.coordinate[0]), parseFloat(this.matchdetail.coordinate[1])]
+    this.markerLatLng = [parseFloat(this.matchdetail.coordinate[0]), parseFloat(this.matchdetail.coordinate[1])]
+    // await this.checkCurrentPlayer()
   },
   async mounted() {
     await this.getMatchDetail()
     const url = new URL(window.location.href)
     this.tempParams = url.searchParams.get('invitedFrom')
-    // await this.getCoordinate()
-    // this.$nextTick(() => {
-    //   this.$refs.marker.mapObject.openPopup()
-    // })
     await this.checkMinPlayer()
-    this.center = [parseFloat(this.matchdetail.coordinate[0]), parseFloat(this.matchdetail.coordinate[1])]
-    this.markerLatLng = [parseFloat(this.matchdetail.coordinate[0]), parseFloat(this.matchdetail.coordinate[1])]
-    // await this.checkCurrentPlayer()
+    await this.checkCurrentPlayer()
   },
   methods: {
     ...mapActions({
       joinMatch: 'match/joinMatch',
     }),
+    numberFormat(number, decimals, decPoint, thousandSep) {
+      return typeof _numberFormat !== 'undefined'
+        ? _numberFormat(number, decimals, decPoint, thousandSep)
+        : (number, decimals, decPoint, thousandSep)
+    },
+    checkIfJoinMatch() {
+      const status = this.matchdetail.status
+      switch (status) {
+        case 'Open':
+          this.isJoin = false
+          break;
+        case 'Canceled':
+          this.isJoin = false
+          break;
+        default:
+          break;
+      }
+      // const username = localStorage.getItem('nameGoogleAcc')
+      // const listplayer = this.matchdetail.player
+      // this.matchdetail.player.forEach((item) => {
+      //   if (username === item.name) {
+      //     this.isJoin = true
+      //   } else {
+      //     this.isJoin = false
+      //   }
+      // })
+    },
     back() {
       this.$store.$router.push('/')
     },
@@ -356,7 +393,7 @@ export default {
       }
     },
     checkCurrentPlayer() {
-      const result = this.matchdetail.player.length - this.minplayer
+      const result = this.listPlayer.length - this.minplayer
       this.sisaPlayer = result
       return this.sisaPlayer
     },

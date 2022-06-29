@@ -16,7 +16,7 @@
                 </v-btn>
               </v-flex>
               <v-flex xs10 s10>
-                <v-text-field v-model="fieldCity" outlined dense class="field-city" @change="getByCity"></v-text-field>
+                <v-text-field v-model="fieldCity" outlined dense class="field-city" placeholder="Semua Kota" @change="getByCity"></v-text-field>
                 <p class="date">
                   {{ dateFormat(currentDate) }} - {{ dateFormat(lastday) }}
                 </p>
@@ -103,6 +103,7 @@
               </div>
             </v-card>
           </div>
+          <br />
         </div>
         <!-- end of card list -->
 
@@ -267,9 +268,14 @@ export default {
     },
   },
   async mounted() {
-    this.fieldCity = this.filterCity
-    await this.getMatch(this.catFilter)
-    await this.checkCategory()
+    if (this.filterCity === '') {
+      this.fieldCity = ''
+      await this.getMatch(this.catFilter)
+    } else {
+      this.fieldCity = this.filterCity
+      await this.getMatch(this.catFilter)
+      await this.checkCategory()
+    }
   },
   methods: {
     ...mapMutations({
