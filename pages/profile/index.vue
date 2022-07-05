@@ -43,7 +43,6 @@
                   aria-expanded="false"
                   aria-label="Add"
                   small
-                  flat
                 >
                   <IcPlus />
                 </v-btn>
@@ -270,7 +269,7 @@ export default {
       changePassword: 'user/changePassword',
     }),
     back() {
-      this.$store.$router.push('/')
+      this.$router.back()
     },
     async getProfile(store = this.$store) {
       const bearer = localStorage.getItem('accKey')
@@ -303,7 +302,7 @@ export default {
     },
     goSignOut() {
       localStorage.clear()
-      this.$store.$router.push('/login')
+      this.$router.push('/login')
     },
     changePass() {
       this.showdialogchangepass = true

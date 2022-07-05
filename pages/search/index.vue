@@ -64,7 +64,7 @@
         </div>
         <div v-else class="card">
           <div v-for="(item, idx) in listAllMatch" :key="idx" class="list-card">
-            <v-card outlined>
+            <v-card outlined @click="goToDetailMatch(item.id)">
               <h3>{{ item.gamename }}</h3>
               <div class="chips">
                 <v-chip color="blue" outlined small>
@@ -271,6 +271,7 @@ export default {
     if (this.filterCity === '') {
       this.fieldCity = ''
       await this.getMatch(this.catFilter)
+      await this.checkCategory()
     } else {
       this.fieldCity = this.filterCity
       await this.getMatch(this.catFilter)
@@ -350,7 +351,7 @@ export default {
       this.setState({ isMiniSoccer: false })
       this.setState({ isSoccer: false })
       this.setState({ filterCity: '' })
-      this.$store.$router.push('/')
+      this.$router.back()
     },
     openFilter() {
       this.showdialog = true
@@ -368,6 +369,9 @@ export default {
       return typeof _formatDateTime !== 'undefined'
         ? _formatDateTime(date, 'short', true)
         : date
+    },
+    goToDetailMatch(id) {
+      this.$router.push(`/match/${id}`)
     },
   },
 }

@@ -549,7 +549,7 @@ export default {
       this.isCityId = 0
     },
     back() {
-      this.$store.$router.push('/')
+      this.$router.back()
     },
     formatDate(date) {
       if (!date) return null
@@ -635,11 +635,10 @@ export default {
               color: '#43A047',
             }
             this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-            this.$store.$router.push('/')
+            this.$router.push('/')
             }
           })
           .catch((error) => {
-            console.warn(error)
             if (error.response.status === 401) {
               const alertMsg = {
                 msg: error.response.data.message,
@@ -649,7 +648,6 @@ export default {
             }
             return false
           })
-        console.warn(resultsearch)
         // eslint-disable-next-line no-prototype-builtins
         if (resultsearch.hasOwnProperty('data') && resultsearch.data) {
           await this.$store

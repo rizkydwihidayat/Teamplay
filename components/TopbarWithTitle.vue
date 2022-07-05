@@ -1,7 +1,7 @@
 <template>
   <div class="headBar">
     <div class="container">
-      <v-toolbar flat color="transparent">
+      <v-toolbar color="transparent">
         <v-btn icon :ripple="false" class="btnBack ml-10" @click="back">
           <img
             width="32"
@@ -26,7 +26,7 @@ export default {
   },
   methods: {
     back() {
-      this.$store.$router.push('/')
+      this.$router.back()
     }
   },
 }
