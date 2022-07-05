@@ -19,7 +19,7 @@
       <v-card v-if="isMatchToday === true" outlined>
         <v-layout row wrap>
           <v-flex xs6 s6 class="pl-16 p-12-20">
-            <h3>{{matchToday[0].gamename}}</h3>
+            <h3>{{ matchToday[0].gamename }}</h3>
           </v-flex>
           <v-flex xs6 s6 class="align-right label">
             <v-chip small color="rgba(239, 50, 50, 1)" class="capsule mr-2"
@@ -31,7 +31,7 @@
           <v-layout row wrap class="pl-16">
             <v-flex xs6 s6 class="tgl">
               <img src="~/assets/img/Vector.png" width="16" />
-              <span class="txt-list">{{matchToday[0].place}}</span>
+              <span class="txt-list">{{ matchToday[0].place }}</span>
             </v-flex>
             <v-flex xs6 s6 class="btn-detail"> </v-flex>
           </v-layout>
@@ -40,9 +40,14 @@
           <v-layout row wrap class="pl-16 cursor-pointer">
             <v-flex xs6 s6 class="tgl">
               <img src="~/assets/img/calendar-2.png" width="18" />
-              <span class="txt-list">Hari ini, {{matchToday[0].time}}</span>
+              <span class="txt-list">Hari ini, {{ matchToday[0].time }}</span>
             </v-flex>
-            <v-flex v-if="!matchPIC" xs6 s6 class="btn-detail" @click="goToMatch(matchToday[0].id)"
+            <v-flex
+              v-if="!matchPIC"
+              xs6
+              s6
+              class="btn-detail"
+              @click="goToMatch(matchToday[0].id)"
               ><img
                 width="24"
                 height="24"
@@ -55,7 +60,10 @@
         <div class="pl-20 pr-20">
           <v-btn
             v-if="matchPIC"
-            block depressed rounded class="btn-primary create-btn"
+            block
+            depressed
+            rounded
+            class="btn-primary create-btn"
             @click="goToAbsen(matchToday[0].id)"
           >
             <span> Absen Pemain</span>
@@ -63,7 +71,10 @@
           <br />
           <v-btn
             v-if="btnEndTime"
-            block depressed rounded class="btn-primary create-btn"
+            block
+            depressed
+            rounded
+            class="btn-primary create-btn"
             @click="submitCreateMatch"
           >
             <span> Selesaikan Pertandingan</span>
@@ -86,7 +97,7 @@ export default {
       matchUser: false,
       currentDate: new Date().toISOString().substr(0, 10),
       isMatchToday: false,
-      btnEndTime: false
+      btnEndTime: false,
     }
   },
   computed: {
@@ -112,7 +123,7 @@ export default {
     }),
     searchByCity() {
       this.setState({ filterCity: this.fieldCity })
-      this.$store.$router.push('/search')
+      this.$router.push('/search')
     },
     BDTime() {
       moment.locale('id')
@@ -122,33 +133,35 @@ export default {
     async getMatchToday(store = this.$store) {
       const bearer = localStorage.getItem('accKey')
       const userID = localStorage.getItem('userID')
-      const listData = await store.dispatch('match/getMatchHistory', {
-        bearer,
-        userID,
-      })
-      // eslint-disable-next-line array-callback-return
-      listData.data.filter(async (item) => {
-        const date = this.BDTime()
-        const currentTime = moment().hour().toString()
-        // const matchTime = item.match.match.timePlay.slice(0, 2)
-        const matchEnd = item.match.match.timePlay.slice(7, 13)
-        if (date === item.match.match.playDate) {
-          this.isMatchToday = true
-          await store.dispatch('match/setMatchToday', listData)
-        } else if (currentTime === matchEnd) {
-          this.btnEndTime = true
-          this.isMatchToday = false
-        } else if (Number(currentTime) > Number(matchEnd)) {
-          this.isMatchToday = false
-        }
-      })
+      if (userID !== null) {
+        const listData = await store.dispatch('match/getMatchHistory', {
+          bearer,
+          userID,
+        })
+        // eslint-disable-next-line array-callback-return
+        listData.data.filter(async (item) => {
+          const date = this.BDTime()
+          const currentTime = moment().hour().toString()
+          // const matchTime = item.match.match.timePlay.slice(0, 2)
+          const matchEnd = item.match.match.timePlay.slice(7, 13)
+          if (date === item.match.match.playDate) {
+            this.isMatchToday = true
+            await store.dispatch('match/setMatchToday', listData)
+          } else if (currentTime === matchEnd) {
+            this.btnEndTime = true
+            this.isMatchToday = false
+          } else if (Number(currentTime) > Number(matchEnd)) {
+            this.isMatchToday = false
+          }
+        })
+      }
     },
     goToAbsen(id) {
       this.$router.push(`/absen/${id}`)
     },
     goToMatch(id) {
       this.$router.push(`/match/${id}`)
-    }
+    },
   },
 }
 </script>

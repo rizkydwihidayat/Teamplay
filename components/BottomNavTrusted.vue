@@ -45,7 +45,6 @@
     <v-btn
       id="toAddUser"
       :ripple="false"
-      flat
       to="/create-match"
       aria-expanded="false"
       aria-label="Add"

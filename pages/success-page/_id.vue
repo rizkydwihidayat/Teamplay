@@ -118,11 +118,12 @@ export default {
       //   return this.matchDetail.push(match)
     },
     goToHome() {
-      this.$store.$router.push('/')
+      this.$router.push('/')
     },
     inviteFriend() {
       const usrId = localStorage.getItem('userID')
-      const url = new URL(window.location.href) + `?invitedFrom=${usrId}`
+      const id = this.$route.params.id
+      const url = new URL(window.location.origin) + `match/${id}` + `?invitedFrom=${usrId}`
       // url.select()
       const copied = navigator.clipboard.writeText(url)
       try {

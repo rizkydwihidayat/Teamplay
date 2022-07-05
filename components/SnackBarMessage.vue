@@ -15,7 +15,7 @@
         @click.native="snackbar=false"
       >{{actionText}}</nuxt-link>
     </div>
-    <v-btn :ripple="false" flat class="btn" @click="snackbar = false">
+    <v-btn :ripple="false" class="btn" @click="snackbar = false">
       <span>Back</span>
     </v-btn>
   </v-snackbar>

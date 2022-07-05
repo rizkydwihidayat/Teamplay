@@ -152,9 +152,12 @@ export const actions = {
       gender,
       age,
     }
-    const postData = JSON.stringify(data)
+    // const postData = JSON.stringify(data)
     return this.$axios
-      .$post('https://api.naufalbahri.com/api/v1/users/registration', postData)
+      .$post('https://api.naufalbahri.com/api/v1/users/registration', data)
+      .then((result) => {
+        localStorage.userID= result.data.id
+      })
       .catch((error) => {
         // handle error
         if (error.response.status === 401) {

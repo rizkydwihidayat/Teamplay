@@ -15,7 +15,7 @@ export default {
   name: "TopBar",
   methods: {
     back() {
-        this.$store.$router.push('/')
+        this.$router.back()
     }
   },
 }

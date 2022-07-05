@@ -41,12 +41,12 @@ export const mutations = {
       name: resp.data.organizer.name,
       created: resp.data.organizer.hasCreated,
       phone: resp.data.organizer.phoneNumber,
-      player: resp.data.players,
+      // player: resp.data.players,
       price: resp.data.match.price
     }
     state.listPlayer.push(resp.data.players) 
     state.matchdetail = store
-    console.warn(resp.data.players);
+    return state.listPlayer + state.matchdetail
   },
   setListMatch(state, list) {
     if (list.data) {

@@ -527,7 +527,7 @@ export default {
       }
     },
     back() {
-      this.$store.$router.push('/')
+      this.$router.back()
     },
     async goJoinMatch() {
       const id = this.$route.params.id
@@ -544,12 +544,12 @@ export default {
           color: 'secondary',
         }
         this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-        this.$store.$router.push('/login')
+        this.$router.push('/login')
       } else {
         await this.joinMatch({ params, bearer })
           .then((result) => {
             if (result !== 'undefined') {
-              this.$store.$router.push(`/success-page/${id}`)
+              this.$router.push(`/success-page/${id}`)
             }
           })
           .catch((error) => {
@@ -562,7 +562,6 @@ export default {
             }
             return false
           })
-        // this.$store.$router.push(`/success-page/${id}`)
       }
     },
     getCoordinate() {

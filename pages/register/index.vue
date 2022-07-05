@@ -11,7 +11,7 @@
       </div>
       <br />
       <div v-if="hideTop === false" class="google-button">
-        <v-btn depressed color="primary" outlined rounded>
+        <v-btn depressed color="primary" outlined rounded @click="showForm">
           <img src="~/assets/img/google-ic.png" width="20" /><span
             >Lanjutkan dengan Google</span
           >
@@ -118,7 +118,7 @@
           <v-radio-group v-if="isRegister2 === true" v-model="radioGroup">
             <v-radio label="Laki-laki" value="M"></v-radio>
             <v-radio label="Perempuan" value="F"></v-radio>
-            <v-radio label="Perempuan" value="X"></v-radio>
+            <v-radio label="Tidak Mau Menyebutkan" value="X"></v-radio>
           </v-radio-group>
         </v-form>
       </div>
@@ -146,7 +146,7 @@ export default {
       showFormRegister: false,
       hideButton: false,
       emailInput: '',
-      passIput: '',
+      passInput: '',
       isRegister1: false,
       isRegister2: false,
       radioGroup: 'M',

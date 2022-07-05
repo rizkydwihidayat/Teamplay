@@ -389,7 +389,7 @@ export default {
       // }
     },
     back() {
-      this.$store.$router.push('/my-match')
+      this.$router.back()
     },
     async goJoinMatch() {
       const id = this.$route.params.id
@@ -406,12 +406,12 @@ export default {
           color: 'secondary',
         }
         this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-        this.$store.$router.push('/login')
+        this.$router.push('/login')
       } else {
         await this.joinMatch({ params, bearer })
           .then((result) => {
             if (result !== 'undefined') {
-              this.$store.$router.push(`/success-page/${id}`)
+              this.$router.push(`/success-page/${id}`)
             }
           })
           .catch((error) => {
@@ -484,7 +484,9 @@ export default {
     },
     inviteFriend() {
       const usrId = localStorage.getItem('userID')
-      const url = new URL(window.location.href) + `?invitedFrom=${usrId}`
+      const id = this.$route.params.id
+      const url = new URL(window.location.origin) + `match/${id}` + `?invitedFrom=${usrId}`
+      console.warn(url);
       // url.select()
       const copied = navigator.clipboard.writeText(url)
       try {
