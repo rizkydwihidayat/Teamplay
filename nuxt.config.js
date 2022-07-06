@@ -2,10 +2,12 @@ import colors from 'vuetify/es5/util/colors'
 
 export default {
   mode: 'spa',
+  server: {
+    port: 3000
+  },
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - Teamplay',
-    title: 'Teamplay',
+    title: process.env.TEAMPLAY_APP_TITLE,
     htmlAttrs: {
       lang: 'en'
     },
@@ -21,6 +23,7 @@ export default {
   },
   manifest: {
     lang: 'id',
+    name: process.env.TEAMPLAY_APP_TITLE,
     theme_color: '#2962ff',
     display: 'standalone'
   },
@@ -59,7 +62,8 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: 'http://localhost:3000',
+    // baseURL: 'http://localhost:3000',
+    baseURL: 'https://api.naufalbahri.com/api/v1',
     retry: { retries: 3 },
     proxy: true,
     proxyHeaders: false,
