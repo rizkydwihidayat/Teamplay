@@ -123,7 +123,7 @@ export default {
     }),
     searchByCity() {
       this.setState({ filterCity: this.fieldCity })
-      this.$router.push('/search')
+      this.$router.push({ name: 'search'})
     },
     BDTime() {
       moment.locale('id')
@@ -157,10 +157,10 @@ export default {
       }
     },
     goToAbsen(id) {
-      this.$router.push(`/absen/${id}`)
+      this.$router.push({ path: `/absen/${id}`})
     },
     goToMatch(id) {
-      this.$router.push(`/match/${id}`)
+      this.$router.push({ path: `/match/${id}`})
     },
   },
 }
