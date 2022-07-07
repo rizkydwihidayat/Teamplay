@@ -131,7 +131,8 @@ export default {
   },
 
   generate: {
-    dir: 'dist'
+    dir: 'dist',
+    fallback: true
   },
 
   target: 'static'

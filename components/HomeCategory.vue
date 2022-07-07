@@ -131,26 +131,27 @@ export default {
       await store.dispatch('match/setListMatch', listData)
     },
     goToSearch() {
-      this.$router.push('/search')
+      this.$router.push({ name: 'search'})
     },
-    goToDetailMatch(id) {
-      this.$router.push(`/match/${id}`)
+    goToDetailMatch(matchid) {
+      const id = matchid
+      this.$router.push({ path: `/match/${id}` })
     },
     sportFutsal() {
       this.setState({ isFutsal: true })
-      this.$router.push('/search')
+      this.$router.push({ name: 'search'})
     },
     sportBasket() {
       this.setState({ isBasket: true })
-      this.$router.push('/search')
+      this.$router.push({ name: 'search'})
     },
     sportMiniSoccer() {
       this.setState({ isMiniSoccer: true })
-      this.$router.push('/search')
+      this.$router.push({ name: 'search'})
     },
     sportSoccer() {
       this.setState({ isSoccer: true })
-      this.$router.push('/search')
+      this.$router.push({ name: 'search'})
     }
   },
 }

@@ -1,3 +1,10 @@
 [build]
   command = "nuxt generate"
   publish = "dist"
+  base = "/"
+
+# Basic redirect rule
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
