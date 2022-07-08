@@ -142,7 +142,7 @@
               class="players"
             >
               <span
-                >{{ item[0].name }} ({{ convertAge(item[0].age) }})
+                >{{ item[idx].name }} ({{ convertAge(item[idx].age) }})
                 <!-- {{ item.gender.charAt(0) }} -->
                 </span
               >
@@ -280,7 +280,6 @@ export default {
   // eslint-disable-next-line vue/order-in-components
   async fetch() {
     await this.getCoordinate()
-    await this.checkIfJoinMatch()
     this.center = [parseFloat(this.matchdetail.coordinate[0]), parseFloat(this.matchdetail.coordinate[1])]
     this.markerLatLng = [parseFloat(this.matchdetail.coordinate[0]), parseFloat(this.matchdetail.coordinate[1])]
     // await this.checkCurrentPlayer()
@@ -302,26 +301,26 @@ export default {
         : (number, decimals, decPoint, thousandSep)
     },
     checkIfJoinMatch() {
-      const status = this.matchdetail.status
-      switch (status) {
-        case 'Open':
-          this.isJoin = false
-          break;
-        case 'Canceled':
-          this.isJoin = false
-          break;
-        default:
-          break;
-      }
-      // const username = localStorage.getItem('nameGoogleAcc')
-      // const listplayer = this.matchdetail.player
-      // this.matchdetail.player.forEach((item) => {
-      //   if (username === item.name) {
-      //     this.isJoin = true
-      //   } else {
+      // const status = this.matchdetail.status
+      // switch (status) {
+      //   case 'Open':
       //     this.isJoin = false
-      //   }
-      // })
+      //     break;
+      //   case 'Canceled':
+      //     this.isJoin = false
+      //     break;
+      //   default:
+      //     break;
+      // }
+      const username = localStorage.getItem('nameGoogleAcc')
+      this.listPlayer.forEach((item, idx) => {
+        console.warn(item[idx].name);
+        if (username === item[idx].name) {
+          this.isJoin = true
+        } else {
+          this.isJoin = false
+        }
+      })
     },
     back() {
       this.$router.back()
@@ -341,12 +340,12 @@ export default {
           color: 'secondary',
         }
         this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-        this.$router.push('/login')
+        this.$router.push({ name: 'login'})
       } else {
         await this.joinMatch({ params, bearer })
           .then((result) => {
             if (result !== 'undefined') {
-              this.$router.push(`/success-page/${id}`)
+              this.$router.push({path: `/success-page/${id}`})
             }
           })
           .catch((error) => {
@@ -372,6 +371,7 @@ export default {
       const match = await store.dispatch('match/getMatchId', { id })
       await store.dispatch('match/setMatchDetail', match)
       //   return this.matchDetail.push(match)
+      // await this.checkIfJoinMatch()
     },
     goToMaps() {
       window.location.href = `https://maps.google.com?q=${this.center[0]},${this.center[1]}`
@@ -403,6 +403,7 @@ export default {
     },
     openListPlayer() {
       this.showdialog = true
+      this.checkIfJoinMatch()
     },
     convertAge(val) {
       const result = this.years - val

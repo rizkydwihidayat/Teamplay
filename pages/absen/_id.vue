@@ -544,12 +544,12 @@ export default {
           color: 'secondary',
         }
         this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-        this.$router.push('/login')
+        this.$router.push({ name: 'login'})
       } else {
         await this.joinMatch({ params, bearer })
           .then((result) => {
             if (result !== 'undefined') {
-              this.$router.push(`/success-page/${id}`)
+              this.$router.push({ path: `/success-page/${id}`})
             }
           })
           .catch((error) => {

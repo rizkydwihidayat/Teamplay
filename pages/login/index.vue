@@ -194,7 +194,7 @@ export default {
       this.doLogin(params)
         .then(() => {
           if (this.isLogin) {
-            this.$router.push('/')
+            this.$router.push({path: '/'})
           }
         })
         .catch((error) => {
@@ -214,7 +214,7 @@ export default {
         this.loginWithGoogle(params)
           .then((resp) => {
             if (this.isLoginWithGoogle) {
-              this.$router.push('/')
+              this.$router.push({path: '/'})
             }
           })
           .catch((error) => {

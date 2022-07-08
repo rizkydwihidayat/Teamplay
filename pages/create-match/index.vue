@@ -635,7 +635,7 @@ export default {
               color: '#43A047',
             }
             this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-            this.$router.push('/')
+            this.$router.push({path: '/'})
             }
           })
           .catch((error) => {

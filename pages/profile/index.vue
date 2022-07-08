@@ -34,7 +34,7 @@
             </div>
             <v-layout v-else row wrap>
               <v-flex xs6 s6
-                ><h2 class="mg-16">{{ matchToday.length }}</h2></v-flex
+                ><h2 class="mg-16">{{ userPoint }}</h2></v-flex
               >
               <v-flex xs6 s6 class="align-right p-12-20">
                 <v-btn
