@@ -58,13 +58,14 @@ export default {
   position: absolute;
   top: 50%;
   left: 50%;
+  width: 300px;
   transform: translate(-50%, -90%);
 }
 .footer-page {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -10%);
+  transform: translate(-50%, 10%);
 }
 .notFoundLabel {
   margin-top: 32px;
@@ -72,6 +73,6 @@ export default {
 .g-footer {
   position: fixed;
   bottom: 0;
-  padding: 16px;
+  /* padding: 16px; */
 }
 </style>
