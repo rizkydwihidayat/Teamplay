@@ -131,8 +131,8 @@ export default {
   },
 
   generate: {
-    dir: 'dist',
-    fallback: '404.html'
+    // dir: 'dist',
+    fallback: true
   },
 
   target: 'static'
