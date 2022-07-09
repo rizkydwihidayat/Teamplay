@@ -142,7 +142,7 @@
               class="players"
             >
               <span
-                >{{ item[idx].name }} ({{ convertAge(item[idx].age) }})
+                >{{ item.name }} ({{ convertAge(item.age) }})
                 <!-- {{ item.gender.charAt(0) }} -->
                 </span
               >
@@ -314,8 +314,7 @@ export default {
       // }
       const username = localStorage.getItem('nameGoogleAcc')
       this.listPlayer.forEach((item, idx) => {
-        console.warn(item[idx].name);
-        if (username === item[idx].name) {
+        if (username === item.name) {
           this.isJoin = true
         } else {
           this.isJoin = false

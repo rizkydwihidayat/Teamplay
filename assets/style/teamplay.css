@@ -142,6 +142,9 @@ span {
 .font-blue {
   color: rgba(41, 121, 255, 1);
 }
+.font-grey {
+  color: lightslategrey
+}
 .font-bold {
   font-weight: 600;
   font-family: Poppins;

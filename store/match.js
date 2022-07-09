@@ -26,27 +26,27 @@ export const mutations = {
     keys.forEach((key) => (state[key] = params[key]))
   },
   setMatchDetail(state, resp) {
-    const store = {
-      id: resp.data.match.id,
-      gameName: resp.data.match.gameName,
-      playDate: resp.data.match.playDate,
-      time: resp.data.match.timePlay,
-      playerCategory: resp.data.match.playerCategory,
-      sportCategory: resp.data.match.sportCategory,
-      duration: resp.data.match.duration,
-      address: resp.data.venue.address,
-      venueName: resp.data.venue.venueName,
-      coordinate: resp.data.venue.coordinate,
-      city: resp.data.venue.city,
-      name: resp.data.organizer.name,
-      created: resp.data.organizer.hasCreated,
-      phone: resp.data.organizer.phoneNumber,
-      // player: resp.data.players,
-      price: resp.data.match.price
-    }
-    state.listPlayer.push(resp.data.players) 
-    state.matchdetail = store
-    return state.listPlayer + state.matchdetail
+      const store = {
+        id: resp.data.match.id,
+        gameName: resp.data.match.gameName,
+        playDate: resp.data.match.playDate,
+        time: resp.data.match.timePlay,
+        playerCategory: resp.data.match.playerCategory,
+        sportCategory: resp.data.match.sportCategory,
+        duration: resp.data.match.duration,
+        address: resp.data.venue.address,
+        venueName: resp.data.venue.venueName,
+        coordinate: resp.data.venue.coordinate,
+        city: resp.data.venue.city,
+        name: resp.data.organizer.name,
+        created: resp.data.organizer.hasCreated,
+        phone: resp.data.organizer.phoneNumber,
+        // player: resp.data.players,
+        price: resp.data.match.price
+      }
+      state.listPlayer = resp.data.players
+      state.matchdetail = store
+    
   },
   setListMatch(state, list) {
     if (list.data) {
@@ -450,7 +450,6 @@ export const actions = {
         `https://api.naufalbahri.com/api/v1/match/${matchid}/exit`
       )
       .then((result) => {
-        console.warn(result.message);
         if (result.message) {
           const errMsg = result.message
           const alertMsg = {
