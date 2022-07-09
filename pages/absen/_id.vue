@@ -199,8 +199,9 @@
               class="players"
             >
               <span
-                >{{ item[0].name }} ({{ convertAge(item[0].age) }})
-                {{ item[0].gender.charAt(0) }}</span
+                >{{ item.name }} ({{ convertAge(item.age) }})
+                {{ item.gender.charAt(0) }}
+                </span
               >
             </div>
           </v-card-text>
@@ -622,7 +623,15 @@ export default {
     },
     chatHost() {
       const phone = localStorage.getItem('phone')
-      window.location.href = `https://wa.me/${phone}`
+      if (phone !== 'null') {
+        window.location.href = `https://wa.me/${phone}`
+      } else {
+        const alertMsg = {
+          msg: 'Nomor kontak Host tidak valid.',
+          color: '#EF6C00',
+        }
+        this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+      }
     },
     endMatchNow() {
       this.dialogEndMatch = true

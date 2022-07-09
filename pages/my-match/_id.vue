@@ -155,11 +155,11 @@
               :key="idx"
               class="players"
             >
-              <!-- <span
+              <span
                 >{{ item.name }} ({{ convertAge(item.age) }})
                 {{ item.gender.charAt(0) }}
                 </span
-              > -->
+              >
             </div>
           </v-card-text>
         </v-card>
@@ -242,7 +242,7 @@
         depressed
         rounded
         class="btn-primary"
-        :disabled="isJoin"
+        :disabled="!isJoin"
         @click="goJoinMatch"
         >Ikut Main</v-btn
       >
@@ -362,31 +362,14 @@ export default {
         : (number, decimals, decPoint, thousandSep)
     },
     checkIfJoinMatch() {
-      // const username = localStorage.getItem('nameGoogleAcc')
-      // const listplayer = this.listPlayer
-      // listplayer.forEach((item) => {
-      //   if (username === item[0].name) {
-      //     this.isJoin = true
-      //     const alertMsg = {
-      //       msg: 'Kamu sudah join di match ini.',
-      //       color: '#43A047',
-      //     }
-      //     this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-      //   } else {
-      //     this.isJoin = false
-      //   }
-      // })
-      // const status = this.matchdetail.status
-      // switch (status) {
-      //   case 'Open':
-      //     this.isJoin = false
-      //     break;
-      //   case 'Canceled':
-      //     this.isJoin = false
-      //     break;
-      //   default:
-      //     break;
-      // }
+      const username = localStorage.getItem('nameGoogleAcc')
+      this.listPlayer.forEach((item, idx) => {
+        if (item.name === username) {
+          this.isJoin = true
+        } else {
+          this.isJoin = false
+        }
+      })
     },
     back() {
       this.$router.back()
@@ -480,7 +463,15 @@ export default {
     },
     chatHost() {
       const phone = localStorage.getItem('phone')
-      window.location.href = `https://wa.me/${phone}`
+      if (phone !== 'null') {
+        window.location.href = `https://wa.me/${phone}`
+      } else {
+        const alertMsg = {
+          msg: 'Nomor kontak Host tidak valid.',
+          color: '#EF6C00',
+        }
+        this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+      }
     },
     inviteFriend() {
       const usrId = localStorage.getItem('userID')
