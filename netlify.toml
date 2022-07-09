@@ -1,5 +1,5 @@
 [build]
-  command = "nuxt generate"
+  command = "yarn generate"
   publish = "dist"
   base = "/"
 
