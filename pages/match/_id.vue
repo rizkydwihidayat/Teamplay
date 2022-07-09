@@ -81,16 +81,19 @@
         <div class="description-wrapper">
           <p class="desc-subdued mb-1">Biaya</p>
           <p class="desc-primary mb-0">
-            <span class="desc-bold">Rp{{numberFormat(matchdetail.price, 0, ',', '.')}}</span> / pemain
+            <span class="desc-bold"
+              >Rp{{ numberFormat(matchdetail.price, 0, ',', '.') }}</span
+            >
+            / pemain
           </p>
         </div>
       </v-row>
     </div>
     <div v-if="isJoin" class="pa-4">
-        <v-alert outlined text type="success" class="alert" color="#43A047">
-          <span class="notif">Kamu sudah join di match ini.</span>
-        </v-alert>
-      </div>
+      <v-alert outlined text type="success" class="alert" color="#43A047">
+        <span class="notif">Kamu sudah join di match ini.</span>
+      </v-alert>
+    </div>
 
     <!-- section pemain -->
     <div class="divider"></div>
@@ -133,19 +136,12 @@
           </v-card-title>
           <hr class="hr-divider" />
           <v-card-text class="list-player">
-            <p v-if="listPlayer.length === 0">
-              Belum ada yang bergabung
-            </p>
-            <div
-              v-for="(item, idx) in listPlayer"
-              :key="idx"
-              class="players"
-            >
+            <p v-if="listPlayer.length === 0">Belum ada yang bergabung</p>
+            <div v-for="(item, idx) in listPlayer" :key="idx" class="players">
               <span
-                >{{ item[0].name }} ({{ convertAge(item[0].age) }})
-                <!-- {{ item.gender.charAt(0) }} -->
-                </span
-              >
+                >{{ item.name }} ({{ convertAge(item.age) }})
+                {{ item.gender.charAt(0) }}
+              </span>
             </div>
           </v-card-text>
         </v-card>
@@ -203,14 +199,22 @@
             />
           </v-row>
           <p class="desc-subdued mb-3">Bergabung Juni 2022</p>
-          <p class="desc-blue pb-4 cursor-pointer" @click="chatHost">Hubungi Host</p>
+          <p class="desc-blue pb-4 cursor-pointer" @click="chatHost">
+            Hubungi Host
+          </p>
         </div>
       </v-row>
     </div>
 
     <!-- CTA -->
     <div class="btn-join-match pa-4">
-      <v-btn block depressed rounded class="btn-primary" :disabled="isJoin" @click="goJoinMatch"
+      <v-btn
+        block
+        depressed
+        rounded
+        class="btn-primary"
+        :disabled="!isJoin"
+        @click="goJoinMatch"
         >Ikut Main</v-btn
       >
     </div>
@@ -247,7 +251,7 @@ export default {
         iconUrl: require('leaflet/dist/images/marker-icon.png'),
         shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
       }),
-      isJoin: false
+      isJoin: false,
     }
   },
   //   layout: 'bottom_nav',
@@ -274,15 +278,20 @@ export default {
       matchdetail: (state) => state.match.matchdetail,
       latitude: (state) => state.match.lat,
       longitude: (state) => state.match.lng,
-      listPlayer: (state) => state.match.listPlayer
+      listPlayer: (state) => state.match.listPlayer,
     }),
   },
   // eslint-disable-next-line vue/order-in-components
   async fetch() {
     await this.getCoordinate()
-    await this.checkIfJoinMatch()
-    this.center = [parseFloat(this.matchdetail.coordinate[0]), parseFloat(this.matchdetail.coordinate[1])]
-    this.markerLatLng = [parseFloat(this.matchdetail.coordinate[0]), parseFloat(this.matchdetail.coordinate[1])]
+    this.center = [
+      parseFloat(this.matchdetail.coordinate[0]),
+      parseFloat(this.matchdetail.coordinate[1]),
+    ]
+    this.markerLatLng = [
+      parseFloat(this.matchdetail.coordinate[0]),
+      parseFloat(this.matchdetail.coordinate[1]),
+    ]
     // await this.checkCurrentPlayer()
   },
   async mounted() {
@@ -291,6 +300,7 @@ export default {
     this.tempParams = url.searchParams.get('invitedFrom')
     await this.checkMinPlayer()
     await this.checkCurrentPlayer()
+    await this.checkIfJoinMatch()
   },
   methods: {
     ...mapActions({
@@ -302,26 +312,14 @@ export default {
         : (number, decimals, decPoint, thousandSep)
     },
     checkIfJoinMatch() {
-      const status = this.matchdetail.status
-      switch (status) {
-        case 'Open':
+      const username = localStorage.getItem('nameGoogleAcc')
+      this.listPlayer.forEach((item, idx) => {
+        if (item.name === username) {
+          this.isJoin = true
+        } else {
           this.isJoin = false
-          break;
-        case 'Canceled':
-          this.isJoin = false
-          break;
-        default:
-          break;
-      }
-      // const username = localStorage.getItem('nameGoogleAcc')
-      // const listplayer = this.matchdetail.player
-      // this.matchdetail.player.forEach((item) => {
-      //   if (username === item.name) {
-      //     this.isJoin = true
-      //   } else {
-      //     this.isJoin = false
-      //   }
-      // })
+        }
+      })
     },
     back() {
       this.$router.back()
@@ -341,12 +339,12 @@ export default {
           color: 'secondary',
         }
         this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-        this.$router.push('/login')
+        this.$router.push({ name: 'login' })
       } else {
         await this.joinMatch({ params, bearer })
           .then((result) => {
             if (result !== 'undefined') {
-              this.$router.push(`/success-page/${id}`)
+              this.$router.push({ path: `/success-page/${id}` })
             }
           })
           .catch((error) => {
@@ -372,6 +370,7 @@ export default {
       const match = await store.dispatch('match/getMatchId', { id })
       await store.dispatch('match/setMatchDetail', match)
       //   return this.matchDetail.push(match)
+      await this.checkIfJoinMatch()
     },
     goToMaps() {
       window.location.href = `https://maps.google.com?q=${this.center[0]},${this.center[1]}`
@@ -403,6 +402,7 @@ export default {
     },
     openListPlayer() {
       this.showdialog = true
+      // this.checkIfJoinMatch()
     },
     convertAge(val) {
       const result = this.years - val
@@ -410,8 +410,16 @@ export default {
     },
     chatHost() {
       const phone = localStorage.getItem('phone')
-      window.location.href = `https://wa.me/${phone}`
-    }
+      if (phone !== 'null') {
+        window.location.href = `https://wa.me/${phone}`
+      } else {
+        const alertMsg = {
+          msg: 'Nomor kontak Host tidak valid.',
+          color: '#EF6C00',
+        }
+        this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+      }
+    },
   },
 }
 </script>

@@ -3,6 +3,7 @@
     <div id="pageRegister" class="compWrapper g-transition">
       <TopBarNav />
       <div v-if="hideTop === false" class="top-register">
+        <br /><br /><br /><br />
         <h2>Yuk, daftar!</h2>
         <span
           >Jangan khawatir, data kamu akan kami<br />
@@ -17,112 +18,7 @@
           >
         </v-btn>
       </div>
-      <div v-if="hideTop === false" class="divider"><span>atau</span></div>
-      <div class="bottom-button">
-        <v-btn
-          v-if="hideButton === false"
-          depressed
-          color="gray"
-          outlined
-          rounded
-          @click="showForm"
-        >
-          <img src="~/assets/img/email.png" width="20" /><span
-            >Daftar dengan Email</span
-          >
-        </v-btn>
-        <v-form
-          v-if="showFormRegister === true"
-          ref="form"
-          v-model="valid"
-          lazy-validation
-          @keyup.native.enter="valid && submit($event)"
-        >
-          <div>
-            <br /><br /><br /><br />
-            <h2 v-if="isRegister1 === true">Daftar dengan email</h2>
-          </div>
-          <br />
-          <v-text-field
-            v-if="isRegister1 === true"
-            ref="emailAddress"
-            v-model="emailInput"
-            outlined
-            required
-            placeholder="Daftar dengan Email"
-            prepend-inner-icon="mdi-email-outline"
-            @input="(val) => inputEmail(val)"
-            @focus="resetEmail"
-          ></v-text-field>
-          <v-text-field
-            v-if="isRegister1 === true"
-            v-model="passInput"
-            :type="showpass ? 'text' : 'password'"
-            :validate-on-blur="true"
-            autocomplete="password"
-            required
-            outlined
-            placeholder="Password"
-            prepend-inner-icon="mdi-key-outline"
-            :maxlength="27"
-            @click:append="showpass = !showpass"
-          >
-            <template #append>
-              <div @click="showpass = !showpass">
-                <IcSeen v-if="!showpass" class="form-icon" />
-                <IcSeen v-else :reveal="true" class="form-icon" />
-              </div>
-            </template>
-          </v-text-field>
-          <div class="login-button">
-            <v-btn
-              v-if="isRegister1 === true"
-              depressed
-              color="primary"
-              rounded
-              @click="nextForm"
-            >
-              <span>Daftar</span>
-            </v-btn>
-            <v-btn
-              v-if="isRegister2 === true"
-              depressed
-              color="primary"
-              rounded
-              @click="submitForm"
-            >
-              <span>Simpan</span>
-            </v-btn>
-          </div>
-          <div>
-            <h2 v-if="isRegister2 === true">Yuk, lengkapin data kamu dulu!</h2>
-          </div>
-          <br />
-          <v-text-field
-            v-if="isRegister2 === true"
-            ref="fullName"
-            v-model="fullname"
-            outlined
-            required
-            placeholder="Nama lengkap kamu"
-          ></v-text-field>
-          <v-text-field
-            v-if="isRegister2 === true"
-            ref="age"
-            v-model="age"
-            outlined
-            required
-            placeholder="Usia kamu sekarang"
-            @keypress="checkValue($event)"
-          ></v-text-field>
-          <v-radio-group v-if="isRegister2 === true" v-model="radioGroup">
-            <v-radio label="Laki-laki" value="M"></v-radio>
-            <v-radio label="Perempuan" value="F"></v-radio>
-            <v-radio label="Tidak Mau Menyebutkan" value="X"></v-radio>
-          </v-radio-group>
-        </v-form>
-      </div>
-      <br />
+      <br /><br />
       <span v-if="hideTop === false" class="do-register"
         >Suda punya akun? <a href="/login">Yuk, masuk!</a></span
       >

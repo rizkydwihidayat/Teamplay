@@ -143,7 +143,7 @@ export default {
           const date = this.BDTime()
           const currentTime = moment().hour().toString()
           // const matchTime = item.match.match.timePlay.slice(0, 2)
-          const matchEnd = item.match.match.timePlay.slice(7, 13)
+          const matchEnd = item.match.match.timePlay.slice(7, 10)
           if (date === item.match.match.playDate) {
             this.isMatchToday = true
             await store.dispatch('match/setMatchToday', listData)

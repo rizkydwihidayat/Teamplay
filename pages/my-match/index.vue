@@ -116,7 +116,7 @@ export default {
       }
     },
     goToDetailMatch(id) {
-      this.$router.push(`/my-match/${id}`)
+      this.$router.push({path: `/my-match/${id}`})
     },
   },
 }

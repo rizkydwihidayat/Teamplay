@@ -3,6 +3,7 @@
     <div id="pageLogin" class="compWrapper g-transition">
       <TopBarNav />
       <div class="top-login">
+        <br /><br /><br /><br />
         <h2>
           Masuk dengan email<br />
           yang kamu gunakan
@@ -50,74 +51,11 @@
           </div></v-form
         >
       </div>
-      <div class="divider"><span>atau</span></div>
-      <div class="bottom-button">
-        <v-btn
-          v-if="hideButton === false"
-          depressed
-          color="gray"
-          outlined
-          rounded
-          @click="showForm"
-        >
-          <img src="~/assets/img/email.png" width="20" /><span
-            >Masuk dengan Email</span
-          >
-        </v-btn>
-        <v-form
-          v-if="showFormLogin === true"
-          ref="form"
-          v-model="valid"
-          lazy-validation
-          @keyup.native.enter="valid && submit($event)"
-        >
-          <v-text-field
-            ref="emailAddress"
-            v-model="emailInput"
-            outlined
-            placeholder="Email"
-            required
-            type="text"
-            prepend-inner-icon="mdi-email-outline"
-            :rules="emailRules"
-            :clearable="widthClearable"
-            clear-icon="mdi-close"
-            @blur="widthClearable = false"
-            @focus="widthClearable = true"
-          ></v-text-field>
-          <v-text-field
-            v-model="passInput"
-            :type="showpass ? 'text' : 'password'"
-            :validate-on-blur="true"
-            autocomplete="password"
-            required
-            outlined
-            placeholder="Password"
-            prepend-inner-icon="mdi-key-outline"
-            :maxlength="27"
-            @click:append="showpass = !showpass"
-          >
-            <template #append>
-              <div @click="showpass = !showpass">
-                <IcSeen v-if="!showpass" class="form-icon" />
-                <IcSeen v-else :reveal="true" class="form-icon" />
-              </div>
-            </template>
-          </v-text-field>
-          <span>Lupa Password?</span>
-          <div class="login-button">
-            <v-btn depressed color="primary" rounded :disabled="!valid" @click="submit">
-              <span>Masuk</span>
-            </v-btn>
-          </div>
-        </v-form>
-      </div>
-      <br />
+      <br /><br />
       <span class="do-register"
         >Belum punya akun? <a href="/register">Yuk, daftar!</a></span
       >
     </div>
-    {{ namaUser }}
   </v-main>
 </template>
 <script>
@@ -194,7 +132,7 @@ export default {
       this.doLogin(params)
         .then(() => {
           if (this.isLogin) {
-            this.$router.push('/')
+            this.$router.push({path: '/'})
           }
         })
         .catch((error) => {
@@ -214,7 +152,7 @@ export default {
         this.loginWithGoogle(params)
           .then((resp) => {
             if (this.isLoginWithGoogle) {
-              this.$router.push('/')
+              this.$router.push({path: '/'})
             }
           })
           .catch((error) => {
