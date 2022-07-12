@@ -52,6 +52,9 @@ span {
 .mb-10 {
   margin-bottom: 10px;
 }
+.mb-5 {
+  margin-bottom: 5px;
+}
 .main {
   background: lightgray !important;
   padding: 0px 0px !important;
@@ -148,4 +151,8 @@ span {
 .font-bold {
   font-weight: 600;
   font-family: Poppins;
+}
+.red-text {
+  color: #f16060 !important;
+  margin-left: 10px;
 }

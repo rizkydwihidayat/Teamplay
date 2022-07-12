@@ -122,7 +122,7 @@
         </v-flex>
       </v-layout>
       <!-- <hr class="hr-divider" /> -->
-      <v-layout
+      <!-- <v-layout
         v-if="!isTrustedMember"
         row
         wrap
@@ -140,7 +140,7 @@
             alt="<"
           />
         </v-flex>
-      </v-layout>
+      </v-layout> -->
       <hr class="hr-divider" />
       <br /><br />
       <v-layout row wrap class="logout">

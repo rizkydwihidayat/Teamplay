@@ -242,7 +242,7 @@
         depressed
         rounded
         class="btn-primary"
-        :disabled="!isJoin"
+        :disabled="isJoin"
         @click="goJoinMatch"
         >Ikut Main</v-btn
       >
@@ -317,7 +317,6 @@ export default {
   // eslint-disable-next-line vue/order-in-components
   async fetch() {
     await this.getCoordinate()
-    // await this.checkIfJoinMatch()
     this.center = [
       parseFloat(this.matchdetail.coordinate[0]),
       parseFloat(this.matchdetail.coordinate[1]),
@@ -326,7 +325,6 @@ export default {
       parseFloat(this.matchdetail.coordinate[0]),
       parseFloat(this.matchdetail.coordinate[1]),
     ]
-    await this.checkCurrentPlayer()
   },
   async mounted() {
     await this.getMatchDetail()
@@ -345,7 +343,8 @@ export default {
     } else if (verified === 'true') {
       this.isTrusted = true
     }
-    // await this.checkCurrentPlayer()
+    console.warn(this.isTrusted, verified);
+    await this.checkCurrentPlayer()
     await this.checkIfJoinMatch()
   },
   methods: {
@@ -366,8 +365,6 @@ export default {
       this.listPlayer.forEach((item, idx) => {
         if (item.name === username) {
           this.isJoin = true
-        } else {
-          this.isJoin = false
         }
       })
     },
@@ -477,9 +474,9 @@ export default {
       const usrId = localStorage.getItem('userID')
       const id = this.$route.params.id
       const url = new URL(window.location.origin) + `match/${id}` + `?invitedFrom=${usrId}`
-      console.warn(url);
       // url.select()
       const copied = navigator.clipboard.writeText(url)
+      // localStorage.urlMatch = url
       try {
         // const copied = document.execCommand('copy')
         const alertMsg = {
