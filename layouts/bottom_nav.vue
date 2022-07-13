@@ -24,21 +24,6 @@ const components = {
 }
 export default {
   components,
-//   methods: {
-//     ...mapActions({ doLogout: 'user/doLogout' }),
-//     logout() {
-//       this.doLogout().then(() => {
-//         // clear all stora cache
-//         this.$store.cache.clear()
-//         // console.warn('warn logout')
-//         this.$router.replace('/')
-//         // console.warn('warn logout done')
-//       })
-//     },
-//     goTo(path) {
-//       this.$router.push(path)
-//     }
-//   }
 }
 </script>
 

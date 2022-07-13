@@ -63,27 +63,30 @@ export const mutations = {
                 time: value.match.timePlay,
                 place: value.venue.venueName,
                 status: value.match.status,
+                players: value.players
               }
             }, {})
           : []
-    } else {
-      state.listMatch =
-        list.length > 0 && list[0] !== null
-          ? // eslint-disable-next-line array-callback-return
-            list.map((value, key) => {
-              return {
-                id: value.match.id,
-                gamename: value.match.gameName,
-                category: value.match.sportCategory,
-                gender: value.match.playerCategory,
-                date: value.match.playDate,
-                time: value.match.timePlay,
-                place: value.venue.venueName,
-                status: value.match.status,
-              }
-            }, {})
-          : []
-    }
+    } 
+    // else {
+    //   state.listMatch =
+    //     list.length > 0 && list[0] !== null
+    //       ? // eslint-disable-next-line array-callback-return
+    //         list.map((value, key) => {
+    //           return {
+    //             id: value.match.id,
+    //             gamename: value.match.gameName,
+    //             category: value.match.sportCategory,
+    //             gender: value.match.playerCategory,
+    //             date: value.match.playDate,
+    //             time: value.match.timePlay,
+    //             place: value.venue.venueName,
+    //             status: value.match.status,
+    //             players: value.players
+    //           }
+    //         }, {})
+    //       : []
+    // }
   },
   setMatchToday(state, list) {
     state.matchToday =
@@ -99,7 +102,8 @@ export const mutations = {
               absen: value.isAbsent,
               joined: value.isJoined,
               totalPayer: value.match.numberOfPlayers,
-              status: value.match.match.status
+              status: value.match.match.status,
+              category: value.match.match.sportCategory
             }
           }, {})
         : []

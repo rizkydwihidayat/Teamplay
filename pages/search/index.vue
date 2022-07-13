@@ -351,7 +351,7 @@ export default {
       this.setState({ isMiniSoccer: false })
       this.setState({ isSoccer: false })
       this.setState({ filterCity: '' })
-      this.$router.back()
+      this.$router.push('/')
     },
     openFilter() {
       this.showdialog = true
@@ -519,7 +519,7 @@ h3 {
 .txt-chips {
   font-family: Poppins;
   font-weight: 500;
-  color: blue !important;
+  color: #3197F3 !important;
 }
 .chips {
   padding-top: 5px;

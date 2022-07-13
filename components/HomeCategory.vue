@@ -17,10 +17,18 @@
         /></v-flex>
       </v-layout>
       <v-layout row wrap class="ic-category">
-        <v-flex xs2 class="txt-category cursor-pointer"><span>Futsal</span></v-flex>
-        <v-flex xs2 class="txt-category cursor-pointer"><span>Basket</span></v-flex>
-        <v-flex xs2 class="txt-category cursor-pointer"><span>Mini Soccer</span></v-flex>
-        <v-flex xs2 class="txt-category cursor-pointer"><span>Sepak Bola</span></v-flex>
+        <v-flex xs2 class="txt-category cursor-pointer"
+          ><span>Futsal</span></v-flex
+        >
+        <v-flex xs2 class="txt-category cursor-pointer"
+          ><span>Basket</span></v-flex
+        >
+        <v-flex xs2 class="txt-category cursor-pointer"
+          ><span>Mini Soccer</span></v-flex
+        >
+        <v-flex xs2 class="txt-category cursor-pointer"
+          ><span>Sepak Bola</span></v-flex
+        >
       </v-layout>
     </div>
     <!-- end of category -->
@@ -57,40 +65,40 @@
             </div>
             <div class="pl-20">
               <span class="fs-12">Pemain</span
-              ><span class="txt-list">(16/20)</span>
+              ><span class="txt-list"
+                >({{ item.players.length }}/{{ minplayer }})</span
+              >
               <p>
-                <v-avatar color="indigo" size="20">
+                <v-avatar v-if="item.players.length > 0" color="indigo" size="20">
                   <span class="white--text fs-10">P1</span>
                 </v-avatar>
-                <v-avatar color="orange" size="20">
+                <v-avatar v-if="item.players.length > 1 ||  item.players.length === 2" color="orange" size="20">
                   <span class="white--text fs-10">P2</span>
                 </v-avatar>
-                <v-avatar color="blue" size="20">
+                <v-avatar v-if="item.players.length > 2 ||  item.players.length === 3" color="blue" size="20">
                   <span class="white--text fs-10">P3</span>
                 </v-avatar>
-                <v-avatar color="green" size="20">
+                <v-avatar v-if="item.players.length > 3" color="green" size="20">
                   <span class="white--text fs-10">+13</span>
                 </v-avatar>
-                <span class="fs-12 red-text">4 orang lagi</span>
+                <span class="fs-12 red-text">{{ sisaPlayer }} orang lagi</span>
               </p>
             </div>
           </v-card>
         </div>
         <!-- bottom button -->
-    <div v-if="listAllMatch.length > 0" class="bottom-button">
-      <v-btn depressed color="primary" @click="goToSearch">
-        <span> Lihat Pertandingan Lainnya</span>
-      </v-btn>
-      <br /><br /><br /><br />
-    </div>
+        <div v-if="listAllMatch.length > 0" class="bottom-button">
+          <v-btn depressed color="primary" @click="goToSearch">
+            <span> Lihat Pertandingan Lainnya</span>
+          </v-btn>
+          <br /><br /><br /><br />
+        </div>
       </div>
       <div v-else class="emptyState">
         <span>Saat ini Anda tidak memiliki jadwal pertandingan.</span>
       </div>
-      
     </div>
     <!-- end of card list -->
-    
   </div>
 </template>
 <script>
@@ -100,17 +108,21 @@ export default {
     return {
       listMatch: [],
       currentDate: new Date().toISOString().substr(0, 10),
+      minplayer: 0,
+      sisaPlayer: 0,
     }
   },
   computed: {
     ...mapState({
       listAllMatch: (state) => state.match.listMatch,
       isLoading: (state) => state.match.isLoading,
-      timeDur: (state) => state.match.timeDur
+      timeDur: (state) => state.match.timeDur,
     }),
   },
   async mounted() {
     await this.getMatch()
+    await this.checkTotalPlayer()
+    await this.checkCurrentPlayer()
   },
   methods: {
     ...mapMutations({
@@ -125,13 +137,13 @@ export default {
         startDate: this.currentDate,
         endDate: week.toISOString().substr(0, 10),
         time: '',
-        limit: 10
+        limit: 10,
       }
       const listData = await store.dispatch('match/getListMatch', { params })
       await store.dispatch('match/setListMatch', listData)
     },
     goToSearch() {
-      this.$router.push({ name: 'search'})
+      this.$router.push({ name: 'search' })
     },
     goToDetailMatch(matchid) {
       const id = matchid
@@ -139,20 +151,46 @@ export default {
     },
     sportFutsal() {
       this.setState({ isFutsal: true })
-      this.$router.push({ name: 'search'})
+      this.$router.push({ name: 'search' })
     },
     sportBasket() {
       this.setState({ isBasket: true })
-      this.$router.push({ name: 'search'})
+      this.$router.push({ name: 'search' })
     },
     sportMiniSoccer() {
       this.setState({ isMiniSoccer: true })
-      this.$router.push({ name: 'search'})
+      this.$router.push({ name: 'search' })
     },
     sportSoccer() {
       this.setState({ isSoccer: true })
-      this.$router.push({ name: 'search'})
-    }
+      this.$router.push({ name: 'search' })
+    },
+    checkCurrentPlayer() {
+      this.listAllMatch.forEach((item) => {
+        const result = item.players.length - this.minplayer
+        this.sisaPlayer = result
+        return this.sisaPlayer
+      })
+    },
+    checkTotalPlayer() {
+      this.listAllMatch.forEach((item) => {
+        const category = item.category
+        switch (category) {
+          case 'Futsal':
+            this.minplayer = 15
+            break
+          case 'Basket':
+            this.minplayer = 15
+            break
+          case 'Mini Soccer':
+            this.minplayer = 18
+            break
+          case 'Sepak Bola':
+            this.minplayer = 25
+            break
+        }
+      })
+    },
   },
 }
 </script>
@@ -272,8 +310,8 @@ span {
 }
 </style>
 <style>
-.main {
+/* .main {
   background: lightgray !important;
   padding: 0px 0px !important;
-}
+} */
 </style>

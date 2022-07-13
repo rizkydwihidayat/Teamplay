@@ -1,5 +1,6 @@
 <template>
-  <v-main class="main">
+  <!-- <v-main class="main"> -->
+  <div>
     <TopBarNav />
     <br />
     <br />
@@ -30,30 +31,52 @@
                 <v-layout row wrap>
                   <v-flex xs6 class="pl-20"
                     ><span class="fs-12 txt-black">Pemain</span
-                    ><span class="txt-list">(16/20)</span></v-flex
+                    ><span class="txt-list"
+                      >({{ item.totalPayer }}/{{ minplayer }})</span
+                    ></v-flex
                   >
-                  <v-flex xs6
+                  <v-flex xs6 class="mb-10"
                     ><p>
-                      <v-avatar color="indigo" size="20">
+                      <v-avatar
+                        v-if="item.totalPayer > 0"
+                        color="indigo"
+                        size="20"
+                      >
                         <span class="white--text fs-10">P1</span>
                       </v-avatar>
-                      <v-avatar color="orange" size="20">
+                      <v-avatar
+                        v-if="item.totalPayer > 1 || item.totalPayer === 2"
+                        color="orange"
+                        size="20"
+                      >
                         <span class="white--text fs-10">P2</span>
                       </v-avatar>
-                      <v-avatar color="blue" size="20">
+                      <v-avatar
+                        v-if="item.totalPayer > 2 || item.totalPayer === 3"
+                        color="blue"
+                        size="20"
+                      >
                         <span class="white--text fs-10">P3</span>
                       </v-avatar>
-                      <v-avatar color="green" size="20">
+                      <v-avatar
+                        v-if="item.totalPayer > 3"
+                        color="green"
+                        size="20"
+                      >
                         <span class="white--text fs-10">+13</span>
                       </v-avatar>
-                      <span class="fs-12 red-text">4 orang lagi</span>
+                      <span class="fs-12 red-text"
+                        >{{ sisaPlayer }} orang lagi</span
+                      >
                     </p></v-flex
                   >
                 </v-layout>
               </v-flex>
               <v-flex xs4 class="card-section-2"
                 ><v-chip :color="getColor(item.status, item.joined)" small>
-                  <span v-if="item.status === 'Open'" class="txt-black">{{ item.status }}</span>
+                  <span v-if="item.status === 'Open'" class="txt-black">{{
+                    item.status
+                  }}</span>
                   <span v-else>{{ item.status }}</span>
                 </v-chip></v-flex
               >
@@ -67,7 +90,8 @@
         >
       </div>
     </div>
-  </v-main>
+  </div>
+  <!-- </v-main> -->
 </template>
 <script>
 import { mapState } from 'vuex'
@@ -85,6 +109,8 @@ export default {
       listMatch: [],
       filterCategory: ['Semua', 'Bergabung', 'Batal', 'Selesai'],
       inputCategory: '',
+      minplayer: 0,
+      sisaPlayer: 0,
     }
   },
   computed: {
@@ -94,6 +120,8 @@ export default {
   },
   async mounted() {
     await this.getMatch()
+    await this.checkTotalPlayer()
+    await this.checkCurrentPlayer()
   },
   methods: {
     async getMatch(store = this.$store) {
@@ -116,7 +144,33 @@ export default {
       }
     },
     goToDetailMatch(id) {
-      this.$router.push({path: `/my-match/${id}`})
+      this.$router.push({ path: `/my-match/${id}` })
+    },
+    checkCurrentPlayer() {
+      this.listAllMatch.forEach((item) => {
+        const result = item.totalPayer - this.minplayer
+        this.sisaPlayer = result
+        return this.sisaPlayer
+      })
+    },
+    checkTotalPlayer() {
+      this.listAllMatch.forEach((item) => {
+        const category = item.category
+        switch (category) {
+          case 'Futsal':
+            this.minplayer = 15
+            break
+          case 'Basket':
+            this.minplayer = 15
+            break
+          case 'Mini Soccer':
+            this.minplayer = 18
+            break
+          case 'Sepak Bola':
+            this.minplayer = 25
+            break
+        }
+      })
     },
   },
 }
@@ -208,11 +262,5 @@ export default {
   height: auto;
   margin-top: 150px;
   margin-bottom: 20px;
-}
-</style>
-<style>
-.main {
-  background: lightgray !important;
-  padding: 0px 0px !important;
 }
 </style>

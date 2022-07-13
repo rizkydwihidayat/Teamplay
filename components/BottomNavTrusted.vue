@@ -214,7 +214,7 @@
       />
     </v-btn>
 
-    <v-btn id="toOrder" :ripple="false" text :to="linkToLogin">
+    <v-btn id="toOrder" :ripple="false" text :to="linkToOnboard">
       <span class="text-nav">Masuk</span>
       <img
         src="~/assets/svg/login.svg"
@@ -239,7 +239,7 @@ export default {
       linkToMatch: '/my-match',
       linkToSearch: '/search',
       linkToAccount: '/profile',
-      linkToLogin: '/login',
+      linkToOnboard: '/on-board',
       isNotLogin: false,
       isTrusted: false,
       isDefault: false

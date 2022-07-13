@@ -213,7 +213,7 @@
         depressed
         rounded
         class="btn-primary"
-        :disabled="!isJoin"
+        :disabled="isJoin"
         @click="goJoinMatch"
         >Ikut Main</v-btn
       >
@@ -316,8 +316,6 @@ export default {
       this.listPlayer.forEach((item, idx) => {
         if (item.name === username) {
           this.isJoin = true
-        } else {
-          this.isJoin = false
         }
       })
     },
@@ -370,7 +368,7 @@ export default {
       const match = await store.dispatch('match/getMatchId', { id })
       await store.dispatch('match/setMatchDetail', match)
       //   return this.matchDetail.push(match)
-      await this.checkIfJoinMatch()
+      // await this.checkIfJoinMatch()
     },
     goToMaps() {
       window.location.href = `https://maps.google.com?q=${this.center[0]},${this.center[1]}`
