@@ -8,6 +8,10 @@
 span {
   font-family: Poppins;
 }
+.text-white {
+  color: white;
+  font-family: Poppins;
+}
 .txt-capitalize {
   text-transform: capitalize;
 }
