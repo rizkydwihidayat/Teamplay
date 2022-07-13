@@ -16,16 +16,16 @@
             large
             color="primary"
             rounded
-            @click="submitEmailGoogle"
+            :to="linkToLogin"
           >
             <IcGoogle /><span> &nbsp; Masuk dengan Google</span>
           </v-btn>
         </div>
-      </div>
-      <div class="text-center">
+        <div class="text-center">
         <small class="text-white"
           >Belum punya akun? <a href="/register">Yuk, daftar!</a></small
         >
+      </div>
       </div>
     </div>
   </v-main>
@@ -37,28 +37,36 @@ const components = {
 export default {
   name: 'OnBoard',
   components,
+  data() {
+    return {
+      linkToLogin: '/login'
+    }
+  }
 }
 </script>
 <style scoped>
 .onboard {
-  background-image: url('~@/assets/img/onboard.png');
+  background-image: linear-gradient(to bottom, transparent, black), url('~@/assets/img/onboard.png');
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center;
-  background-size: 375px 812px;
-  /* background-color: rgb(11,13,14,.4); */
+  background-size: 480px 812px;
 }
 h2 {
   font-family: Poppins;
   font-weight: 600;
   font-size: 24px;
+  color: white;
 }
 .top-element {
-  /* position: absolute; */
-  top: 80%;
-  left: 50%;
-  /* width: 300px; */
-  /* transform: translate(-50%, -90%); */
+  max-width: 480px !important;
+  margin: auto !important;
+  left: 0 !important;
+  right: 0 !important;
+  position: fixed;
+  bottom: 0;
+  height: 400px;
+  padding: 35px;
 }
 .login-button {
   /* position: absolute; */
