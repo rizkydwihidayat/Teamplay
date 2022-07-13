@@ -314,7 +314,6 @@ export default {
     checkIfJoinMatch() {
       const username = localStorage.getItem('nameGoogleAcc')
       this.listPlayer.forEach((item, idx) => {
-        console.warn(item.name, username);
         if (item.name === username) {
           this.isJoin = true
         }

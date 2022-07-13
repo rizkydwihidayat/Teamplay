@@ -47,9 +47,6 @@ export default {
       title: this.error.statusCode === '404' ? 'Tidak Ditemukan' : 'Error',
     }
   },
-  // mounted() {
-  //   console.warn(this.error)
-  // },
 }
 </script>
 

@@ -343,7 +343,6 @@ export default {
     } else if (verified === 'true') {
       this.isTrusted = true
     }
-    console.warn(this.isTrusted, verified);
     await this.checkCurrentPlayer()
     await this.checkIfJoinMatch()
   },

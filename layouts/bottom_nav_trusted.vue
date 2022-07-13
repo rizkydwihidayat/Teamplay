@@ -24,21 +24,6 @@ const components = {
 }
 export default {
   components,
-//   methods: {
-//     ...mapActions({ doLogout: 'user/doLogout' }),
-//     logout() {
-//       this.doLogout().then(() => {
-//         // clear all stora cache
-//         this.$store.cache.clear()
-//         // console.warn('warn logout')
-//         this.$router.replace('/')
-//         // console.warn('warn logout done')
-//       })
-//     },
-//     goTo(path) {
-//       this.$router.push(path)
-//     }
-//   }
 }
 </script>
 
@@ -48,7 +33,6 @@ export default {
   max-width: 480px;
   margin: 0 auto;
   padding: 0px;
-  /* background: #0D47A1; */
 }
 .main {
   background: lightgray;

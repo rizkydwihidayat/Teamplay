@@ -328,14 +328,11 @@ export default {
         }
         this.changePassword({ params, bearer, userID })
           .then((resp) => {
-            console.warn(resp)
             if (this.isLoginWithGoogle) {
               this.$router.push('/')
             }
           })
-          .catch((error) => {
-            console.log(error)
-          })
+          .catch()
       }
     },
   },
