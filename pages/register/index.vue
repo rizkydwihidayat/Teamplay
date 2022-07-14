@@ -67,6 +67,7 @@ export default {
       this.hideButton = true
       this.isRegister1 = true
       this.hideTop = true
+      console.warn(this.$nuxt.context.from.fullPath);
     },
     nextForm() {
       this.isRegister1 = false

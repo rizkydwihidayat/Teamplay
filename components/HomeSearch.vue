@@ -86,7 +86,6 @@
 </template>
 <script>
 import { mapState, mapMutations } from 'vuex'
-import moment from 'moment'
 export default {
   name: 'TopHome',
   data() {
@@ -126,8 +125,8 @@ export default {
       this.$router.push({ name: 'search'})
     },
     BDTime() {
-      moment.locale('id')
-      const result = moment().format('dddd' + ', ' + 'll')
+      this.$dayjs.locale('id')
+      const result = this.$dayjs().format('dddd' + ', ' + 'D ' + 'MMM ' + 'YYYY')
       return result
     },
     async getMatchToday(store = this.$store) {
@@ -141,7 +140,7 @@ export default {
         // eslint-disable-next-line array-callback-return
         listData.data.filter(async (item) => {
           const date = this.BDTime()
-          const currentTime = moment().hour().toString()
+          const currentTime = this.$dayjs().hour().toString()
           // const matchTime = item.match.match.timePlay.slice(0, 2)
           const matchEnd = item.match.match.timePlay.slice(7, 10)
           if (date === item.match.match.playDate) {

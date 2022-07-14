@@ -56,8 +56,14 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
-    '@nuxtjs/proxy'
+    '@nuxtjs/proxy',
+    '@nuxtjs/dayjs'
   ],
+  dayjs: {
+    locales: ['id'],
+    defaultLocale: 'id',
+    plugins: ['relativeTime', 'advancedFormat'],
+},
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {

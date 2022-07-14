@@ -414,7 +414,6 @@ import { mapState, mapActions } from 'vuex'
 import { LMap, LTileLayer, LMarker, LTooltip } from 'vue2-leaflet'
 import { icon } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import moment from 'moment'
 import { _numberFormat } from '~/utils'
 
 export default {
@@ -499,8 +498,8 @@ export default {
       joinMatch: 'match/joinMatch',
     }),
     BDTime() {
-      moment.locale('id')
-      const result = moment().format('dddd' + ', ' + 'll')
+      this.$dayjs.locale('id')
+      const result = this.$dayjs().format('dddd' + ', ' + 'D ' + 'MMM ' + 'YYYY')
       return result
     },
     numberFormat(number, decimals, decPoint, thousandSep) {
@@ -576,7 +575,7 @@ export default {
       await store.dispatch('match/setMatchDetail', match)
       //   return this.matchDetail.push(match)
       const matchEnd = this.matchdetail.time.slice(7, 13)
-      const currentTime = moment().hour().toString()
+      const currentTime = this.$dayjs().hour().toString()
       if (currentTime === matchEnd) {
         this.btnEndMatch = true
       }

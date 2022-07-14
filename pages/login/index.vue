@@ -45,7 +45,13 @@
             @focus="widthClearable = true"
           ></v-text-field>
           <div class="login-button">
-            <v-btn depressed color="primary" rounded :disabled="!validGoogle" @click="submitEmailGoogle">
+            <v-btn
+              depressed
+              color="primary"
+              rounded
+              :disabled="!validGoogle"
+              @click="submitEmailGoogle"
+            >
               <span>Masuk Google</span>
             </v-btn>
           </div></v-form
@@ -83,13 +89,13 @@ export default {
       emailGoogle: '',
       widthClearable: true,
       emailRules: [
-        v => !!v || 'Email wajib diisi.',
-        v =>
+        (v) => !!v || 'Email wajib diisi.',
+        (v) =>
           v && v.length > 4
             ? /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
                 v
               ) || 'Format email tidak valid.'
-            : 'Email minimal 5 karakter.'
+            : 'Email minimal 5 karakter.',
       ],
     }
   },
@@ -131,9 +137,7 @@ export default {
       }
       this.doLogin(params)
         .then(() => {
-          if (this.isLogin) {
-            this.$router.push({path: '/'})
-          }
+          this.$router.push({ path: '/' })
         })
         .catch((error) => {
           const alertMsg = {
@@ -149,10 +153,13 @@ export default {
         const params = {
           email: this.emailGoogle,
         }
+        const prevUrl = this.$nuxt.context.from
         this.loginWithGoogle(params)
           .then((resp) => {
-            if (this.isLoginWithGoogle) {
-              this.$router.push({path: '/'})
+            if (prevUrl.fullPath.includes('invitedFrom')) {
+              this.$router.push({ path: prevUrl.fullPath })
+            } else {
+              this.$router.push({ path: '/' })
             }
           })
           .catch((error) => {
