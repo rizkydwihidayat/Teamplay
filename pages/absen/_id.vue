@@ -237,13 +237,13 @@
 
     <!-- dialog konfirm end match -->
     <v-dialog v-model="dialogEndMatch" transition="dialog-bottom-transition wrap-400">
-      <v-card class="modalShare">
+      <v-card class="modalEndMatch">
           <v-card-title class="headerModal mt-2">
             <v-layout row wrap>
               <v-flex xs2 s2 class="close-modal">
-                <div class="align-right" @click="dialogEndMatch = false">X</div>
+                <div class="align-right" @click="closeModalFinish">X</div>
               </v-flex>
-              <v-flex xs6 s6>
+              <v-flex xs8 s8>
                 <span class="title-filter font-bold">Selesaikan pertandingan</span>
               </v-flex>
             </v-layout>
@@ -662,6 +662,9 @@ export default {
     endMatchNow() {
       this.dialogEndMatch = true
     },
+    closeModalFinish() {
+      this.dialogEndMatch = false
+    }
   },
 }
 </script>
@@ -698,6 +701,19 @@ export default {
   right: 0;
   max-width: 480px;
   height: 100vh;
+  overflow: scroll;
+  margin: auto;
+  border-radius: 16px 16px 0px 0px;
+  font-family: Poppins;
+}
+.modalEndMatch {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 480px;
+  height: 75vh;
   overflow: scroll;
   margin: auto;
   border-radius: 16px 16px 0px 0px;
