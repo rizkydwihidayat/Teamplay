@@ -152,10 +152,44 @@
       <div class="player-mini-list description-wrapper ma-4 pb-2">
         <p class="desc-subdued mb-4">Rata-rata usia 25 tahun</p>
         <v-row class="ma-0">
-          <div class="player-ava mr-1"><span>AM</span></div>
-          <div class="player-ava mr-1"><span>AM</span></div>
-          <div class="player-ava mr-1"><span>AM</span></div>
-          <div class="player-ava mr-1"><span>AM</span></div>
+          <div v-if="matchdetail.totalPayer > 0" class="player-ava mr-1">
+            <span class="pl-3">{{
+              listPlayer[0].name
+                .split(' ')
+                .map((x) => x[0].toUpperCase())
+                .join('')
+            }}</span>
+          </div>
+          <div
+            v-if="matchdetail.totalPayer > 1 || matchdetail.totalPayer === 2"
+            class="player-ava mr-1"
+          >
+            <span class="pl-3">{{
+              listPlayer[1].name
+                .split(' ')
+                .map((x) => x[0].toUpperCase())
+                .join('')
+            }}</span>
+          </div>
+          <div
+            v-if="matchdetail.totalPayer > 2 || matchdetail.totalPayer === 3"
+            class="player-ava mr-1"
+          >
+            <span class="pl-3">{{
+              listPlayer[2].name
+                .split(' ')
+                .map((x) => x[0].toUpperCase())
+                .join('')
+            }}</span>
+          </div>
+          <div v-if="matchdetail.totalPayer > 3" class="player-ava mr-1">
+            <span class="pl-3">{{
+              listPlayer[3].name
+                .split(' ')
+                .map((x) => x[0].toUpperCase())
+                .join('')
+            }}</span>
+          </div>
           <div class="player-number">
             <p class="desc-subdued count mb-0">
               ({{ listPlayer.length }}/{{ minplayer }})
@@ -249,7 +283,6 @@
         <v-card-title class="headerModal mt-2">
           <v-layout row wrap>
             <v-flex xs2 s2 class="close-modal">
-              <!-- <div class="align-right" @click="dialogAbsen = false">X</div> -->
               <v-btn
                 icon
                 :ripple="false"
@@ -378,7 +411,7 @@
     <div class="section-host ma-4 pb-10">
       <p class="desc-primary">Diselenggarakan oleh</p>
       <v-row class="detail-host ma-0">
-        <div class="player-ava mr-3"><span>AM</span></div>
+        <div class="player-ava mr-3"><span>{{ initialName }}</span></div>
         <div class="description-wrapper">
           <v-row style="align-item: center" class="ma-0">
             <p class="desc-bold mb-0 mr-2" style="align-item: center">
@@ -437,9 +470,9 @@ export default {
       btnEndMatch: false,
       dialogEndMatch: false,
       dialogAbsen: false,
+      initialName: ''
     }
   },
-  //   layout: 'bottom_nav',
   head() {
     return {
       title: 'Match Absen',
@@ -561,16 +594,18 @@ export default {
       temp.push(this.matchdetail.coordinate)
     },
     async getMatchDetail(store = this.$store) {
-      //   this.matchDetail = []
       const id = this.$route.params.id
       const match = await store.dispatch('match/getMatchId', { id })
       await store.dispatch('match/setMatchDetail', match)
-      //   return this.matchDetail.push(match)
       const matchEnd = this.matchdetail.time.slice(7, 13)
       const currentTime = this.$dayjs().hour().toString()
       if (currentTime === matchEnd) {
         this.btnEndMatch = true
       }
+      this.initialName = this.matchdetail.name
+        .split(' ')
+        .map((x) => x[0].toUpperCase())
+        .join('')
     },
     goToMaps() {
       window.location.href = `https://maps.google.com?q=${this.center[0]},${this.center[1]}`
@@ -652,6 +687,9 @@ export default {
 .btn-listplayer {
   cursor: pointer;
 }
+.pl-3 {
+  padding-left: 3px !important;
+}
 .modalShare {
   position: fixed;
   width: 100%;
@@ -659,7 +697,7 @@ export default {
   left: 0;
   right: 0;
   max-width: 480px;
-  height: 650px;
+  height: 100vh;
   overflow: scroll;
   margin: auto;
   border-radius: 16px 16px 0px 0px;

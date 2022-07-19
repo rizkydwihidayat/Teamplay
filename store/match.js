@@ -43,6 +43,7 @@ export const mutations = {
       created: resp.data.organizer.hasCreated,
       phone: resp.data.organizer.phoneNumber,
       price: resp.data.match.price,
+      totalPayer: resp.data.numberOfPlayers,
     }
     state.listPlayer = resp.data.players
     state.matchdetail = matchData
@@ -65,6 +66,7 @@ export const mutations = {
       phone: resp.data.organizer.phoneNumber,
       price: resp.data.match.price,
       gameStatus: resp.data.gameStatus,
+      totalPayer: resp.data.numberOfPlayers,
     }
     state.listPlayer = resp.data.players
     state.matchdetailuser = matchData

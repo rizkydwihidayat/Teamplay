@@ -136,7 +136,11 @@ export default {
         case 'Selesai':
           return 'grey'
         case 'Dibatalkan':
-          return 'red'
+          return '#F16060'
+        case 'Bergabung':
+          return '#43A047'
+        case 'Berlangsung':
+          return '#2962FF'
         default:
           return ''
       }
