@@ -11,14 +11,6 @@
             alt="back"
           />
         </v-btn>
-        <v-btn icon :ripple="false" class="btnBack">
-          <img
-            width="24"
-            height="24"
-            src="~/assets/svg/ic-share-white.svg"
-            alt="share"
-          />
-        </v-btn>
       </v-row>
       <h2 class="match-title ml-4 mr-4">
         {{ matchdetail.gameName }} {{matchdetail.absen}}
@@ -368,7 +360,7 @@ export default {
       })
     },
     back() {
-      this.$router.back()
+      this.$router.push({path: '/'})
     },
     async goJoinMatch() {
       const id = this.$route.params.id

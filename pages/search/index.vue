@@ -351,7 +351,7 @@ export default {
       this.setState({ isMiniSoccer: false })
       this.setState({ isSoccer: false })
       this.setState({ filterCity: '' })
-      this.$router.push('/')
+      this.$router.push({path: '/'})
     },
     openFilter() {
       this.showdialog = true

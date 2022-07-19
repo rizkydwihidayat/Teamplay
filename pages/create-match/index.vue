@@ -549,7 +549,7 @@ export default {
       this.isCityId = 0
     },
     back() {
-      this.$router.back()
+      this.$router.push({path: '/'})
     },
     formatDate(date) {
       if (!date) return null

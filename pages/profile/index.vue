@@ -269,7 +269,7 @@ export default {
       changePassword: 'user/changePassword',
     }),
     back() {
-      this.$router.back()
+      this.$router.push({path: '/'})
     },
     async getProfile(store = this.$store) {
       const bearer = localStorage.getItem('accKey')

@@ -41,12 +41,10 @@ export const mutations = {
         name: resp.data.organizer.name,
         created: resp.data.organizer.hasCreated,
         phone: resp.data.organizer.phoneNumber,
-        // player: resp.data.players,
         price: resp.data.match.price
       }
       state.listPlayer = resp.data.players
       state.matchdetail = store
-    
   },
   setListMatch(state, list) {
     if (list.data) {
@@ -67,26 +65,7 @@ export const mutations = {
               }
             }, {})
           : []
-    } 
-    // else {
-    //   state.listMatch =
-    //     list.length > 0 && list[0] !== null
-    //       ? // eslint-disable-next-line array-callback-return
-    //         list.map((value, key) => {
-    //           return {
-    //             id: value.match.id,
-    //             gamename: value.match.gameName,
-    //             category: value.match.sportCategory,
-    //             gender: value.match.playerCategory,
-    //             date: value.match.playDate,
-    //             time: value.match.timePlay,
-    //             place: value.venue.venueName,
-    //             status: value.match.status,
-    //             players: value.players
-    //           }
-    //         }, {})
-    //       : []
-    // }
+    }
   },
   setMatchToday(state, list) {
     state.matchToday =
@@ -190,7 +169,6 @@ export const actions = {
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
           this.$router.push('/login')
-          //   dispatch('user/refreshAuth', null, { root: true })
           commit('setState', { isLoading: false })
         } else {
           const alertMsg = {
@@ -224,7 +202,6 @@ export const actions = {
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
           this.$router.push('/login')
-          //   dispatch('user/refreshAuth', null, { root: true })
         } else {
           const alertMsg = {
             msg: error.response.data.message,
@@ -248,7 +225,6 @@ export const actions = {
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
           this.$router.push('/login')
-          //   dispatch('user/refreshAuth', null, { root: true })
         } else if (error.response.status === 500) {
           const alertMsg = {
             msg: error,
@@ -273,7 +249,6 @@ export const actions = {
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
           this.$router.push('/login')
-          //   dispatch('user/refreshAuth', null, { root: true })
         } else {
           const alertMsg = {
             msg: error,
@@ -308,7 +283,6 @@ export const actions = {
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
           this.$router.push('/login')
-          //   dispatch('user/refreshAuth', null, { root: true })
         } else {
           const alertMsg = {
             msg: error.response.data.message,
@@ -341,9 +315,6 @@ export const actions = {
       .$post('https://api.naufalbahri.com/api/v1/match', data, axiosOption)
       .catch((error) => {
         if (error.response.status === 401) {
-          // const errMsg = error.response.data.message
-          //   ? error.response.data.message
-          //   : 'Invalid login credentials.'
           const errMsg = 'Username atau kata sandi salah'
           const alertMsg = {
             msg: errMsg,
@@ -351,7 +322,6 @@ export const actions = {
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
         } else {
-          // const errMsg = 'Unknown error please contact admin'
           const errMsg =
             'Terjadi kesalahan. Silahkan hubungi administrator kami'
           const alertMsg = {
@@ -384,9 +354,6 @@ export const actions = {
       .$post('https://api.naufalbahri.com/api/v1/venue', data, axiosOption)
       .catch((error) => {
         if (error.response.status === 401) {
-          // const errMsg = error.response.data.message
-          //   ? error.response.data.message
-          //   : 'Invalid login credentials.'
           const errMsg = 'Username atau kata sandi salah'
           const alertMsg = {
             msg: errMsg,
@@ -394,7 +361,6 @@ export const actions = {
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
         } else {
-          // const errMsg = 'Unknown error please contact admin'
           const errMsg =
             'Terjadi kesalahan. Silahkan hubungi administrator kami'
           const alertMsg = {
@@ -421,7 +387,6 @@ export const actions = {
             color: '#43A047',
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
-          // this.$router.push('/')
         }
       })
       .catch((error) => {
@@ -434,7 +399,6 @@ export const actions = {
           dispatch('ui/showAlert', alertMsg, { root: true })
           this.$router.push('/')
         } else {
-          // const errMsg = 'Unknown error please contact admin'
           const errMsg =
             'Terjadi kesalahan. Silahkan hubungi administrator kami'
           const alertMsg = {
@@ -474,7 +438,6 @@ export const actions = {
           dispatch('ui/showAlert', alertMsg, { root: true })
           this.$router.push('/')
         } else {
-          // const errMsg = 'Unknown error please contact admin'
           const errMsg =
             'Terjadi kesalahan. Silahkan hubungi administrator kami'
           const alertMsg = {
