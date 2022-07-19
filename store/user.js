@@ -214,39 +214,6 @@ export const actions = {
       })
   },
 
-  getUserMatchHistory({ dispatch, commit, state }, { bearer, userID }) {
-    const axiosOption = {
-      headers: {
-        xToken: bearer
-      }
-    }
-    return this.$axios
-      .$get(
-        `https://api.naufalbahri.com/api/v1/users/${userID}/match-history`, axiosOption
-      )
-      .then((result) => {
-        commit('setState', { isLoading: false })
-        return result
-      })
-      .catch((error) => {
-        // handle error
-        if (error.response.status !== '404') {
-          const alertMsg = {
-            msg: 'Token kadaluwarsa, silahkan login kembali.',
-            color: 'secondary',
-          }
-          dispatch('ui/showAlert', alertMsg, { root: true })
-          this.$router.push({ path:'/login' })
-        } else {
-          const alertMsg = {
-            msg: 'Get item store failed',
-          }
-          dispatch('ui/showAlert', alertMsg, { root: true })
-        }
-        return false
-      })
-  },
-
   changePassword({ dispatch, commit, state }, { bearer, userID, params }) {
     this.$axios.setHeader(
       'Content-Type',

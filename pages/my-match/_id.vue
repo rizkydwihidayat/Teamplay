@@ -16,7 +16,7 @@
         {{ matchdetail.gameName }} {{matchdetail.absen}}
       </h2>
       <v-row class="match-location mr-4 ml-4 mt-2 mb-0">
-        <v-chip small :color="statusColor" class="capsule mr-2">{{ statusmatch }}</v-chip>
+        <v-chip small :color="getColor(matchdetail.gameStatus)" class="capsule mr-2">{{ matchdetail.gameStatus }}</v-chip>
         <v-chip small color="rgba(255, 255, 255, 0.2)" class="capsule mr-2">{{
           matchdetail.sportCategory
         }}</v-chip>
@@ -300,7 +300,7 @@ export default {
   },
   computed: {
     ...mapState({
-      matchdetail: (state) => state.match.matchdetail,
+      matchdetail: (state) => state.match.matchdetailuser,
       latitude: (state) => state.match.lat,
       longitude: (state) => state.match.lng,
       listPlayer: (state) => state.match.listPlayer
@@ -322,9 +322,6 @@ export default {
     await this.getMatchDetail()
     const url = new URL(window.location.href)
     this.tempParams = url.searchParams.get('invitedFrom')
-    // this.$nextTick(() => {
-    //   this.$refs.marker.mapObject.openPopup()
-    // })
     await this.checkMinPlayer()
     const token = localStorage.getItem('accKey')
     const verified = localStorage.getItem('isVerified')
@@ -343,9 +340,6 @@ export default {
       joinMatch: 'match/joinMatch',
       exitMatch: 'match/exitMatch'
     }),
-    // checkStatus() {
-    //   const today
-    // },
     numberFormat(number, decimals, decPoint, thousandSep) {
       return typeof _numberFormat !== 'undefined'
         ? _numberFormat(number, decimals, decPoint, thousandSep)
@@ -365,8 +359,6 @@ export default {
     async goJoinMatch() {
       const id = this.$route.params.id
       const bearer = localStorage.getItem('accKey')
-      // const invite = this.$store.state.user.userID
-      // if (userID !)
       const params = {
         matchId: id,
         invitedFrom: this.tempParams,
@@ -395,7 +387,6 @@ export default {
             }
             return false
           })
-        // this.$store.$router.push(`/success-page/${id}`)
       }
     },
     async goExitMatch() {
@@ -408,11 +399,11 @@ export default {
       temp.push(this.matchdetail.coordinate)
     },
     async getMatchDetail(store = this.$store) {
-      //   this.matchDetail = []
-      const id = this.$route.params.id
-      const match = await store.dispatch('match/getMatchId', { id })
-      await store.dispatch('match/setMatchDetail', match)
-      //   return this.matchDetail.push(match)
+      const matchId = this.$route.params.id
+      const bearer = localStorage.getItem('accKey')
+      const userId = localStorage.getItem('userID')
+      const match = await store.dispatch('match/getUserMatchDetail', { matchId, userId, bearer })
+      await store.dispatch('match/setUserMatchDetail', match)
     },
     goToMaps() {
       window.location.href = `https://maps.google.com?q=${this.center[0]},${this.center[1]}`
@@ -461,15 +452,22 @@ export default {
         this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
       }
     },
+    getColor(status) {
+      switch (status) {
+        case 'Selesai':
+          return 'grey'
+        case 'Dibatalkan':
+          return 'red'
+        default:
+          return ''
+      }
+    },
     inviteFriend() {
       const usrId = localStorage.getItem('userID')
       const id = this.$route.params.id
       const url = new URL(window.location.origin) + `match/${id}` + `?invitedFrom=${usrId}`
-      // url.select()
       const copied = navigator.clipboard.writeText(url)
-      // localStorage.urlMatch = url
       try {
-        // const copied = document.execCommand('copy')
         const alertMsg = {
           msg: copied
             ? 'Link pertandingan berhasil dicopy'

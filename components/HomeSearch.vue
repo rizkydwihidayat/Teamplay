@@ -101,9 +101,8 @@ export default {
   },
   computed: {
     ...mapState({
-      // namaUser: (state) => state.user.nameGoogleAcc,
       filterCity: (state) => state.match.filterCity,
-      matchToday: (state) => state.match.matchToday,
+      matchToday: (state) => state.match.listMatchHistory,
     }),
   },
   async mounted() {
@@ -145,7 +144,7 @@ export default {
           const matchEnd = item.match.match.timePlay.slice(7, 10)
           if (date === item.match.match.playDate) {
             this.isMatchToday = true
-            await store.dispatch('match/setMatchToday', listData)
+            await store.dispatch('match/setMatchHistory', listData)
           } else if (currentTime === matchEnd) {
             this.btnEndTime = true
             this.isMatchToday = false

@@ -1,10 +1,11 @@
 export const state = () => ({
   listMatch: [],
-  matchToday: [],
+  listMatchHistory: [],
   listPlayer: [],
   listCity: [],
   listVenue: [],
   matchdetail: {},
+  matchdetailuser: {},
   limit: 10,
   offset: 0,
   isLoading: false,
@@ -26,25 +27,47 @@ export const mutations = {
     keys.forEach((key) => (state[key] = params[key]))
   },
   setMatchDetail(state, resp) {
-      const store = {
-        id: resp.data.match.id,
-        gameName: resp.data.match.gameName,
-        playDate: resp.data.match.playDate,
-        time: resp.data.match.timePlay,
-        playerCategory: resp.data.match.playerCategory,
-        sportCategory: resp.data.match.sportCategory,
-        duration: resp.data.match.duration,
-        address: resp.data.venue.address,
-        venueName: resp.data.venue.venueName,
-        coordinate: resp.data.venue.coordinate,
-        city: resp.data.venue.city,
-        name: resp.data.organizer.name,
-        created: resp.data.organizer.hasCreated,
-        phone: resp.data.organizer.phoneNumber,
-        price: resp.data.match.price
-      }
-      state.listPlayer = resp.data.players
-      state.matchdetail = store
+    const matchData = {
+      id: resp.data.match.id,
+      gameName: resp.data.match.gameName,
+      playDate: resp.data.match.playDate,
+      time: resp.data.match.timePlay,
+      playerCategory: resp.data.match.playerCategory,
+      sportCategory: resp.data.match.sportCategory,
+      duration: resp.data.match.duration,
+      address: resp.data.venue.address,
+      venueName: resp.data.venue.venueName,
+      coordinate: resp.data.venue.coordinate,
+      city: resp.data.venue.city,
+      name: resp.data.organizer.name,
+      created: resp.data.organizer.hasCreated,
+      phone: resp.data.organizer.phoneNumber,
+      price: resp.data.match.price,
+    }
+    state.listPlayer = resp.data.players
+    state.matchdetail = matchData
+  },
+  setUserMatchDetail(state, resp) {
+    const matchData = {
+      id: resp.data.match.id,
+      gameName: resp.data.match.gameName,
+      playDate: resp.data.match.playDate,
+      time: resp.data.match.timePlay,
+      playerCategory: resp.data.match.playerCategory,
+      sportCategory: resp.data.match.sportCategory,
+      duration: resp.data.match.duration,
+      address: resp.data.venue.address,
+      venueName: resp.data.venue.venueName,
+      coordinate: resp.data.venue.coordinate,
+      city: resp.data.venue.city,
+      name: resp.data.organizer.name,
+      created: resp.data.organizer.hasCreated,
+      phone: resp.data.organizer.phoneNumber,
+      price: resp.data.match.price,
+      gameStatus: resp.data.gameStatus,
+    }
+    state.listPlayer = resp.data.players
+    state.matchdetailuser = matchData
   },
   setListMatch(state, list) {
     if (list.data) {
@@ -61,14 +84,14 @@ export const mutations = {
                 time: value.match.timePlay,
                 place: value.venue.venueName,
                 status: value.match.status,
-                players: value.players
+                players: value.players,
               }
             }, {})
           : []
     }
   },
-  setMatchToday(state, list) {
-    state.matchToday =
+  setMatchHistory(state, list) {
+    state.listMatchHistory =
       list.data.length > 0 && list.data[0] !== null
         ? // eslint-disable-next-line array-callback-return
           list.data.map((value, key) => {
@@ -82,7 +105,8 @@ export const mutations = {
               joined: value.isJoined,
               totalPayer: value.match.numberOfPlayers,
               status: value.match.match.status,
-              category: value.match.match.sportCategory
+              category: value.match.match.sportCategory,
+              gameStatus: value.gameStatus,
             }
           }, {})
         : []
@@ -132,11 +156,14 @@ export const actions = {
   setListVenue({ commit }, listVenue) {
     commit('setListVenue', listVenue)
   },
-  setMatchDetail({ commit }, storeData) {
-    commit('setMatchDetail', storeData)
+  setMatchDetail({ commit }, matchData) {
+    commit('setMatchDetail', matchData)
   },
-  setMatchToday({ commit }, matchToday) {
-    commit('setMatchToday', matchToday)
+  setUserMatchDetail({ commit }, matchDataUser) {
+    commit('setUserMatchDetail', matchDataUser)
+  },
+  setMatchHistory({ commit }, matchToday) {
+    commit('setMatchHistory', matchToday)
   },
   getListMatch({ state, commit, dispatch }, { params }) {
     const param = {
@@ -208,6 +235,38 @@ export const actions = {
             color: 'secondary',
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
+        }
+        return false
+      })
+  },
+
+  getUserMatchDetail({ dispatch }, { userId, matchId, bearer }) {
+    const axiosOption = {
+      headers: {
+        xToken: bearer,
+      },
+    }
+    return this.$axios
+      .$get(
+        `https://api.naufalbahri.com/api/v1/users/${userId}/match/${matchId}/match-detail`,
+        axiosOption
+      )
+      .catch((error) => {
+        // handle error
+        if (error.response.status !== 404) {
+          const alertMsg = {
+            msg: 'Token kadaluwarsa, silahkan login kembali.',
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/login')
+        } else if (error.response.status === 500) {
+          const alertMsg = {
+            msg: error,
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/login')
         }
         return false
       })
@@ -414,9 +473,7 @@ export const actions = {
   exitMatch({ dispatch }, { matchid, bearer }) {
     this.$axios.setHeader('xToken', `${bearer}`, ['post'])
     return this.$axios
-      .$post(
-        `https://api.naufalbahri.com/api/v1/match/${matchid}/exit`
-      )
+      .$post(`https://api.naufalbahri.com/api/v1/match/${matchid}/exit`)
       .then((result) => {
         if (result.message) {
           const errMsg = result.message
@@ -448,5 +505,5 @@ export const actions = {
           this.$router.push('/')
         }
       })
-  }
+  },
 }

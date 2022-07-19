@@ -253,7 +253,7 @@ export default {
       userPhone: (state) => state.user.userPhone,
       isLoginWithGoogle: (state) => state.user.isLoginWithGoogle,
       isLoading: (state) => state.user.isLoading,
-      matchToday: (state) => state.match.matchToday,
+      matchToday: (state) => state.match.listMatchHistory,
     }),
   },
   async mounted() {
@@ -298,7 +298,7 @@ export default {
         bearer,
         userID,
       })
-      await store.dispatch('match/setMatchToday', listData)
+      await store.dispatch('match/setMatchHistory', listData)
     },
     goSignOut() {
       localStorage.clear()
