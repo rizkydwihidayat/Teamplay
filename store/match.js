@@ -211,11 +211,17 @@ export const actions = {
       })
   },
 
-  getMatchHistory({ context, commit, dispatch }, { bearer, userID }) {
+  getMatchHistory({ context, commit, dispatch }, { bearer, userID, offsetPage, pageLimit }) {
+    const params = {
+      offset: offsetPage,
+      limit: pageLimit
+      // 'fields[user--user]': 'name'
+    }
     const axiosOption = {
       headers: {
         xToken: bearer,
       },
+      params
     }
     return this.$axios
       .$get(

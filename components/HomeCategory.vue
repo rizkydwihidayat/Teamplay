@@ -91,7 +91,7 @@
           <v-btn depressed color="primary" @click="goToSearch">
             <span> Lihat Pertandingan Lainnya</span>
           </v-btn>
-          <br /><br /><br /><br />
+          <!-- <br /><br /><br /><br /> -->
         </div>
       </div>
       <div v-else class="emptyState">

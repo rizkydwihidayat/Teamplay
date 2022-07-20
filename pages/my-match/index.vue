@@ -11,7 +11,18 @@
           }}</v-chip>
         </v-chip-group>
       </div>
-      <div v-if="listAllMatch.length !== 0" class="card">
+      <div v-if="listAllMatch.length === 0 && !loadData" class="empty">
+        <span class="emptyState">Riwayat pertandingan tidak ditemukan.</span>
+      </div>
+      <div v-if="loadData" class="card align-center">
+        <v-progress-circular
+          color="#0d47a1"
+          :size="35"
+          :width="2"
+          indeterminate
+        ></v-progress-circular>
+      </div>
+      <div v-else class="card">
         <div v-for="(item, idx) in listAllMatch" :key="idx" class="list-card">
           <v-card outlined @click="goToDetailMatch(item.id)">
             <v-layout row wrap>
@@ -34,8 +45,8 @@
                       >({{ item.totalPayer }}/{{ minplayer }})</span
                     ><br />
                     <span class="fs-12 red-text"
-                        >{{ sisaPlayer }} orang lagi</span
-                      ></v-flex
+                      >{{ sisaPlayer }} orang lagi</span
+                    ></v-flex
                   >
                   <v-flex xs6 class="mb-10"
                     ><p>
@@ -82,11 +93,11 @@
             </v-layout>
           </v-card>
         </div>
-      </div>
-      <div v-else class="empty">
-        <span v-if="listAllMatch.length === 0" class="emptyState"
-          >Riwayat pertandingan tidak ditemukan.</span
-        >
+        <div v-if="listAllMatch.length > 0" class="bottom-button">
+          <v-btn depressed block rounded color="primary" @click="loadMoreData">
+            <span> Lihat Pertandingan Lainnya</span>
+          </v-btn>
+        </div>
       </div>
     </div>
   </div>
@@ -109,6 +120,7 @@ export default {
       inputCategory: '',
       minplayer: 0,
       sisaPlayer: 0,
+      loadData: false,
     }
   },
   computed: {
@@ -123,11 +135,30 @@ export default {
   },
   methods: {
     async getMatch(store = this.$store) {
+      this.loadData = true
+      const offsetPage = 0
+      const pageLimit = 7
       const bearer = localStorage.getItem('accKey')
       const userID = localStorage.getItem('userID')
       const listData = await store.dispatch('match/getMatchHistory', {
         bearer,
         userID,
+        offsetPage,
+        pageLimit,
+      })
+      await store.dispatch('match/setMatchHistory', listData)
+      this.loadData = false
+    },
+    async loadMoreData(store = this.$store) {
+      const bearer = localStorage.getItem('accKey')
+      const userID = localStorage.getItem('userID')
+      const offsetPage = store.state.match.offset
+      const pageLimit = store.state.match.limit
+      const listData = await store.dispatch('match/getMatchHistory', {
+        bearer,
+        userID,
+        offsetPage,
+        pageLimit,
       })
       await store.dispatch('match/setMatchHistory', listData)
     },
@@ -264,5 +295,20 @@ export default {
   height: auto;
   margin-top: 150px;
   margin-bottom: 20px;
+}
+.bottom-button {
+  background: white;
+  height: 10vh;
+  /* margin: 0px; */
+  /* padding-top: 20px; */
+  padding-left: 20px;
+  padding-right: 20px;
+  /* margin-bottom: 40px; */
+}
+.bottom-button >>> span {
+  text-transform: capitalize !important;
+  font-family: Poppins;
+  font-weight: 600;
+  font-size: 14px;
 }
 </style>
