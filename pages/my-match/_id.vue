@@ -11,20 +11,17 @@
             alt="back"
           />
         </v-btn>
-        <v-btn icon :ripple="false" class="btnBack">
-          <img
-            width="24"
-            height="24"
-            src="~/assets/svg/ic-share-white.svg"
-            alt="share"
-          />
-        </v-btn>
       </v-row>
       <h2 class="match-title ml-4 mr-4">
-        {{ matchdetail.gameName }} {{matchdetail.absen}}
+        {{ matchdetail.gameName }} {{ matchdetail.absen }}
       </h2>
       <v-row class="match-location mr-4 ml-4 mt-2 mb-0">
-        <v-chip small :color="statusColor" class="capsule mr-2">{{ statusmatch }}</v-chip>
+        <v-chip
+          small
+          :color="getColor(matchdetail.gameStatus)"
+          class="capsule mr-2"
+          >{{ matchdetail.gameStatus }}</v-chip
+        >
         <v-chip small color="rgba(255, 255, 255, 0.2)" class="capsule mr-2">{{
           matchdetail.sportCategory
         }}</v-chip>
@@ -118,10 +115,44 @@
       <div class="player-mini-list description-wrapper ma-4 pb-2">
         <p class="desc-subdued mb-4">Rata-rata usia 25 tahun</p>
         <v-row class="ma-0">
-          <div class="player-ava mr-1"><span>AM</span></div>
-          <div class="player-ava mr-1"><span>AM</span></div>
-          <div class="player-ava mr-1"><span>AM</span></div>
-          <div class="player-ava mr-1"><span>AM</span></div>
+          <div v-if="matchdetail.totalPayer > 0" class="player-ava mr-1">
+            <span class="pl-3">{{
+              listPlayer[0].name
+                .split(' ')
+                .map((x) => x[0].toUpperCase())
+                .join('')
+            }}</span>
+          </div>
+          <div
+            v-if="matchdetail.totalPayer > 1 || matchdetail.totalPayer === 2"
+            class="player-ava mr-1"
+          >
+            <span class="pl-3">{{
+              listPlayer[1].name
+                .split(' ')
+                .map((x) => x[0].toUpperCase())
+                .join('')
+            }}</span>
+          </div>
+          <div
+            v-if="matchdetail.totalPayer > 2 || matchdetail.totalPayer === 3"
+            class="player-ava mr-1"
+          >
+            <span class="pl-3">{{
+              listPlayer[2].name
+                .split(' ')
+                .map((x) => x[0].toUpperCase())
+                .join('')
+            }}</span>
+          </div>
+          <div v-if="matchdetail.totalPayer > 3" class="player-ava mr-1">
+            <span class="pl-3">{{
+              listPlayer[3].name
+                .split(' ')
+                .map((x) => x[0].toUpperCase())
+                .join('')
+            }}</span>
+          </div>
           <div class="player-number">
             <p class="desc-subdued count mb-0">
               ({{ listPlayer.length }}/{{ minplayer }})
@@ -147,19 +178,12 @@
           </v-card-title>
           <hr class="hr-divider" />
           <v-card-text class="list-player">
-            <p v-if="listPlayer.length === 0">
-              Belum ada yang bergabung
-            </p>
-            <div
-              v-for="(item, idx) in listPlayer"
-              :key="idx"
-              class="players"
-            >
+            <p v-if="listPlayer.length === 0">Belum ada yang bergabung</p>
+            <div v-for="(item, idx) in listPlayer" :key="idx" class="players">
               <span
                 >{{ item.name }} ({{ convertAge(item.age) }})
                 {{ item.gender.charAt(0) }}
-                </span
-              >
+              </span>
             </div>
           </v-card-text>
         </v-card>
@@ -202,7 +226,9 @@
     <div class="section-host ma-4 pb-10">
       <p class="desc-primary">Diselenggarakan oleh</p>
       <v-row class="detail-host ma-0">
-        <div class="player-ava mr-3"><span>AM</span></div>
+        <div class="player-ava mr-3">
+          <span class="pl-3">{{ initialName }}</span>
+        </div>
         <div class="description-wrapper">
           <v-row style="align-item: center" class="ma-0">
             <p class="desc-bold mb-0 mr-2" style="align-item: center">
@@ -284,10 +310,10 @@ export default {
       isTrusted: false,
       isDefault: false,
       statusmatch: '',
-      statusColor: ''
+      statusColor: '',
+      initialName: '',
     }
   },
-  //   layout: 'bottom_nav',
   head() {
     return {
       title: 'Match Detail',
@@ -308,10 +334,10 @@ export default {
   },
   computed: {
     ...mapState({
-      matchdetail: (state) => state.match.matchdetail,
+      matchdetail: (state) => state.match.matchdetailuser,
       latitude: (state) => state.match.lat,
       longitude: (state) => state.match.lng,
-      listPlayer: (state) => state.match.listPlayer
+      listPlayer: (state) => state.match.listPlayer,
     }),
   },
   // eslint-disable-next-line vue/order-in-components
@@ -330,9 +356,6 @@ export default {
     await this.getMatchDetail()
     const url = new URL(window.location.href)
     this.tempParams = url.searchParams.get('invitedFrom')
-    // this.$nextTick(() => {
-    //   this.$refs.marker.mapObject.openPopup()
-    // })
     await this.checkMinPlayer()
     const token = localStorage.getItem('accKey')
     const verified = localStorage.getItem('isVerified')
@@ -349,11 +372,8 @@ export default {
   methods: {
     ...mapActions({
       joinMatch: 'match/joinMatch',
-      exitMatch: 'match/exitMatch'
+      exitMatch: 'match/exitMatch',
     }),
-    // checkStatus() {
-    //   const today
-    // },
     numberFormat(number, decimals, decPoint, thousandSep) {
       return typeof _numberFormat !== 'undefined'
         ? _numberFormat(number, decimals, decPoint, thousandSep)
@@ -368,13 +388,11 @@ export default {
       })
     },
     back() {
-      this.$router.back()
+      this.$router.push({ path: '/my-match' })
     },
     async goJoinMatch() {
       const id = this.$route.params.id
       const bearer = localStorage.getItem('accKey')
-      // const invite = this.$store.state.user.userID
-      // if (userID !)
       const params = {
         matchId: id,
         invitedFrom: this.tempParams,
@@ -385,12 +403,12 @@ export default {
           color: 'secondary',
         }
         this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-        this.$router.push({name: 'login'})
+        this.$router.push({ name: 'login' })
       } else {
         await this.joinMatch({ params, bearer })
           .then((result) => {
             if (result !== 'undefined') {
-              this.$router.push({path: `/success-page/${id}`})
+              this.$router.push({ path: `/success-page/${id}` })
             }
           })
           .catch((error) => {
@@ -403,24 +421,31 @@ export default {
             }
             return false
           })
-        // this.$store.$router.push(`/success-page/${id}`)
       }
     },
     async goExitMatch() {
       const matchid = this.$route.params.id
       const bearer = localStorage.getItem('accKey')
-      await this.exitMatch({ matchid, bearer})
+      await this.exitMatch({ matchid, bearer })
     },
     getCoordinate() {
       const temp = []
       temp.push(this.matchdetail.coordinate)
     },
     async getMatchDetail(store = this.$store) {
-      //   this.matchDetail = []
-      const id = this.$route.params.id
-      const match = await store.dispatch('match/getMatchId', { id })
-      await store.dispatch('match/setMatchDetail', match)
-      //   return this.matchDetail.push(match)
+      const matchId = this.$route.params.id
+      const bearer = localStorage.getItem('accKey')
+      const userId = localStorage.getItem('userID')
+      const match = await store.dispatch('match/getUserMatchDetail', {
+        matchId,
+        userId,
+        bearer,
+      })
+      await store.dispatch('match/setUserMatchDetail', match)
+      this.initialName = this.matchdetail.name
+        .split(' ')
+        .map((x) => x[0].toUpperCase())
+        .join('')
     },
     goToMaps() {
       window.location.href = `https://maps.google.com?q=${this.center[0]},${this.center[1]}`
@@ -469,15 +494,29 @@ export default {
         this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
       }
     },
+    getColor(status) {
+      switch (status) {
+        case 'Selesai':
+          return 'grey'
+        case 'Dibatalkan':
+          return '#F16060'
+        case 'Bergabung':
+          return '#43A047'
+        case 'Berlangsung':
+          return '#2962FF'
+        default:
+          return ''
+      }
+    },
     inviteFriend() {
       const usrId = localStorage.getItem('userID')
       const id = this.$route.params.id
-      const url = new URL(window.location.origin) + `match/${id}` + `?invitedFrom=${usrId}`
-      // url.select()
+      const url =
+        new URL(window.location.origin) +
+        `match/${id}` +
+        `?invitedFrom=${usrId}`
       const copied = navigator.clipboard.writeText(url)
-      // localStorage.urlMatch = url
       try {
-        // const copied = document.execCommand('copy')
         const alertMsg = {
           msg: copied
             ? 'Link pertandingan berhasil dicopy'
@@ -552,6 +591,9 @@ h2.match-title {
   font-family: Poppins;
   text-align: left;
   color: white;
+}
+.pl-3 {
+  padding-left: 3px !important;
 }
 .capsule {
   font-size: 12px;

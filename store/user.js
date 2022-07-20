@@ -68,9 +68,6 @@ export const actions = {
       .catch((error) => {
         // handle error
         if (error.response.status === 401) {
-          // const errMsg = error.response.data.message
-          //   ? error.response.data.message
-          //   : 'Invalid login credentials.'
           const errMsg = 'Username atau kata sandi salah'
           const alertMsg = {
             msg: errMsg,
@@ -78,7 +75,6 @@ export const actions = {
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
         } else {
-          // const errMsg = 'Unknown error please contact admin'
           const errMsg =
             'Terjadi kesalahan. Silahkan hubungi administrator kami'
           const alertMsg = {
@@ -105,7 +101,6 @@ export const actions = {
       .then((result) => {
         commit('setState', { isLoginWithGoogle: true })
         commit('setState', {
-          // nameGoogleAcc: result.data.name,
           nameGoogleAcc: localStorage.getItem('nameGoogleAcc')
         })
         commit('setAuthToken', {
@@ -161,9 +156,6 @@ export const actions = {
       .catch((error) => {
         // handle error
         if (error.response.status === 401) {
-          // const errMsg = error.response.data.message
-          //   ? error.response.data.message
-          //   : 'Invalid login credentials.'
           const errMsg = 'Username atau kata sandi salah'
           const alertMsg = {
             msg: errMsg,
@@ -171,7 +163,6 @@ export const actions = {
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
         } else {
-          // const errMsg = 'Unknown error please contact admin'
           const errMsg =
             'Terjadi kesalahan. Silahkan hubungi administrator kami'
           const alertMsg = {
@@ -210,8 +201,7 @@ export const actions = {
             color: 'secondary',
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
-          this.$router.push('/login')
-          //   dispatch('user/refreshAuth', null, { root: true })
+          this.$router.push({ path:'/login' })
           commit('setState', { isLoading: false })
         } else {
           const alertMsg = {
@@ -219,40 +209,6 @@ export const actions = {
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
           commit('setState', { isLoading: false })
-        }
-        return false
-      })
-  },
-
-  getUserMatchHistory({ dispatch, commit, state }, { bearer, userID }) {
-    const axiosOption = {
-      headers: {
-        xToken: bearer
-      }
-    }
-    return this.$axios
-      .$get(
-        `https://api.naufalbahri.com/api/v1/users/${userID}/match-history`, axiosOption
-      )
-      .then((result) => {
-        commit('setState', { isLoading: false })
-        return result
-      })
-      .catch((error) => {
-        // handle error
-        if (error.response.status !== '404') {
-          const alertMsg = {
-            msg: 'Token kadaluwarsa, silahkan login kembali.',
-            color: 'secondary',
-          }
-          dispatch('ui/showAlert', alertMsg, { root: true })
-          this.$router.push('/login')
-          //   dispatch('user/refreshAuth', null, { root: true })
-        } else {
-          const alertMsg = {
-            msg: 'Get item store failed',
-          }
-          dispatch('ui/showAlert', alertMsg, { root: true })
         }
         return false
       })
@@ -284,7 +240,7 @@ export const actions = {
           color: '#43A047',
         }
         dispatch('ui/showAlert', alertMsg, { root: true })
-        this.$router.push('/profile')
+        this.$router.push({ path: '/profile'})
         return result
       })
       .catch((error) => {
@@ -295,7 +251,7 @@ export const actions = {
             color: 'secondary',
           }
           dispatch('ui/showAlert', alertMsg, { root: true })
-          this.$router.push('/login')
+          this.$router.push({ path:'/login' })
           //   dispatch('user/refreshAuth', null, { root: true })
         } else {
           const alertMsg = {

@@ -1,5 +1,4 @@
 <template>
-  <!-- <v-main class="main"> -->
   <div>
     <TopBarNav />
     <br />
@@ -33,7 +32,10 @@
                     ><span class="fs-12 txt-black">Pemain</span
                     ><span class="txt-list"
                       >({{ item.totalPayer }}/{{ minplayer }})</span
-                    ></v-flex
+                    ><br />
+                    <span class="fs-12 red-text"
+                        >{{ sisaPlayer }} orang lagi</span
+                      ></v-flex
                   >
                   <v-flex xs6 class="mb-10"
                     ><p>
@@ -65,19 +67,16 @@
                       >
                         <span class="white--text fs-10">+13</span>
                       </v-avatar>
-                      <span class="fs-12 red-text"
-                        >{{ sisaPlayer }} orang lagi</span
-                      >
                     </p></v-flex
                   >
                 </v-layout>
               </v-flex>
               <v-flex xs4 class="card-section-2"
-                ><v-chip :color="getColor(item.status, item.joined)" small>
-                  <span v-if="item.status === 'Open'" class="txt-black">{{
-                    item.status
+                ><v-chip :color="getColor(item.gameStatus, item.joined)" small>
+                  <span v-if="item.gameStatus === 'Open'" class="txt-black">{{
+                    item.gameStatus
                   }}</span>
-                  <span v-else>{{ item.status }}</span>
+                  <span v-else>{{ item.gameStatus }}</span>
                 </v-chip></v-flex
               >
             </v-layout>
@@ -91,7 +90,6 @@
       </div>
     </div>
   </div>
-  <!-- </v-main> -->
 </template>
 <script>
 import { mapState } from 'vuex'
@@ -115,7 +113,7 @@ export default {
   },
   computed: {
     ...mapState({
-      listAllMatch: (state) => state.match.matchToday,
+      listAllMatch: (state) => state.match.listMatchHistory,
     }),
   },
   async mounted() {
@@ -131,14 +129,18 @@ export default {
         bearer,
         userID,
       })
-      await store.dispatch('match/setMatchToday', listData)
+      await store.dispatch('match/setMatchHistory', listData)
     },
     getColor(status) {
       switch (status) {
         case 'Selesai':
           return 'grey'
-        case 'Canceled':
-          return 'red'
+        case 'Dibatalkan':
+          return '#F16060'
+        case 'Bergabung':
+          return '#43A047'
+        case 'Berlangsung':
+          return '#2962FF'
         default:
           return ''
       }

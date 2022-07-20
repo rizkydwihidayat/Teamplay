@@ -39,8 +39,7 @@
 
    ```bash
    #npm run dev
-   nvm use 17.0.1
-   export NODE_OPTIONS=--openssl-legacy-provider; npm run dev
+   nvm use 16.4.0
    # or
    yarn dev
    ```
