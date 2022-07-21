@@ -297,12 +297,7 @@
           >
         </v-card-text>
         <v-card-actions class="justify-end">
-          <v-btn
-            outlined
-            rounded
-            color="#42A5F5"
-            @click="exitMatch"
-          >
+          <v-btn outlined rounded color="#42A5F5" @click="exitMatch">
             <span class="txt-capitalize"> Ya, batalkan</span>
           </v-btn>
           <v-btn text depressed rounded @click="dialogExitMatch = false"
@@ -428,13 +423,13 @@
                 >
               </v-checkbox>
             </div>
-            <div class="pa-4">
+            <div class="pa-4 btn-save-absen">
               <v-btn
                 block
                 depressed
                 rounded
                 class="btn-primary create-btn txt-capitalize"
-                @click="endMatchNow"
+                @click="saveAbsen"
               >
                 <span> Simpan Absensi Pemain</span>
               </v-btn>
@@ -466,17 +461,18 @@
             />
           </v-row>
           <p class="desc-subdued mb-3">Bergabung Juni 2022</p>
-          <p class="desc-blue pb-4 cursor-pointer" @click="chatHost">
-            Hubungi Host
-          </p>
         </div>
       </v-row>
+      <v-btn block outlined rounded color="#42A5F5" @click="chatHost">
+        <IcWA /><span class="txt-capitalize ml-3"> Hubungi Penyelenggara</span>
+      </v-btn>
+      <br />
       <v-btn
         depressed
         block
         rounded
         text
-        color="#757575"
+        color="#F16060"
         @click="openModalExit"
       >
         <span class="txt-capitalize"> Batalkan Pertandingan</span>
@@ -498,6 +494,7 @@ export default {
     LTileLayer,
     LMarker,
     LTooltip,
+    IcWA: () => import('~/components/svg/IcWA'),
   },
   data() {
     return {
@@ -522,6 +519,7 @@ export default {
       dialogExitMatch: false,
       dialogAbsen: false,
       initialName: '',
+      absenPlayer: [],
     }
   },
   head() {
@@ -712,8 +710,16 @@ export default {
         this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
       }
     },
-    endMatchNow() {
+    async endMatchNow() {
       this.dialogEndMatch = true
+      const matchid = this.$route.params.id
+      const bearer = localStorage.getItem('accKey')
+      const listUserId = []
+      listUserId.push()
+      await this.finishMatch({ matchid, bearer, listUserId })
+    },
+    saveAbsen() {
+      localStorage.listUsrId = this.absenPlayer
     },
     openModalFinish() {
       this.dialogEndMatch = true
@@ -756,6 +762,15 @@ export default {
 }
 .pl-3 {
   padding-left: 3px !important;
+}
+.btn-save-absen {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 480px;
+  margin: auto;
 }
 .modalShare {
   position: fixed;

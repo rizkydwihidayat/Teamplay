@@ -243,11 +243,12 @@
             />
           </v-row>
           <p class="desc-subdued mb-3">Bergabung Juni 2022</p>
-          <p class="desc-blue pb-4 cursor-pointer" @click="chatHost">
-            Hubungi Host
-          </p>
         </div>
       </v-row>
+      <v-btn block outlined rounded color="#42A5F5" @click="chatHost">
+        <IcWA /><span class="txt-capitalize ml-3"> Hubungi Penyelenggara</span>
+      </v-btn>
+      <br />
     </div>
 
     <!-- CTA -->
@@ -288,6 +289,7 @@ export default {
     LTileLayer,
     LMarker,
     LTooltip,
+    IcWA: () => import('~/components/svg/IcWA'),
   },
   data() {
     return {

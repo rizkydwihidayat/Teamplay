@@ -514,4 +514,44 @@ export const actions = {
         }
       })
   },
+
+  finishMatch({ dispatch }, { matchid, bearer, listUserId }) {
+    const bodyData = {
+      data: listUserId
+    }
+    this.$axios.setHeader('xToken', `${bearer}`, ['post'])
+    return this.$axios
+      .$post(`https://api.naufalbahri.com/api/v1/match/${matchid}/finish`, bodyData)
+      .then((result) => {
+        if (result.message) {
+          const errMsg = result.message
+          const alertMsg = {
+            msg: errMsg,
+            color: '#43A047',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/')
+        }
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          const errMsg = error.response.data.message
+          const alertMsg = {
+            msg: errMsg,
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/')
+        } else {
+          const errMsg =
+            'Terjadi kesalahan. Silahkan hubungi administrator kami'
+          const alertMsg = {
+            msg: errMsg,
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/')
+        }
+      })
+  },
 }
