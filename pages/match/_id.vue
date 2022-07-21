@@ -83,8 +83,16 @@
     </div>
     <div v-if="isJoin" class="pa-4">
       <v-alert outlined text type="success" class="alert" color="#43A047">
-        <span class="notif">Kamu sudah join di match ini.</span>
+        <span class="notif">Kamu sudah bergabung! Yuk, undang teman kamu juga!</span>
       </v-alert>
+      <v-btn
+        block
+        depressed
+        rounded
+        class="btn-primary mb-3"
+        @click="inviteFriend"
+        >Undang Teman</v-btn
+      >
     </div>
 
     <!-- section pemain -->
@@ -348,6 +356,30 @@ export default {
     },
     back() {
       this.$router.push({path: '/'})
+    },
+    inviteFriend() {
+      const usrId = localStorage.getItem('userID')
+      const id = this.$route.params.id
+      const url =
+        new URL(window.location.origin) +
+        `match/${id}` +
+        `?invitedFrom=${usrId}`
+      const copied = navigator.clipboard.writeText(url)
+      try {
+        const alertMsg = {
+          msg: copied
+            ? 'Link pertandingan berhasil dicopy'
+            : 'Gagal copy Link pertandingan',
+          color: '#43A047',
+        }
+        this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+      } catch (err) {
+        const alertMsg = {
+          msg: 'Oops, unable to copy',
+          color: 'secondary',
+        }
+        this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+      }
     },
     async goJoinMatch() {
       const id = this.$route.params.id
