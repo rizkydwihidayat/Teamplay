@@ -211,11 +211,17 @@ export const actions = {
       })
   },
 
-  getMatchHistory({ context, commit, dispatch }, { bearer, userID }) {
+  getMatchHistory({ context, commit, dispatch }, { bearer, userID, offsetPage, pageLimit }) {
+    const params = {
+      offset: offsetPage,
+      limit: pageLimit
+      // 'fields[user--user]': 'name'
+    }
     const axiosOption = {
       headers: {
         xToken: bearer,
       },
+      params
     }
     return this.$axios
       .$get(
@@ -476,6 +482,46 @@ export const actions = {
     this.$axios.setHeader('xToken', `${bearer}`, ['post'])
     return this.$axios
       .$post(`https://api.naufalbahri.com/api/v1/match/${matchid}/exit`)
+      .then((result) => {
+        if (result.message) {
+          const errMsg = result.message
+          const alertMsg = {
+            msg: errMsg,
+            color: '#43A047',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/')
+        }
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          const errMsg = error.response.data.message
+          const alertMsg = {
+            msg: errMsg,
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/')
+        } else {
+          const errMsg =
+            'Terjadi kesalahan. Silahkan hubungi administrator kami'
+          const alertMsg = {
+            msg: errMsg,
+            color: 'secondary',
+          }
+          dispatch('ui/showAlert', alertMsg, { root: true })
+          this.$router.push('/')
+        }
+      })
+  },
+
+  finishMatch({ dispatch }, { matchid, bearer, listUserId }) {
+    const bodyData = {
+      data: listUserId
+    }
+    this.$axios.setHeader('xToken', `${bearer}`, ['post'])
+    return this.$axios
+      .$post(`https://api.naufalbahri.com/api/v1/match/${matchid}/finish`, bodyData)
       .then((result) => {
         if (result.message) {
           const errMsg = result.message

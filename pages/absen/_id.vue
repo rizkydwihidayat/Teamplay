@@ -97,7 +97,7 @@
           >Absen Pemain</v-btn
         >
         <v-btn
-          v-if="btnEndMatch"
+          v-else
           block
           depressed
           rounded
@@ -215,9 +215,7 @@
           </v-card-title>
           <hr class="hr-divider" />
           <v-card-text class="list-player">
-            <p v-if="listPlayer.length === 0">
-              Belum ada yang bergabung
-            </p>
+            <p v-if="listPlayer.length === 0">Belum ada yang bergabung</p>
             <div
               v-for="(item, idx) in listPlayer"
               v-else
@@ -227,8 +225,7 @@
               <span
                 >{{ item.name }} ({{ convertAge(item.age) }})
                 {{ item.gender.charAt(0) }}
-                </span
-              >
+              </span>
             </div>
           </v-card-text>
         </v-card>
@@ -236,42 +233,78 @@
     </div>
 
     <!-- dialog konfirm end match -->
-    <v-dialog v-model="dialogEndMatch" transition="dialog-bottom-transition wrap-400">
+    <v-dialog
+      v-model="dialogEndMatch"
+      transition="dialog-bottom-transition wrap-400"
+    >
       <v-card class="modalEndMatch">
-          <v-card-title class="headerModal mt-2">
-            <v-layout row wrap>
-              <v-flex xs2 s2 class="close-modal">
-                <div class="align-right" @click="closeModalFinish">X</div>
-              </v-flex>
-              <v-flex xs8 s8>
-                <span class="title-filter font-bold">Selesaikan pertandingan</span>
-              </v-flex>
-            </v-layout>
-          </v-card-title>
-          <hr class="hr-divider" />
-          <v-card-text class="list-player">
-            <div class="top">
-              <div class="ic-1">
+        <v-card-title class="headerModal mt-2">
+          <v-layout row wrap>
+            <v-flex xs2 s2 class="close-modal">
+              <div class="align-right" @click="closeModalFinish">X</div>
+            </v-flex>
+            <v-flex xs8 s8>
+              <span class="title-filter font-bold"
+                >Selesaikan pertandingan</span
+              >
+            </v-flex>
+          </v-layout>
+        </v-card-title>
+        <hr class="hr-divider" />
+        <v-card-text class="list-player">
+          <div class="top">
+            <!-- <div class="ic-1">
                 <div class="ic-2">
                   <div class="ic-3"></div>
                 </div>
-              </div>
-            </div>
-            <span>Pastikan semua pemain yang datang sudah diabsen ya!</span>
-          </v-card-text>
+              </div> -->
+          </div>
+          <span class="align-center"
+            >Pastikan semua pemain yang <br />datang sudah diabsen ya!</span
+          >
           <div class="pa-4">
             <v-btn
-              v-if="btnEndMatch"
               block
               depressed
               rounded
               class="btn-primary create-btn txt-capitalize"
               @click="endMatchNow"
             >
-              <span> Selesaikan Pertandingan</span>
+              <span> Oke, selesaikan pertandingan</span>
             </v-btn>
           </div>
-        </v-card>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    <!-- dialog konfirm exit match -->
+    <v-dialog
+      v-model="dialogExitMatch"
+      width="350"
+      persistent
+      transition="dialog-bottom-transition wrap-400"
+    >
+      <v-card>
+        <v-card-title class="headerModal mt-2">
+          <span class="title-filter font-bold">Batalkan pertandingan</span>
+        </v-card-title>
+        <hr class="hr-divider" />
+        <v-card-text class="list-player">
+          <!-- <div class="top">
+            </div> -->
+          <span class="align-center"
+            >Yakin ingin batalkan pertandingan ini?</span
+          >
+        </v-card-text>
+        <v-card-actions class="justify-end">
+          <v-btn outlined rounded color="#42A5F5" @click="exitMatch">
+            <span class="txt-capitalize"> Ya, batalkan</span>
+          </v-btn>
+          <v-btn text depressed rounded @click="dialogExitMatch = false"
+            ><span class="txt-capitalize">Tidak</span></v-btn
+          >
+        </v-card-actions>
+      </v-card>
     </v-dialog>
 
     <!-- dialog absen player -->
@@ -390,13 +423,13 @@
                 >
               </v-checkbox>
             </div>
-            <div class="pa-4">
+            <div class="pa-4 btn-save-absen">
               <v-btn
                 block
                 depressed
                 rounded
                 class="btn-primary create-btn txt-capitalize"
-                @click="endMatchNow"
+                @click="saveAbsen"
               >
                 <span> Simpan Absensi Pemain</span>
               </v-btn>
@@ -411,7 +444,9 @@
     <div class="section-host ma-4 pb-10">
       <p class="desc-primary">Diselenggarakan oleh</p>
       <v-row class="detail-host ma-0">
-        <div class="player-ava mr-3"><span>{{ initialName }}</span></div>
+        <div class="player-ava mr-3">
+          <span>{{ initialName }}</span>
+        </div>
         <div class="description-wrapper">
           <v-row style="align-item: center" class="ma-0">
             <p class="desc-bold mb-0 mr-2" style="align-item: center">
@@ -426,11 +461,22 @@
             />
           </v-row>
           <p class="desc-subdued mb-3">Bergabung Juni 2022</p>
-          <p class="desc-blue pb-4 cursor-pointer" @click="chatHost">
-            Hubungi Host
-          </p>
         </div>
       </v-row>
+      <v-btn block outlined rounded color="#42A5F5" @click="chatHost">
+        <IcWA /><span class="txt-capitalize ml-3"> Hubungi Penyelenggara</span>
+      </v-btn>
+      <br />
+      <v-btn
+        depressed
+        block
+        rounded
+        text
+        color="#F16060"
+        @click="openModalExit"
+      >
+        <span class="txt-capitalize"> Batalkan Pertandingan</span>
+      </v-btn>
     </div>
   </div>
 </template>
@@ -448,6 +494,7 @@ export default {
     LTileLayer,
     LMarker,
     LTooltip,
+    IcWA: () => import('~/components/svg/IcWA'),
   },
   data() {
     return {
@@ -469,8 +516,10 @@ export default {
       }),
       btnEndMatch: false,
       dialogEndMatch: false,
+      dialogExitMatch: false,
       dialogAbsen: false,
-      initialName: ''
+      initialName: '',
+      absenPlayer: [],
     }
   },
   head() {
@@ -496,7 +545,7 @@ export default {
       matchdetail: (state) => state.match.matchdetail,
       latitude: (state) => state.match.lat,
       longitude: (state) => state.match.lng,
-      listPlayer: (state) => state.match.listPlayer
+      listPlayer: (state) => state.match.listPlayer,
     }),
   },
   async mounted() {
@@ -524,7 +573,9 @@ export default {
     }),
     BDTime() {
       this.$dayjs.locale('id')
-      const result = this.$dayjs().format('dddd' + ', ' + 'D ' + 'MMM ' + 'YYYY')
+      const result = this.$dayjs().format(
+        'dddd' + ', ' + 'D ' + 'MMM ' + 'YYYY'
+      )
       return result
     },
     numberFormat(number, decimals, decPoint, thousandSep) {
@@ -569,12 +620,12 @@ export default {
           color: 'secondary',
         }
         this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-        this.$router.push({ name: 'login'})
+        this.$router.push({ name: 'login' })
       } else {
         await this.joinMatch({ params, bearer })
           .then((result) => {
             if (result !== 'undefined') {
-              this.$router.push({ path: `/success-page/${id}`})
+              this.$router.push({ path: `/success-page/${id}` })
             }
           })
           .catch((error) => {
@@ -659,12 +710,31 @@ export default {
         this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
       }
     },
-    endMatchNow() {
+    async endMatchNow() {
       this.dialogEndMatch = true
+      const matchid = this.$route.params.id
+      const bearer = localStorage.getItem('accKey')
+      const listUserId = []
+      listUserId.push()
+      await this.finishMatch({ matchid, bearer, listUserId })
+    },
+    saveAbsen() {
+      localStorage.listUsrId = this.absenPlayer
+    },
+    openModalFinish() {
+      this.dialogEndMatch = true
+    },
+    openModalExit() {
+      this.dialogExitMatch = true
     },
     closeModalFinish() {
       this.dialogEndMatch = false
-    }
+    },
+    async exitMatch() {
+      const matchid = this.$route.params.id
+      const bearer = localStorage.getItem('accKey')
+      await this.exitMatch({ matchid, bearer })
+    },
   },
 }
 </script>
@@ -678,9 +748,9 @@ export default {
   margin-left: 40px;
   margin-right: 40px;
 }
-.list-player p {
+.list-player {
   text-align: center !important;
-  margin: 35px 12px;
+  /* margin: 35px 12px; */
 }
 .players {
   margin: 12px 0px;
@@ -692,6 +762,15 @@ export default {
 }
 .pl-3 {
   padding-left: 3px !important;
+}
+.btn-save-absen {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 480px;
+  margin: auto;
 }
 .modalShare {
   position: fixed;
@@ -713,7 +792,7 @@ export default {
   left: 0;
   right: 0;
   max-width: 480px;
-  height: 75vh;
+  height: 40vh;
   overflow: scroll;
   margin: auto;
   border-radius: 16px 16px 0px 0px;
@@ -886,9 +965,10 @@ h2.match-title {
   margin: 12px;
 }
 .top {
-  height: 325px;
+  height: 125px;
   width: 100%;
-  background-image: url('~@/assets/img/bg-success-pg.png');
+  background-image: url('~@/assets/svg/verify.svg');
+  background-position: center;
 }
 .ic-1 {
   padding-top: 20px !important;
