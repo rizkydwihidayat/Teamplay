@@ -92,26 +92,26 @@ export const mutations = {
           : []
     }
   },
-  setMatchHistory(state, list) {
-    state.listMatchHistory =
-      list.data.length > 0 && list.data[0] !== null
-        ? // eslint-disable-next-line array-callback-return
-          list.data.map((value, key) => {
-            return {
-              gamename: value.match.match.gameName,
-              place: value.match.venue.venueName,
-              time: value.match.match.timePlay,
-              date: value.match.match.playDate,
-              id: value.match.match.id,
-              absen: value.isAbsent,
-              joined: value.isJoined,
-              totalPayer: value.match.numberOfPlayers,
-              status: value.match.match.status,
-              category: value.match.match.sportCategory,
-              gameStatus: value.gameStatus,
-            }
-          }, {})
-        : []
+  setMatchHistory(state, { data }) {
+    const listMatchHistory = state.listMatchHistory
+    state.listMatchHistory = listMatchHistory.concat(
+      data.map((value) => {
+        console.warn(value);
+        return {
+          gamename: value.match.match.gameName,
+          place: value.match.venue.venueName,
+          time: value.match.match.timePlay,
+          date: value.match.match.playDate,
+          id: value.match.match.id,
+          absen: value.isAbsent,
+          joined: value.isJoined,
+          totalPayer: value.match.numberOfPlayers,
+          status: value.match.match.status,
+          category: value.match.match.sportCategory,
+          gameStatus: value.gameStatus,
+        }
+      })
+    )
   },
   setListCity(state, list) {
     state.listCity =
@@ -211,23 +211,32 @@ export const actions = {
       })
   },
 
-  getMatchHistory({ context, commit, dispatch }, { bearer, userID, offsetPage, pageLimit }) {
-    const params = {
-      offset: offsetPage,
-      limit: pageLimit
-      // 'fields[user--user]': 'name'
-    }
+  getMatchHistory(
+    { context, commit, dispatch },
+    { bearer, userID, offsetPage, pageLimit }
+  ) {
     const axiosOption = {
       headers: {
         xToken: bearer,
       },
-      params
     }
     return this.$axios
       .$get(
-        `https://api.naufalbahri.com/api/v1/users/${userID}/match-history`,
+        `https://api.naufalbahri.com/api/v1/users/${userID}/match-history?offset=${offsetPage}&limit=${pageLimit}`,
         axiosOption
       )
+      .then((result) => {
+        // const alertMsg = {
+        //   msg: 'Berhasil mengambil data',
+        //   color: '#43A047',
+        // }
+        // dispatch('ui/showAlert', alertMsg, { root: true })
+        commit('setState', {
+          offset: offsetPage + pageLimit,
+        })
+
+        return result
+      })
       .catch((error) => {
         // handle error
         if (error.response.status === 403) {
@@ -517,11 +526,14 @@ export const actions = {
 
   finishMatch({ dispatch }, { matchid, bearer, listUserId }) {
     const bodyData = {
-      data: listUserId
+      data: listUserId,
     }
     this.$axios.setHeader('xToken', `${bearer}`, ['post'])
     return this.$axios
-      .$post(`https://api.naufalbahri.com/api/v1/match/${matchid}/finish`, bodyData)
+      .$post(
+        `https://api.naufalbahri.com/api/v1/match/${matchid}/finish`,
+        bodyData
+      )
       .then((result) => {
         if (result.message) {
           const errMsg = result.message

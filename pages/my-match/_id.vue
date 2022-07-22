@@ -251,6 +251,36 @@
       <br />
     </div>
 
+    <!-- dialog konfirm exit match -->
+    <v-dialog
+      v-model="dialogExitMatch"
+      width="350"
+      persistent
+      transition="dialog-bottom-transition wrap-400"
+    >
+      <v-card>
+        <v-card-title class="headerModal mt-2">
+          <span class="title-filter font-bold">Batal bergabung</span>
+        </v-card-title>
+        <hr class="hr-divider" />
+        <v-card-text class="list-player">
+          <!-- <div class="top">
+            </div> -->
+          <span class="align-center"
+            >Yakin batal bergabung pertandingan ini?</span
+          >
+        </v-card-text>
+        <v-card-actions class="justify-end">
+          <v-btn outlined rounded color="#42A5F5" @click="goExitMatch">
+            <span class="txt-capitalize"> Ya, batalkan</span>
+          </v-btn>
+          <v-btn text depressed rounded @click="dialogExitMatch = false"
+            ><span class="txt-capitalize">Tidak</span></v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <!-- CTA -->
     <div class="btn-join-match pa-4">
       <v-btn
@@ -260,8 +290,8 @@
         rounded
         class="btn-primary"
         :disabled="isJoin"
-        @click="goExitMatch"
-        >Batalkan Pertandingan</v-btn
+        @click="openModalExit"
+        >Batal Bergabung</v-btn
       >
       <v-btn
         v-else
@@ -314,6 +344,7 @@ export default {
       statusmatch: '',
       statusColor: '',
       initialName: '',
+      dialogExitMatch: false
     }
   },
   head() {
@@ -391,6 +422,9 @@ export default {
     },
     back() {
       this.$router.push({ path: '/my-match' })
+    },
+    openModalExit() {
+      this.dialogExitMatch = true
     },
     async goJoinMatch() {
       const id = this.$route.params.id

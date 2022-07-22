@@ -11,9 +11,6 @@
           }}</v-chip>
         </v-chip-group>
       </div>
-      <div v-if="listAllMatch.length === 0 && !loadData" class="empty">
-        <span class="emptyState">Riwayat pertandingan tidak ditemukan.</span>
-      </div>
       <div v-if="loadData" class="card align-center">
         <v-progress-circular
           color="#0d47a1"
@@ -93,10 +90,23 @@
             </v-layout>
           </v-card>
         </div>
-        <div v-if="listAllMatch.length > 0" class="bottom-button">
-          <v-btn depressed block rounded color="primary" @click="loadMoreData">
-            <span> Lihat Pertandingan Lainnya</span>
+        <div
+          v-if="listAllMatch.length === offset && showButton"
+          class="bottom-button"
+        >
+          <v-btn
+            depressed
+            block
+            rounded
+            color="primary"
+            :loading="loadData"
+            @click="loadMoreData"
+          >
+            <span> Tampilkan Lebih Banyak</span>
           </v-btn>
+        </div>
+        <div v-if="listAllMatch.length <= 0 && !loadData" class="empty">
+          <span class="emptyState">Riwayat pertandingan tidak ditemukan.</span>
         </div>
       </div>
     </div>
@@ -104,6 +114,7 @@
 </template>
 <script>
 import { mapState } from 'vuex'
+import { getNestedObject } from '~/utils'
 const components = {
   TopBarNav: () => import('~/components/TopbarWithTitle'),
 }
@@ -121,11 +132,14 @@ export default {
       minplayer: 0,
       sisaPlayer: 0,
       loadData: false,
+      showButton: false,
     }
   },
   computed: {
     ...mapState({
       listAllMatch: (state) => state.match.listMatchHistory,
+      offset: (state) => state.match.offset,
+      limit: (state) => state.match.limit,
     }),
   },
   async mounted() {
@@ -137,7 +151,7 @@ export default {
     async getMatch(store = this.$store) {
       this.loadData = true
       const offsetPage = 0
-      const pageLimit = 7
+      const pageLimit = 10
       const bearer = localStorage.getItem('accKey')
       const userID = localStorage.getItem('userID')
       const listData = await store.dispatch('match/getMatchHistory', {
@@ -146,21 +160,45 @@ export default {
         offsetPage,
         pageLimit,
       })
-      await store.dispatch('match/setMatchHistory', listData)
+      const matchData = getNestedObject(listData, ['data'])
+      const allData = []
+      for (const i in matchData) {
+        allData.push(matchData[i])
+      }
+      await store.dispatch('match/setMatchHistory', { data: allData })
       this.loadData = false
+      setTimeout(() => {
+        this.showButton = true
+      }, 100)
     },
     async loadMoreData(store = this.$store) {
+      this.loadData = true
       const bearer = localStorage.getItem('accKey')
       const userID = localStorage.getItem('userID')
-      const offsetPage = store.state.match.offset
-      const pageLimit = store.state.match.limit
-      const listData = await store.dispatch('match/getMatchHistory', {
+      const offsetPage = this.offset
+      const pageLimit = this.limit
+      const listData = await this.$store.dispatch('match/getMatchHistory', {
         bearer,
         userID,
         offsetPage,
         pageLimit,
       })
-      await store.dispatch('match/setMatchHistory', listData)
+      .then(response => {
+        const alertMsg = {
+          msg: 'Berhasil mengambil data',
+          color: '#43A047',
+        }
+        this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
+        return response
+      })
+      const matchData = getNestedObject(listData, ['data'])
+      const allData = []
+      for (const i in matchData) {
+        allData.push(matchData[i])
+      }
+      // console.warn(allData);
+      await this.$store.dispatch('match/setMatchHistory', { data: allData })
+      this.loadData = false
     },
     getColor(status) {
       switch (status) {

@@ -10,6 +10,58 @@
           lindungi sepenuh hati.</span
         >
       </div>
+      <div class="bottom-button">
+        <v-form
+          v-if="showFormRegister === true"
+          ref="form"
+          v-model="valid"
+          lazy-validation
+          @keyup.native.enter="valid && submit($event)"
+        >
+          <div>
+            <br /><br /><br /><br />
+          </div>
+          <br />
+          <div class="login-button">
+            <v-btn
+              v-if="isRegister2 === true"
+              depressed
+              color="primary"
+              rounded
+              @click="submitForm"
+            >
+              <span>Simpan</span>
+            </v-btn>
+          </div>
+          <div>
+            <h2 v-if="isRegister2 === true">Yuk, lengkapin data kamu dulu!</h2>
+          </div>
+          <br />
+          <v-text-field
+            v-if="isRegister2 === true"
+            ref="fullName"
+            v-model="fullname"
+            outlined
+            required
+            placeholder="Nama lengkap kamu"
+          ></v-text-field>
+          <v-text-field
+            v-if="isRegister2 === true"
+            ref="age"
+            v-model="age"
+            outlined
+            required
+            placeholder="Usia kamu sekarang"
+            @keypress="checkValue($event)"
+          ></v-text-field>
+          <v-radio-group v-if="isRegister2 === true" v-model="radioGroup">
+            <v-radio label="Laki-laki" value="M"></v-radio>
+            <v-radio label="Perempuan" value="F"></v-radio>
+            <v-radio label="Tidak Mau Menyebutkan" value="X"></v-radio>
+          </v-radio-group>
+        </v-form>
+      </div>
+
       <br />
       <div v-if="hideTop === false" class="google-button">
         <v-btn depressed color="primary" outlined rounded @click="showForm">
@@ -65,12 +117,6 @@ export default {
     showForm() {
       this.showFormRegister = true
       this.hideButton = true
-      this.isRegister1 = true
-      this.hideTop = true
-      console.warn(this.$nuxt.context.from.fullPath);
-    },
-    nextForm() {
-      this.isRegister1 = false
       this.isRegister2 = true
       this.hideTop = true
     },

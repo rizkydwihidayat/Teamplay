@@ -102,7 +102,7 @@
           depressed
           rounded
           class="btn-primary create-btn txt-capitalize"
-          @click="endMatchNow"
+          @click="saveAbsen"
         >
           <span> Selesaikan Pertandingan</span>
         </v-btn>
@@ -268,7 +268,7 @@
               depressed
               rounded
               class="btn-primary create-btn txt-capitalize"
-              @click="endMatchNow"
+              @click="saveAbsen"
             >
               <span> Oke, selesaikan pertandingan</span>
             </v-btn>
@@ -286,18 +286,18 @@
     >
       <v-card>
         <v-card-title class="headerModal mt-2">
-          <span class="title-filter font-bold">Batalkan pertandingan</span>
+          <span class="title-filter font-bold">Batal bergabung</span>
         </v-card-title>
         <hr class="hr-divider" />
         <v-card-text class="list-player">
           <!-- <div class="top">
             </div> -->
           <span class="align-center"
-            >Yakin ingin batalkan pertandingan ini?</span
+            >Yakin batal bergabung pertandingan ini?</span
           >
         </v-card-text>
         <v-card-actions class="justify-end">
-          <v-btn outlined rounded color="#42A5F5" @click="exitMatch">
+          <v-btn outlined rounded color="#42A5F5" @click="goExitMatch">
             <span class="txt-capitalize"> Ya, batalkan</span>
           </v-btn>
           <v-btn text depressed rounded @click="dialogExitMatch = false"
@@ -429,7 +429,7 @@
                 depressed
                 rounded
                 class="btn-primary create-btn txt-capitalize"
-                @click="saveAbsen"
+                @click="openSaveAbsen"
               >
                 <span> Simpan Absensi Pemain</span>
               </v-btn>
@@ -475,7 +475,7 @@
         color="#F16060"
         @click="openModalExit"
       >
-        <span class="txt-capitalize"> Batalkan Pertandingan</span>
+        <span class="txt-capitalize"> Batal bergabung</span>
       </v-btn>
     </div>
   </div>
@@ -550,9 +550,7 @@ export default {
   },
   async mounted() {
     await this.getMatchDetail()
-    // const url = new URL(window.location.href)
-    // this.tempParams = url.searchParams.get('invitedFrom')
-    // await this.getCoordinate()
+    await this.getCoordinate()
     // this.$nextTick(() => {
     //   this.$refs.marker.mapObject.openPopup()
     // })
@@ -569,7 +567,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      joinMatch: 'match/joinMatch',
+      exitMatch: 'match/exitMatch',
     }),
     BDTime() {
       this.$dayjs.locale('id')
@@ -604,41 +602,6 @@ export default {
     },
     back() {
       this.$router.back()
-    },
-    async goJoinMatch() {
-      const id = this.$route.params.id
-      const bearer = localStorage.getItem('accKey')
-      // const invite = this.$store.state.user.userID
-      // if (userID !)
-      const params = {
-        matchId: id,
-        invitedFrom: this.tempParams,
-      }
-      if (bearer === null) {
-        const alertMsg = {
-          msg: 'Silahkan login terlebih dahulu',
-          color: 'secondary',
-        }
-        this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-        this.$router.push({ name: 'login' })
-      } else {
-        await this.joinMatch({ params, bearer })
-          .then((result) => {
-            if (result !== 'undefined') {
-              this.$router.push({ path: `/success-page/${id}` })
-            }
-          })
-          .catch((error) => {
-            if (error.response.status === 401) {
-              const alertMsg = {
-                msg: 'Sesi telah berakhir, merefresh halaman',
-                color: 'secondary',
-              }
-              this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
-            }
-            return false
-          })
-      }
     },
     getCoordinate() {
       const temp = []
@@ -710,16 +673,16 @@ export default {
         this.$store.dispatch('ui/showAlert', alertMsg, { root: true })
       }
     },
-    async endMatchNow() {
+    openSaveAbsen() {
       this.dialogEndMatch = true
+    },
+    async saveAbsen() {
+      localStorage.listUsrId = this.absenPlayer
       const matchid = this.$route.params.id
       const bearer = localStorage.getItem('accKey')
       const listUserId = []
       listUserId.push()
       await this.finishMatch({ matchid, bearer, listUserId })
-    },
-    saveAbsen() {
-      localStorage.listUsrId = this.absenPlayer
     },
     openModalFinish() {
       this.dialogEndMatch = true
@@ -730,7 +693,7 @@ export default {
     closeModalFinish() {
       this.dialogEndMatch = false
     },
-    async exitMatch() {
+    async goExitMatch() {
       const matchid = this.$route.params.id
       const bearer = localStorage.getItem('accKey')
       await this.exitMatch({ matchid, bearer })

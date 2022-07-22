@@ -221,6 +221,7 @@
 </template>
 <script>
 import { mapState, mapActions } from 'vuex'
+import { getNestedObject } from '~/utils'
 const components = {
   IcSeen: () => import('~/components/svg/IcSeen'),
   IcPlus: () => import('~/components/svg/IcPlus'),
@@ -292,13 +293,22 @@ export default {
       }
     },
     async getMatchToday(store = this.$store) {
+      const offsetPage = 0
+      const pageLimit = 10
       const bearer = localStorage.getItem('accKey')
       const userID = localStorage.getItem('userID')
       const listData = await store.dispatch('match/getMatchHistory', {
         bearer,
         userID,
+        offsetPage,
+        pageLimit,
       })
-      await store.dispatch('match/setMatchHistory', listData)
+      const matchData = getNestedObject(listData, ['data'])
+      const allData = []
+      for (const i in matchData) {
+        allData.push(matchData[i])
+      }
+      await store.dispatch('match/setMatchHistory', { data: allData })
     },
     goSignOut() {
       localStorage.clear()
