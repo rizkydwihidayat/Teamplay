@@ -131,10 +131,14 @@ export default {
     async getMatchToday(store = this.$store) {
       const bearer = localStorage.getItem('accKey')
       const userID = localStorage.getItem('userID')
+      const offsetPage = 0
+      const pageLimit = 10
       if (userID !== null) {
         const listData = await store.dispatch('match/getMatchHistory', {
           bearer,
           userID,
+          offsetPage,
+          pageLimit
         })
         // eslint-disable-next-line array-callback-return
         listData.data.filter(async (item) => {
@@ -144,7 +148,7 @@ export default {
           const matchEnd = item.match.match.timePlay.slice(7, 10)
           if (date === item.match.match.playDate) {
             this.isMatchToday = true
-            await store.dispatch('match/setMatchHistory', listData)
+            await store.dispatch('match/setMatchHistory', {data: listData})
           } else if (currentTime === matchEnd) {
             this.btnEndTime = true
             this.isMatchToday = false

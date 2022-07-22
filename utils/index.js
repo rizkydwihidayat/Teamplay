@@ -78,3 +78,11 @@ export const _formatDateTime = (date, type) => {
   }
   return date
 }
+
+// get nested object
+export const getNestedObject = (nestedObj, pathArr) => {
+  return pathArr.reduce(
+    (obj, key) => (obj && obj[key] !== 'undefined' ? obj[key] : undefined),
+    nestedObj
+  )
+}
