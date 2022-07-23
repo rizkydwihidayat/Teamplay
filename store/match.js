@@ -96,7 +96,6 @@ export const mutations = {
     const listMatchHistory = state.listMatchHistory
     state.listMatchHistory = listMatchHistory.concat(
       data.map((value) => {
-        console.warn(value);
         return {
           gamename: value.match.match.gameName,
           place: value.match.venue.venueName,

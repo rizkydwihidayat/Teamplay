@@ -296,7 +296,7 @@ export default {
       const listData = await this.$store.dispatch('match/getListMatch', {
         params,
       })
-
+      console.warn(this.catFilter);
       if (this.catFilter === 'Futsal' || this.Futsal === true) {
         const test = listData.data.filter(
           (item) => item.match.sportCategory === 'Futsal'
@@ -323,6 +323,7 @@ export default {
     },
     useFilter(val) {
       const filter = val.target.textContent
+      console.warn('filter', filter);
       this.catFilter = filter
       this.getMatch(filter)
     },

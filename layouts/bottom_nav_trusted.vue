@@ -13,7 +13,7 @@
 
 
 <script>
-// import { mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 const components = {
 //   SnackBarMessage: () =>
 //     import('@/components/SnackBarMessage.vue' /* webpackChunkName: "SnackBarMessage" */),
@@ -24,6 +24,48 @@ const components = {
 }
 export default {
   components,
+  mounted() {
+    this.checkLoginGoogle()
+  },
+  methods: {
+    ...mapActions({
+      loginWithGoogle: 'user/loginWithGoogle',
+    }),
+    checkLoginGoogle() {
+      const emailUser = this.$auth.user.email
+      if (emailUser !== '') {
+        try {
+          const params = {
+            email: emailUser,
+          }
+          const prevUrl = this.$nuxt.context.from
+          this.loginWithGoogle(params)
+            .then((resp) => {
+              if (prevUrl.fullPath.includes('invitedFrom')) {
+                this.$router.push({ path: prevUrl.fullPath })
+              } else {
+                this.$router.push({ path: '/' })
+              }
+            })
+            .catch((error) => {
+              const alertMsg = {
+                msg: error,
+                timeout: 3000,
+                color: 'secondary',
+              }
+              this.$store.dispatch('ui/showAlert', alertMsg)
+            })
+        } catch (error) {
+          const alertMsg = {
+            msg: error,
+            timeout: 3000,
+            color: 'secondary',
+          }
+          this.$store.dispatch('ui/showAlert', alertMsg)
+        }
+      }
+    },
+  }
 }
 </script>
 
