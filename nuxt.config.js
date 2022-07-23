@@ -59,28 +59,28 @@ export default {
     '@nuxtjs/proxy',
     '@nuxtjs/dayjs'
   ],
-  auth: {
-    strategies: {
-      google: {
-        client_id: '491456573984-06gqkkvkpum869833d7m5kbddob6f2nc.apps.googleusercontent.com'
-      }
-    },
-    redirect: {
-      login: '/login',
-      // logout: '/registration',
-      // callback: '/registration',
-      registration: '/register',
-      home: '/'
-    },
-    /*
-     ** pluugins to extend the auth module
-     ** See https://auth.nuxtjs.org/recipes/extend.html
-     */
-    plugins: ['~/plugins/extendauth.js']
-  },
-  router: {
-    middleware: ['auth']
-  },
+  // auth: {
+  //   strategies: {
+  //     google: {
+  //       client_id: '491456573984-06gqkkvkpum869833d7m5kbddob6f2nc.apps.googleusercontent.com'
+  //     }
+  //   },
+  //   redirect: {
+  //     login: '/login',
+  //     logout: '/registration',
+  //     callback: '/registration',
+  //     registration: '/register',
+  //     home: '/'
+  //   },
+  //   /*
+  //    ** pluugins to extend the auth module
+  //    ** See https://auth.nuxtjs.org/recipes/extend.html
+  //    */
+  //   plugins: ['~/plugins/extendauth.js']
+  // },
+  // router: {
+  //   middleware: ['auth']
+  // },
   dayjs: {
     locales: ['id'],
     defaultLocale: 'id',

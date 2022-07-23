@@ -115,11 +115,10 @@ export default {
       // this.emailErrorMessage = ''\
     },
     showForm() {
-      // this.showFormRegister = true
-      // this.hideButton = true
-      // this.isRegister2 = true
-      // this.hideTop = true
-      // this.$auth.loginWith('google')
+      this.showFormRegister = true
+      this.hideButton = true
+      this.isRegister2 = true
+      this.hideTop = true
     },
     submitForm() {
       const params = {
