@@ -11,13 +11,14 @@
       </div>
       <br />
       <div class="google-button">
+        <!-- @click="showFormGoogle" -->
         <v-btn
           v-if="hideButtonGoogle === false"
           depressed
           color="primary"
           outlined
           rounded
-          @click="showFormGoogle"
+          @click="authProvider"
         >
           <img src="~/assets/img/google-ic.png" width="20" /><span
             >Lanjutkan dengan Google</span
@@ -70,6 +71,13 @@ const components = {
   IcSeen: () => import('~/components/svg/IcSeen'),
   TopBarNav: () => import('~/components/Topbar'),
 }
+// const googleBtn = this.$refs(null)
+// const googleAuthSetings = this.$refs({
+//   clientId: '491456573984-j175qnc1pntjdfrhp6sgui3q6qduatih.apps.googleusercontent.com',
+//   scope: 'email',
+//   prompt: 'consent',
+//   fetch_basic_profile: false,
+// })
 
 export default {
   name: 'LoginPage',
@@ -97,6 +105,8 @@ export default {
               ) || 'Format email tidak valid.'
             : 'Email minimal 5 karakter.',
       ],
+      // googleAuthSetings,
+      // googleBtn
     }
   },
   computed: {
@@ -106,11 +116,26 @@ export default {
       namaUser: (state) => state.user.nameGoogleAcc,
     }),
   },
+  // mounted() {
+  //   this.onBeforeMount()
+  // },
   methods: {
     ...mapActions({
       doLogin: 'user/postLogin',
       loginWithGoogle: 'user/loginWithGoogle',
     }),
+    googleBtn() {
+      this.$refs(null)
+    },
+    googleAuthSetings() {
+      this.$refs({
+        clientId:
+          '491456573984-j175qnc1pntjdfrhp6sgui3q6qduatih.apps.googleusercontent.com',
+        scope: 'email',
+        prompt: 'consent',
+        fetch_basic_profile: false,
+      })
+    },
     inputEmail(val) {
       this.resetEmail()
       this.emailInput = val.replace(' ', '')
@@ -171,6 +196,9 @@ export default {
             this.$store.dispatch('ui/showAlert', alertMsg)
           })
       }
+    },
+    authProvider(loginInfo) {
+      this.$auth.loginWith('google')
     },
   },
 }
