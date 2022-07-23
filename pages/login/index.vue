@@ -18,7 +18,7 @@
           color="primary"
           outlined
           rounded
-          @click="authProvider"
+          @click="authGoogle"
         >
           <img src="~/assets/img/google-ic.png" width="20" /><span
             >Lanjutkan dengan Google</span
@@ -197,7 +197,7 @@ export default {
           })
       }
     },
-    authProvider(loginInfo) {
+    authGoogle() {
       this.$auth.loginWith('google')
     },
   },

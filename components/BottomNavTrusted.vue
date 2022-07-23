@@ -255,15 +255,19 @@ export default {
       },
     },
   },
+  // eslint-disable-next-line vue/order-in-components
+  // fetch() {
+  //   this.checkLoginGoogle()
+  // },
   mounted() {
-    this.checkLoginGoogle()
     const token = localStorage.getItem('accKey')
     const verified = localStorage.getItem('isVerified')
-    if (token === null) {
+    const tokenGoogle = localStorage.getItem('auth._token.google')
+    if (token === null || tokenGoogle === null) {
       this.isNotLogin = true
-    } else if (token !== null && verified === 'false') {
+    } else if (tokenGoogle !== null && token !== null && verified === 'false') {
       this.isDefault = true
-    } else if (verified === 'true') {
+    } else if (tokenGoogle !== null && token !== null && verified === 'true') {
       this.isTrusted = true
     }
   },
@@ -271,40 +275,40 @@ export default {
     ...mapActions({
       loginWithGoogle: 'user/loginWithGoogle',
     }),
-    checkLoginGoogle() {
-      const emailUser = this.$auth.user.email
-      if (emailUser !== '') {
-        try {
-          const params = {
-            email: emailUser,
-          }
-          const prevUrl = this.$nuxt.context.from
-          this.loginWithGoogle(params)
-            .then((resp) => {
-              if (prevUrl.fullPath.includes('invitedFrom')) {
-                this.$router.push({ path: prevUrl.fullPath })
-              } else {
-                this.$router.push({ path: '/' })
-              }
-            })
-            .catch((error) => {
-              const alertMsg = {
-                msg: error,
-                timeout: 3000,
-                color: 'secondary',
-              }
-              this.$store.dispatch('ui/showAlert', alertMsg)
-            })
-        } catch (error) {
-          const alertMsg = {
-            msg: error,
-            timeout: 3000,
-            color: 'secondary',
-          }
-          this.$store.dispatch('ui/showAlert', alertMsg)
-        }
-      }
-    },
+    // checkLoginGoogle() {
+    //   const emailUser = this.$auth.user.email
+    //   if (emailUser !== '') {
+    //     try {
+    //       const params = {
+    //         email: emailUser,
+    //       }
+    //       const prevUrl = this.$nuxt.context.from
+    //       this.loginWithGoogle(params)
+    //         .then((resp) => {
+    //           if (prevUrl.fullPath.includes('invitedFrom')) {
+    //             this.$router.push({ path: prevUrl.fullPath })
+    //           } else {
+    //             this.$router.push({ path: '/' })
+    //           }
+    //         })
+    //         .catch((error) => {
+    //           const alertMsg = {
+    //             msg: error,
+    //             timeout: 3000,
+    //             color: 'secondary',
+    //           }
+    //           this.$store.dispatch('ui/showAlert', alertMsg)
+    //         })
+    //     } catch (error) {
+    //       const alertMsg = {
+    //         msg: error,
+    //         timeout: 3000,
+    //         color: 'secondary',
+    //       }
+    //       this.$store.dispatch('ui/showAlert', alertMsg)
+    //     }
+    //   }
+    // },
   }
 }
 </script>
