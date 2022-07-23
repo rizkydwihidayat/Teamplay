@@ -57,29 +57,21 @@ export default {
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     '@nuxtjs/proxy',
-    '@nuxtjs/dayjs'
+    '@nuxtjs/dayjs',
+    '@nuxtjs/auth'
   ],
-  // auth: {
-  //   strategies: {
-  //     google: {
-  //       client_id: '491456573984-06gqkkvkpum869833d7m5kbddob6f2nc.apps.googleusercontent.com'
-  //     }
-  //   },
-  //   redirect: {
-  //     login: '/login',
-  //     logout: '/registration',
-  //     callback: '/registration',
-  //     registration: '/register',
-  //     home: '/'
-  //   },
-  //   /*
-  //    ** pluugins to extend the auth module
-  //    ** See https://auth.nuxtjs.org/recipes/extend.html
-  //    */
-  //   plugins: ['~/plugins/extendauth.js']
-  // },
+  auth: {
+    strategies: {
+      google: {
+        client_id: '491456573984-j175qnc1pntjdfrhp6sgui3q6qduatih.apps.googleusercontent.com',
+        codeChallengeMethod: '',
+        responseType: 'token id_token',
+        scope: ['profile', 'email'],
+      },
+    }
+  },
   // router: {
-  //   middleware: ['auth']
+  //   middleware: ["auth"],
   // },
   dayjs: {
     locales: ['id'],

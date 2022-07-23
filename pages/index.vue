@@ -20,6 +20,7 @@ export default {
   },
   // layout: 'bottom_nav',
   layout: 'bottom_nav_trusted',
+  // middleware: 'auth',
   head() {
     return {
       title: 'Home',

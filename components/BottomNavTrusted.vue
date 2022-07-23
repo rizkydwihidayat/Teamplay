@@ -227,7 +227,7 @@
 </v-main>
 </template>
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import IcPlus from '~/components/svg/IcPlus'
 export default {
     components: {
@@ -256,6 +256,7 @@ export default {
     },
   },
   mounted() {
+    this.checkLoginGoogle()
     const token = localStorage.getItem('accKey')
     const verified = localStorage.getItem('isVerified')
     if (token === null) {
@@ -265,6 +266,45 @@ export default {
     } else if (verified === 'true') {
       this.isTrusted = true
     }
+  },
+  methods: {
+    ...mapActions({
+      loginWithGoogle: 'user/loginWithGoogle',
+    }),
+    checkLoginGoogle() {
+      const emailUser = this.$auth.user.email
+      if (emailUser !== '') {
+        try {
+          const params = {
+            email: emailUser,
+          }
+          const prevUrl = this.$nuxt.context.from
+          this.loginWithGoogle(params)
+            .then((resp) => {
+              if (prevUrl.fullPath.includes('invitedFrom')) {
+                this.$router.push({ path: prevUrl.fullPath })
+              } else {
+                this.$router.push({ path: '/' })
+              }
+            })
+            .catch((error) => {
+              const alertMsg = {
+                msg: error,
+                timeout: 3000,
+                color: 'secondary',
+              }
+              this.$store.dispatch('ui/showAlert', alertMsg)
+            })
+        } catch (error) {
+          const alertMsg = {
+            msg: error,
+            timeout: 3000,
+            color: 'secondary',
+          }
+          this.$store.dispatch('ui/showAlert', alertMsg)
+        }
+      }
+    },
   }
 }
 </script>
