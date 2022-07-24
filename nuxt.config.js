@@ -63,7 +63,7 @@ export default {
   auth: {
     strategies: {
       google: {
-        client_id: process.env.TEAMPLAY_CLIENT_ID,
+        client_id: '491456573984-j175qnc1pntjdfrhp6sgui3q6qduatih.apps.googleusercontent.com',
         codeChallengeMethod: '',
         responseType: 'token id_token',
         scope: ['profile', 'email'],
