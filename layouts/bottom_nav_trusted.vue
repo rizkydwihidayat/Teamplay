@@ -15,12 +15,8 @@
 <script>
 import { mapActions } from 'vuex'
 const components = {
-//   SnackBarMessage: () =>
-//     import('@/components/SnackBarMessage.vue' /* webpackChunkName: "SnackBarMessage" */),
   BottomNavigationTrusted: () =>
     import('@/components/BottomNavTrusted.vue' /* webpackChunkName: "BottomNavigation" */),
-//   OfflineAlert: () =>
-//     import('~/components/OfflineAlert.vue' /* webpackChunkName: "OfflineAlert" */)
 }
 export default {
   components,
