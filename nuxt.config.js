@@ -67,13 +67,13 @@ export default {
         codeChallengeMethod: '',
         responseType: 'token id_token',
         scope: ['profile', 'email'],
-      },
-      redirect: {
-        login: '/login',
-        logout: '/',
-        callback: '/login',
-        home: '/'
       }
+    },
+    redirect: {
+      login: '/login',
+      logout: '/',
+      callback: '/login',
+      home: '/'
     }
   },
   // router: {
